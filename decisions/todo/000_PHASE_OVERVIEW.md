@@ -7,7 +7,7 @@ Create an npm package `@juanpprieto/shopify-api-types` that provides TypeScript 
 
 | Phase | Status | Priority | Description |
 |-------|--------|----------|-------------|
-| [Phase 1](./001_Phase_1_Project_Setup.md) | 🟡 Not Started | High | Project Setup and Infrastructure |
+| [Phase 1](./001_Phase_1_Project_Setup.md) | 🟡 Not Started | High | Project Setup with Strict TypeScript/Prettier |
 | [Phase 2](./002_Phase_2_Schema_Fetching.md) | 🟡 Not Started | High | Schema Fetching and Version Management |
 | [Phase 3](./003_Phase_3_Code_Generation.md) | 🟡 Not Started | High | Code Generation Pipeline |
 | [Phase 4](./004_Phase_4_Build_System.md) | 🟡 Not Started | High | Build System and Export Configuration |
@@ -48,6 +48,10 @@ graph TD
 4. **Build System**: Vite with ESM and CommonJS output
 5. **Type Generation**: GraphQL Codegen from introspection schemas
 6. **Publishing**: Changesets for version management, GitHub Actions for CI/CD
+7. **Code Quality**: Strictest TypeScript configuration with all checks enabled
+8. **Formatting**: Strictest Prettier configuration for consistent code style
+9. **Linting**: ESLint flat config with TypeScript strict rules
+10. **Git Hooks**: Husky with lint-staged for pre-commit quality checks
 
 ## Environment Requirements
 
