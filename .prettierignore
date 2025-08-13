@@ -9,5 +9,8 @@ coverage/
 *.min.css
 .tsbuildinfo
 
+# Generated GraphQL types
+src/**/types.ts
+
 # IDE
 .idea/

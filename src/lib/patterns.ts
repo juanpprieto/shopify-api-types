@@ -22,15 +22,16 @@ export function matchApiEndpoint(
   storeDomain?: string,
 ): string {
   return match(apiType)
-    .with(
-      'storefront',
-      () =>
-        `https://hydrogen-preview.myshopify.com/api/${version}/graphql.json`,
-    )
-    .with(
-      'customer-account',
-      () => 'https://app.myshopify.com/services/graphql/introspection/customer',
-    )
+    .with('storefront', () => {
+      if (!storeDomain) {
+        throw new Error('Store domain required for Storefront API');
+      }
+      return `https://${storeDomain}.myshopify.com/api/${version}/graphql.json`;
+    })
+    .with('customer-account', () => {
+      // Customer Account API doesn't use version in URL path, but as query param
+      return 'https://app.myshopify.com/services/graphql/introspection/customer';
+    })
     .with('admin', () => {
       if (!storeDomain) {
         throw new Error('Store domain required for Admin API');

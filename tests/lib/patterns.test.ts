@@ -8,8 +8,8 @@ import {
 describe('patterns', () => {
   describe('matchApiEndpoint', () => {
     it('should generate correct endpoints for each API', () => {
-      expect(matchApiEndpoint('storefront', '2025-01')).toBe(
-        'https://hydrogen-preview.myshopify.com/api/2025-01/graphql.json',
+      expect(matchApiEndpoint('storefront', '2025-01', 'mystore')).toBe(
+        'https://mystore.myshopify.com/api/2025-01/graphql.json',
       );
 
       expect(matchApiEndpoint('customer-account', '2025-01')).toBe(

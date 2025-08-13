@@ -11,6 +11,10 @@ export default {
     'scripts/fetch-schemas.ts',
     'scripts/validate-schemas.ts',
     'scripts/version-utils.ts',
+    'scripts/test-codegen.ts',
+    'scripts/generate-indexes.ts',
+    'scripts/validate-types.ts',
+    'scripts/codegen.ts',
   ],
 
   // Project files (production marked with !)
