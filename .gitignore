@@ -102,3 +102,6 @@ temp/
 
 # Husky
 .husky/_
+
+# Generated schemas (large files)
+src/schemas/

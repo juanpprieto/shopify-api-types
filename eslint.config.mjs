@@ -46,16 +46,23 @@ export default [
     },
     rules: {
       'prettier/prettier': 'error',
+      'no-unused-vars': 'off',
+      'no-undef': 'off',
     },
   },
 
   // TypeScript source files with type checking
   {
-    files: ['src/**/*.ts', 'src/**/*.tsx', 'tests/**/*.ts'],
+    files: ['src/**/*.ts', 'src/**/*.tsx', 'tests/**/*.ts', 'scripts/**/*.ts'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
         project: './tsconfig.json',
+      },
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        fetch: 'readonly',
       },
     },
     plugins: {
@@ -65,6 +72,9 @@ export default [
     rules: {
       ...tseslint.configs.recommended.rules,
       'prettier/prettier': 'error',
+      'no-console': ['error', { allow: ['error'] }],
+      'no-unused-vars': 'off', // Disable base rule in favor of TypeScript version
+      'no-undef': 'off', // TypeScript handles this
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/no-unused-vars': 'error',
