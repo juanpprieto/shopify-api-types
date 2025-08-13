@@ -44,7 +44,10 @@ Initialize the npm package structure with the strictest TypeScript and Prettier 
 **Core Dependencies to Install:**
 ```json
 {
-  "dependencies": {},
+  "dependencies": {
+    "zod": "^3.22.4",
+    "ts-pattern": "^5.0.8"
+  },
   "devDependencies": {
     "typescript": "^5.3.3",
     "@graphql-codegen/cli": "^5.0.0",
@@ -64,14 +67,20 @@ Initialize the npm package structure with the strictest TypeScript and Prettier 
     "@changesets/cli": "^2.26.0",
     "graphql": "^16.8.0",
     "husky": "^9.0.0",
-    "lint-staged": "^15.2.0"
+    "lint-staged": "^15.2.0",
+    "knip": "^5.0.0",
+    "ts-prune": "^0.10.3"
   }
 }
 ```
 
 **Installation Command:**
 ```bash
-npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/introspection @graphql-codegen/typescript-operations vite vitest @vitest/ui eslint @eslint/js typescript-eslint eslint-config-prettier eslint-plugin-prettier prettier tsx @changesets/cli graphql husky lint-staged
+# Install runtime dependencies
+npm install --save-exact zod ts-pattern
+
+# Install dev dependencies
+npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/introspection @graphql-codegen/typescript-operations vite vitest @vitest/ui eslint @eslint/js typescript-eslint eslint-config-prettier eslint-plugin-prettier prettier tsx @changesets/cli graphql husky lint-staged knip ts-prune
 ```
 
 **Validation:**
@@ -257,7 +266,6 @@ coverage/
 .tsbuildinfo
 
 # IDE
-.vscode/
 .idea/
 ```
 
@@ -286,19 +294,6 @@ insert_final_newline = true
     "type-check:watch": "tsc --noEmit --watch",
     "prepare": "husky"
   }
-}
-```
-
-6. **.vscode/settings.json** (VS Code integration):
-```json
-{
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true
 }
 ```
 
@@ -374,7 +369,9 @@ npx lint-staged
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "bash -c 'npm run type-check'",
+      "bash -c 'npm run knip:strict'"
     ],
     "*.{json,md,yml,yaml}": [
       "prettier --write"
@@ -383,14 +380,35 @@ npx lint-staged
 }
 ```
 
-3. **Initialize Husky**:
+3. **Add additional pre-commit hooks**:
+
+Create `.husky/pre-push`:
+```bash
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running comprehensive checks before push..."
+
+# Run tests
+npm test
+
+# Run strict dead code detection
+npm run cleanup:check
+
+# Run build to ensure it compiles
+npm run build
+```
+
+4. **Initialize Husky**:
 ```bash
 npx husky init
+chmod +x .husky/pre-push
 ```
 
 **Validation:**
-- Pre-commit hooks run on staged files
-- Code is automatically formatted and linted before commit
+- Pre-commit hooks run on staged files with TypeScript and dead code checks
+- Pre-push hooks ensure tests pass and no dead code exists
+- Code is automatically formatted, linted, and validated before commit
 
 ### Milestone 1.7: Build Configuration ✅
 **Status:** Not Started
@@ -529,6 +547,146 @@ Husky and lint-staged are configured to ensure code quality before commits.
 - README provides clear usage examples
 - CONTRIBUTING guide explains development workflow
 
+### Milestone 1.9: Dead Code Detection Setup ✅
+**Status:** Not Started
+
+**Files to Create:**
+
+1. **knip.config.ts** (Primary dead code detection):
+```typescript
+import type { KnipConfig } from 'knip';
+
+export default {
+  // Production entry points (marked with ! for production mode)
+  entry: [
+    'src/storefront/index.ts!',
+    'src/customer-account/index.ts!',
+    'src/admin/index.ts!',
+    'scripts/fetch-schemas.ts',
+    'scripts/generate-indexes.ts',
+    'vite.config.ts',
+    'vitest.config.ts'
+  ],
+  
+  // Project files (production marked with !)
+  project: [
+    'src/**/*.{ts,tsx,js,jsx}!',
+    'scripts/**/*.{ts,tsx,js,jsx}',
+    'tests/**/*.{ts,tsx,js,jsx}',
+    '!src/**/*.test.{ts,tsx}',
+    '!src/**/*.spec.{ts,tsx}',
+    '!src/**/__tests__/**',
+    '!src/**/__mocks__/**'
+  ],
+  
+  // Ignore patterns for false positives
+  ignore: [
+    // Generated files
+    'dist/**',
+    'build/**',
+    '**/*.d.ts',
+    'src/*/schema.json',
+    
+    // Development utilities
+    'src/test-utils/**',
+    'src/setupTests.ts'
+  ],
+  
+  // Dependencies to ignore
+  ignoreDependencies: [
+    '@types/*',
+    'eslint-*',
+    'vite-*',
+    '@vitejs/*',
+    '@testing-library/*',
+    '@graphql-codegen/*'
+  ],
+  
+  // Strict options for comprehensive analysis
+  ignoreExportsUsedInFile: false,
+  includeEntryExports: true,
+  
+} satisfies KnipConfig;
+```
+
+2. **.ts-prunerc** (Complementary export analysis):
+```json
+{
+  "ignore": ".*\\.(test|spec|stories)\\.(ts|tsx)$|.*\\.d\\.ts$|dist/.*|build/.*",
+  "skip": ".*\\.(test|spec)\\.tsx?$",
+  "error": true
+}
+```
+
+3. **Add dead code detection scripts to package.json**:
+```json
+{
+  "scripts": {
+    // Primary knip workflows
+    "knip": "knip",
+    "knip:production": "knip --production",
+    "knip:strict": "knip --strict --include files,dependencies,unlisted,exports",
+    "knip:fix": "knip --fix --allow-remove-files",
+    
+    // Comprehensive analysis
+    "deadcode": "knip --production --strict",
+    "deadcode:ci": "knip --production --strict --reporter json",
+    
+    // Complementary ts-prune analysis
+    "find-deadcode": "ts-prune",
+    "find-deadcode:strict": "ts-prune -e",
+    "unused-exports": "ts-prune | grep -v test | grep -v spec",
+    
+    // Combined workflow
+    "cleanup:analyze": "npm run deadcode && npm run find-deadcode:strict",
+    "cleanup:check": "npm run knip:strict && npm run find-deadcode:strict",
+    "cleanup:fix": "npm run knip:fix"
+  }
+}
+```
+
+**Validation:**
+- `npm run deadcode` runs without errors
+- `npm run find-deadcode` identifies unused exports
+- Both tools are integrated into CI/CD pipeline
+
+## Coding Principles
+
+### ts-pattern + Zod: Core Patterns
+
+This project follows a **strict pattern matching and validation philosophy** using ts-pattern and Zod as complementary tools:
+
+1. **Validation → Pattern Matching Pipeline**
+   - Use Zod for runtime validation at boundaries (API responses, user input, file parsing)
+   - Use ts-pattern for exhaustive control flow and conditional logic
+   - Pattern: `validate with Zod → match with ts-pattern → handle exhaustively`
+
+2. **Preferred Over if/else and switch**
+   - Always prefer ts-pattern's `match` over complex if/else chains or switch statements
+   - Ensures exhaustive handling and better type inference
+   - Example pattern for handling GraphQL responses:
+   ```typescript
+   const handleSchemaResponse = (rawData: unknown) =>
+     match(SchemaResponseSchema.safeParse(rawData))
+       .with({ success: true }, ({ data }) => processValidSchema(data))
+       .with({ success: false }, ({ error }) => handleValidationError(error))
+       .exhaustive();
+   ```
+
+3. **Error Handling Pattern**
+   - Use Zod's `safeParse` for graceful error handling
+   - Pattern match on results for comprehensive error handling
+   - Never use `as` type assertions - validate instead
+
+4. **Schema as Source of Truth**
+   - Define Zod schemas for all external data structures
+   - Infer TypeScript types from Zod schemas: `type MyType = z.infer<typeof MySchema>`
+   - Keep validation and type definitions in sync
+
+5. **Discriminated Unions**
+   - Use Zod's discriminated unions for event/message types
+   - Pattern match on discriminators for type-safe handling
+
 ## Success Criteria
 - [ ] All directory structure created
 - [ ] Dependencies installed without errors  
@@ -539,7 +697,8 @@ Husky and lint-staged are configured to ensure code quality before commits.
 - [ ] Git hooks configured with Husky and lint-staged
 - [ ] Vite build configuration for ESM and CJS
 - [ ] Documentation files created
-- [ ] VS Code integration configured
+- [ ] Knip and ts-prune configured for strict dead code detection
+- [ ] ts-pattern and Zod installed as runtime dependencies
 - [ ] All configuration files follow 2025 best practices
 
 ## Notes for Other Agents
@@ -548,6 +707,12 @@ Husky and lint-staged are configured to ensure code quality before commits.
 - The package will support both CommonJS and ESM exports
 - TypeScript strict mode is enabled - maintain type safety
 - Follow existing Shopify patterns but adapt for single package structure
+- **IMPORTANT**: Use ts-pattern + Zod for all data handling:
+  - Zod validates unknown data at runtime boundaries
+  - ts-pattern handles validated data with exhaustive pattern matching
+  - Prefer `match()` over if/else or switch statements
+  - Use `safeParse()` for error handling, never `parse()`
+  - Define schemas as source of truth, infer types from them
 
 ## Next Phase
 Once all milestones are complete, proceed to Phase 2: Schema Fetching and Version Management
