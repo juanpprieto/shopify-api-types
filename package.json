@@ -1,0 +1,122 @@
+{
+  "name": "@juanpprieto/shopify-api-types",
+  "version": "0.1.0",
+  "description": "TypeScript types and JSON schemas for Shopify's GraphQL APIs",
+  "type": "module",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./storefront/*": {
+      "types": "./dist/storefront/*.d.ts",
+      "import": "./dist/storefront/*.es.js",
+      "require": "./dist/storefront/*.cjs.js"
+    },
+    "./customer-account/*": {
+      "types": "./dist/customer-account/*.d.ts",
+      "import": "./dist/customer-account/*.es.js",
+      "require": "./dist/customer-account/*.cjs.js"
+    },
+    "./admin/*": {
+      "types": "./dist/admin/*.d.ts",
+      "import": "./dist/admin/*.es.js",
+      "require": "./dist/admin/*.cjs.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juanpprieto/shopify-api-types.git"
+  },
+  "keywords": [
+    "shopify",
+    "graphql",
+    "typescript",
+    "types",
+    "api",
+    "storefront",
+    "admin",
+    "customer-account"
+  ],
+  "author": "Juan Pablo Prieto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/juanpprieto/shopify-api-types/issues"
+  },
+  "homepage": "https://github.com/juanpprieto/shopify-api-types#readme",
+  "dependencies": {
+    "ts-pattern": "5.8.0",
+    "zod": "4.0.17"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.29.5",
+    "@eslint/js": "9.33.0",
+    "@graphql-codegen/cli": "5.0.7",
+    "@graphql-codegen/introspection": "4.0.3",
+    "@graphql-codegen/typescript": "4.1.6",
+    "@graphql-codegen/typescript-operations": "4.6.1",
+    "eslint": "9.33.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.4",
+    "graphql": "16.11.0",
+    "husky": "9.1.7",
+    "knip": "5.62.0",
+    "lint-staged": "16.1.5",
+    "prettier": "3.6.2",
+    "ts-prune": "0.10.3",
+    "tsx": "4.20.4",
+    "typescript": "5.9.2",
+    "typescript-eslint": "8.39.1",
+    "vite": "7.1.2",
+    "vitest": "3.2.4"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\" --ignore-path .prettierignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\" --ignore-path .prettierignore",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "clean": "rm -rf dist .tsbuildinfo",
+    "knip": "knip",
+    "knip:production": "knip --production",
+    "knip:strict": "knip --strict --include files,dependencies,unlisted,exports",
+    "knip:fix": "knip --fix --allow-remove-files",
+    "deadcode": "knip --production --strict",
+    "deadcode:ci": "knip --production --strict --reporter json",
+    "find-deadcode": "ts-prune",
+    "find-deadcode:strict": "ts-prune -e",
+    "unused-exports": "ts-prune | grep -v test | grep -v spec",
+    "cleanup:analyze": "npm run deadcode && npm run find-deadcode:strict",
+    "cleanup:check": "npm run knip:strict && npm run find-deadcode:strict",
+    "cleanup:fix": "npm run knip:fix",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "bash -c 'npm run type-check'",
+      "bash -c 'npm run deadcode'",
+      "bash -c 'npm run find-deadcode:strict'",
+      "bash -c 'npm test'"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

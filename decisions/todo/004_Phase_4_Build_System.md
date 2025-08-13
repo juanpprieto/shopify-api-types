@@ -1,14 +1,18 @@
 # Phase 4: Build System and Export Configuration
 
 ## Overview
-Configure Vite build system and package.json exports to support multiple entry points for different API versions with both ESM and CommonJS compatibility.
+
+Configure Vite build system and package.json exports to support multiple entry
+points for different API versions with both ESM and CommonJS compatibility.
 
 ## Prerequisites
+
 - Phase 3 completed (types generated and indexed)
 - Understanding of Node.js package exports
 - Familiarity with Vite configuration
 
 ## Critical Information
+
 - Package must support BOTH ESM and CommonJS
 - Each API version needs its own export path
 - Build output goes to `dist/` directory
@@ -17,6 +21,7 @@ Configure Vite build system and package.json exports to support multiple entry p
 ## Milestones
 
 ### Milestone 4.1: Package.json Exports Configuration ✅
+
 **Status:** Not Started
 
 **Update package.json with comprehensive exports:**
@@ -30,11 +35,7 @@ Configure Vite build system and package.json exports to support multiple entry p
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist", "README.md", "LICENSE"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -81,9 +82,9 @@ import { getLastFourVersions } from './version-utils.js';
 async function generatePackageExports() {
   const packagePath = path.join(process.cwd(), 'package.json');
   const packageJson = JSON.parse(await fs.readFile(packagePath, 'utf-8'));
-  
+
   const versions = getLastFourVersions();
-  
+
   // Build exports object
   const exports: Record<string, any> = {
     '.': {
@@ -92,23 +93,23 @@ async function generatePackageExports() {
       require: './dist/index.cjs',
     },
   };
-  
+
   // Add specific version exports
-  versions.forEach(version => {
+  versions.forEach((version) => {
     // Storefront API
     exports[`./sfapi/${version}`] = {
       types: `./dist/storefront/${version}/index.d.ts`,
       import: `./dist/storefront/${version}/index.js`,
       require: `./dist/storefront/${version}/index.cjs`,
     };
-    
+
     // Customer Account API
     exports[`./caapi/${version}`] = {
       types: `./dist/customer-account/${version}/index.d.ts`,
       import: `./dist/customer-account/${version}/index.js`,
       require: `./dist/customer-account/${version}/index.cjs`,
     };
-    
+
     // Admin API
     exports[`./admin/${version}`] = {
       types: `./dist/admin/${version}/index.d.ts`,
@@ -116,17 +117,20 @@ async function generatePackageExports() {
       require: `./dist/admin/${version}/index.cjs`,
     };
   });
-  
+
   // Update package.json
   packageJson.exports = exports;
-  
+
   await fs.writeFile(
     packagePath,
     JSON.stringify(packageJson, null, 2) + '\n',
-    'utf-8'
+    'utf-8',
   );
-  
-  console.log('✓ Updated package.json exports for versions:', versions.join(', '));
+
+  console.log(
+    '✓ Updated package.json exports for versions:',
+    versions.join(', '),
+  );
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -135,6 +139,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 ```
 
 ### Milestone 4.2: Vite Build Configuration ✅
+
 **Status:** Not Started
 
 **Create `vite.config.ts`:**
@@ -149,16 +154,19 @@ const versions = getLastFourVersions();
 
 // Build entry points for all API versions
 const entry: Record<string, string> = {
-  'index': resolve(__dirname, 'src/index.ts'),
+  index: resolve(__dirname, 'src/index.ts'),
 };
 
 // Add API root indexes
-['storefront', 'customer-account', 'admin'].forEach(api => {
+['storefront', 'customer-account', 'admin'].forEach((api) => {
   entry[`${api}/index`] = resolve(__dirname, `src/${api}/index.ts`);
-  
+
   // Add version-specific entries
-  versions.forEach(version => {
-    entry[`${api}/${version}/index`] = resolve(__dirname, `src/${api}/${version}/index.ts`);
+  versions.forEach((version) => {
+    entry[`${api}/${version}/index`] = resolve(
+      __dirname,
+      `src/${api}/${version}/index.ts`,
+    );
   });
 });
 
@@ -205,21 +213,21 @@ import { getLastFourVersions } from './version-utils.js';
 async function copySchemas() {
   const versions = getLastFourVersions();
   const apis = ['storefront', 'customer-account', 'admin'];
-  
+
   console.log('Copying schema files to dist...');
-  
+
   for (const api of apis) {
     const sourceDir = path.join('src', 'schemas', api);
     const targetDir = path.join('dist', 'schemas', api);
-    
+
     // Create target directory
     await fs.mkdir(targetDir, { recursive: true });
-    
+
     // Copy each version's schema
     for (const version of versions) {
       const sourceFile = path.join(sourceDir, `${version}.json`);
       const targetFile = path.join(targetDir, `${version}.json`);
-      
+
       try {
         await fs.copyFile(sourceFile, targetFile);
         console.log(`✓ Copied ${api}/${version}.json`);
@@ -236,6 +244,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 ```
 
 ### Milestone 4.3: Build Scripts Configuration ✅
+
 **Status:** Not Started
 
 **Update package.json with build scripts:**
@@ -274,6 +283,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 ```
 
 ### Milestone 4.4: Build Validation ✅
+
 **Status:** Not Started
 
 **Create build validation script: `scripts/validate-build.ts`**
@@ -292,43 +302,58 @@ async function validateBuild(): Promise<ValidationResult> {
   const errors: string[] = [];
   const versions = getLastFourVersions();
   const apis = ['storefront', 'customer-account', 'admin'];
-  
+
   console.log('Validating build output...\n');
-  
+
   // Check root files
   const rootFiles = ['index.js', 'index.cjs', 'index.d.ts'];
   for (const file of rootFiles) {
     const filePath = path.join('dist', file);
-    if (!await fs.access(filePath).then(() => true).catch(() => false)) {
+    if (
+      !(await fs
+        .access(filePath)
+        .then(() => true)
+        .catch(() => false))
+    ) {
       errors.push(`Missing root file: ${file}`);
     }
   }
-  
+
   // Check API files
   for (const api of apis) {
     for (const version of versions) {
       const versionPath = path.join('dist', api, version);
       const requiredFiles = ['index.js', 'index.cjs', 'index.d.ts'];
-      
+
       for (const file of requiredFiles) {
         const filePath = path.join(versionPath, file);
-        if (!await fs.access(filePath).then(() => true).catch(() => false)) {
+        if (
+          !(await fs
+            .access(filePath)
+            .then(() => true)
+            .catch(() => false))
+        ) {
           errors.push(`Missing: ${api}/${version}/${file}`);
         }
       }
     }
   }
-  
+
   // Check schema files
   for (const api of apis) {
     for (const version of versions) {
       const schemaPath = path.join('dist', 'schemas', api, `${version}.json`);
-      if (!await fs.access(schemaPath).then(() => true).catch(() => false)) {
+      if (
+        !(await fs
+          .access(schemaPath)
+          .then(() => true)
+          .catch(() => false))
+      ) {
         errors.push(`Missing schema: ${api}/${version}.json`);
       }
     }
   }
-  
+
   // Test imports
   try {
     // Dynamic import test
@@ -338,20 +363,20 @@ async function validateBuild(): Promise<ValidationResult> {
       import('../dist/customer-account/index.js'),
       import('../dist/admin/index.js'),
     ];
-    
+
     await Promise.all(testImports);
     console.log('✓ All module imports working');
   } catch (error) {
     errors.push(`Import test failed: ${error}`);
   }
-  
+
   if (errors.length === 0) {
     console.log('\n✅ Build validation passed!');
   } else {
     console.error('\n❌ Build validation failed:');
-    errors.forEach(err => console.error(`  - ${err}`));
+    errors.forEach((err) => console.error(`  - ${err}`));
   }
-  
+
   return {
     valid: errors.length === 0,
     errors,
@@ -359,13 +384,14 @@ async function validateBuild(): Promise<ValidationResult> {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  validateBuild().then(result => {
+  validateBuild().then((result) => {
     process.exit(result.valid ? 0 : 1);
   });
 }
 ```
 
 **Add validation to package.json:**
+
 ```json
 {
   "scripts": {
@@ -376,6 +402,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 ```
 
 ## Success Criteria
+
 - [ ] Package.json exports configured for all API versions
 - [ ] Vite successfully builds all entry points
 - [ ] TypeScript declarations generated for all files
@@ -385,6 +412,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 - [ ] Package can be imported using all export paths
 
 ## Build Output Structure
+
 ```
 dist/
 ├── index.js
@@ -413,18 +441,23 @@ dist/
 ## Common Issues & Solutions
 
 ### Issue: Vite not preserving directory structure
+
 **Solution:** Ensure entry points are correctly configured with full paths
 
 ### Issue: CommonJS imports not working
+
 **Solution:** Check that .cjs extension is used and exports are named
 
 ### Issue: TypeScript paths not resolving
+
 **Solution:** Verify tsconfig paths and moduleResolution settings
 
 ### Issue: Large bundle size
+
 **Solution:** This is expected - types are comprehensive
 
 ## Notes for Other Agents
+
 - Build process is multi-step: clean → generate → build → copy
 - The `prepare` script ensures build runs on install
 - Schema files must be copied separately (not bundled)
@@ -433,4 +466,6 @@ dist/
 - No minification to keep types readable
 
 ## Next Phase
-Once build system is working and validated, proceed to Phase 5: Testing and Validation
+
+Once build system is working and validated, proceed to Phase 5: Testing and
+Validation

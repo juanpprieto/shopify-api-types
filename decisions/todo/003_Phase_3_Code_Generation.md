@@ -1,14 +1,18 @@
 # Phase 3: Code Generation Pipeline
 
 ## Overview
-Set up GraphQL Code Generator to transform the fetched schemas into TypeScript type definitions for all APIs and versions.
+
+Set up GraphQL Code Generator to transform the fetched schemas into TypeScript
+type definitions for all APIs and versions.
 
 ## Prerequisites
+
 - Phase 2 completed (schemas fetched and stored)
 - GraphQL Code Generator dependencies installed
 - Understanding of GraphQL Code Generator configuration
 
 ## Critical Information
+
 - We generate types for 3 APIs × 4 versions = 12 type files
 - Each API version gets its own types.ts file
 - Custom scalar mappings must match Shopify's types
@@ -17,6 +21,7 @@ Set up GraphQL Code Generator to transform the fetched schemas into TypeScript t
 ## Milestones
 
 ### Milestone 3.1: GraphQL Codegen Configuration ✅
+
 **Status:** Not Started
 
 **File to Create: `codegen.ts`**
@@ -46,7 +51,7 @@ const config: CodegenConfig = {
 };
 
 // Generate configuration for each API and version
-versions.forEach(version => {
+versions.forEach((version) => {
   // Storefront API
   config.generates[`./src/storefront/${version}/types.ts`] = {
     schema: `./src/schemas/storefront/${version}.json`,
@@ -63,7 +68,7 @@ versions.forEach(version => {
       },
     },
   };
-  
+
   // Customer Account API
   config.generates[`./src/customer-account/${version}/types.ts`] = {
     schema: `./src/schemas/customer-account/${version}.json`,
@@ -80,7 +85,7 @@ versions.forEach(version => {
       },
     },
   };
-  
+
   // Admin API
   config.generates[`./src/admin/${version}/types.ts`] = {
     schema: `./src/schemas/admin/${version}.json`,
@@ -103,14 +108,17 @@ export default config;
 ```
 
 **Validation:**
+
 - File exports a valid CodegenConfig
 - All schema paths are correctly referenced
 - Scalar mappings match Shopify's conventions
 
 ### Milestone 3.2: Type Generation Scripts ✅
+
 **Status:** Not Started
 
 **Update package.json:**
+
 ```json
 {
   "scripts": {
@@ -122,6 +130,7 @@ export default config;
 ```
 
 **Create a type generation test script: `scripts/test-codegen.ts`**
+
 ```typescript
 import { execSync } from 'child_process';
 import fs from 'fs/promises';
@@ -130,21 +139,24 @@ import { getLastFourVersions } from './version-utils.js';
 
 async function testCodegen() {
   console.log('Testing code generation...\n');
-  
+
   try {
     // Run codegen
     execSync('npm run generate-types', { stdio: 'inherit' });
-    
+
     // Verify files were created
     const versions = getLastFourVersions();
     const apis = ['storefront', 'customer-account', 'admin'];
     let allGenerated = true;
-    
+
     for (const api of apis) {
       for (const version of versions) {
         const typePath = path.join('src', api, version, 'types.ts');
-        const exists = await fs.access(typePath).then(() => true).catch(() => false);
-        
+        const exists = await fs
+          .access(typePath)
+          .then(() => true)
+          .catch(() => false);
+
         if (exists) {
           console.log(`✓ Generated: ${api}/${version}/types.ts`);
         } else {
@@ -153,7 +165,7 @@ async function testCodegen() {
         }
       }
     }
-    
+
     return allGenerated;
   } catch (error) {
     console.error('Code generation failed:', error);
@@ -162,18 +174,20 @@ async function testCodegen() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  testCodegen().then(success => {
+  testCodegen().then((success) => {
     process.exit(success ? 0 : 1);
   });
 }
 ```
 
 **Validation:**
+
 - Run `npm run generate-types`
 - All 12 type files should be generated
 - No TypeScript errors in generated files
 
 ### Milestone 3.3: Index Files Generation ✅
+
 **Status:** Not Started
 
 **Create index generator script: `scripts/generate-indexes.ts`**
@@ -203,45 +217,51 @@ async function generateIndexFiles() {
     { dir: 'customer-account', schemaDir: 'customer-account' },
     { dir: 'admin', schemaDir: 'admin' },
   ];
-  
+
   for (const api of apis) {
     const apiExports: string[] = [];
-    
+
     for (const version of versions) {
       const versionDir = path.join('src', api.dir, version);
-      
+
       // Ensure directory exists
       await fs.mkdir(versionDir, { recursive: true });
-      
+
       // Generate index.ts for each version
-      const indexContent = INDEX_TEMPLATE
-        .replace('{API_TYPE}', api.schemaDir)
-        .replace('{VERSION}', version);
-      
+      const indexContent = INDEX_TEMPLATE.replace(
+        '{API_TYPE}',
+        api.schemaDir,
+      ).replace('{VERSION}', version);
+
       const indexPath = path.join(versionDir, 'index.ts');
       await fs.writeFile(indexPath, indexContent, 'utf-8');
-      
+
       console.log(`✓ Generated index: ${api.dir}/${version}/index.ts`);
-      
+
       // Add to API exports
-      apiExports.push(`export * as v${version.replace('-', '_')} from './${version}/index.js';`);
+      apiExports.push(
+        `export * as v${version.replace('-', '_')} from './${version}/index.js';`,
+      );
     }
-    
+
     // Generate main API index
     const apiIndexPath = path.join('src', api.dir, 'index.ts');
-    const apiIndexContent = API_INDEX_TEMPLATE.replace('{EXPORTS}', apiExports.join('\n'));
+    const apiIndexContent = API_INDEX_TEMPLATE.replace(
+      '{EXPORTS}',
+      apiExports.join('\n'),
+    );
     await fs.writeFile(apiIndexPath, apiIndexContent, 'utf-8');
-    
+
     console.log(`✓ Generated API index: ${api.dir}/index.ts`);
   }
-  
+
   // Generate root index
   const rootIndexContent = `// Auto-generated root index
 export * as storefront from './storefront/index.js';
 export * as customerAccount from './customer-account/index.js';
 export * as admin from './admin/index.js';
 `;
-  
+
   await fs.writeFile(path.join('src', 'index.ts'), rootIndexContent, 'utf-8');
   console.log('✓ Generated root index: src/index.ts');
 }
@@ -252,6 +272,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 ```
 
 **Add script to package.json:**
+
 ```json
 {
   "scripts": {
@@ -261,6 +282,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 ```
 
 **Expected file structure after generation:**
+
 ```
 src/
 ├── index.ts
@@ -279,6 +301,7 @@ src/
 ```
 
 ### Milestone 3.4: Type Validation ✅
+
 **Status:** Not Started
 
 **Create type validation script: `scripts/validate-types.ts`**
@@ -290,7 +313,7 @@ import path from 'path';
 
 async function validateTypes() {
   console.log('Validating generated types...\n');
-  
+
   try {
     // Create a temporary test file that imports all types
     const testContent = `
@@ -320,19 +343,22 @@ if (!storefrontSchema.__schema) {
 
 console.log('✓ All type imports working correctly');
 `;
-    
+
     // Write test file
     await fs.mkdir('temp', { recursive: true });
     await fs.writeFile('temp/type-test.ts', testContent, 'utf-8');
-    
+
     // Type check
-    execSync('npx tsc --noEmit temp/type-test.ts --module esnext --moduleResolution bundler --resolveJsonModule --esModuleInterop', {
-      stdio: 'inherit'
-    });
-    
+    execSync(
+      'npx tsc --noEmit temp/type-test.ts --module esnext --moduleResolution bundler --resolveJsonModule --esModuleInterop',
+      {
+        stdio: 'inherit',
+      },
+    );
+
     // Clean up
     await fs.rm('temp', { recursive: true, force: true });
-    
+
     console.log('\n✅ Type validation passed!');
     return true;
   } catch (error) {
@@ -342,13 +368,14 @@ console.log('✓ All type imports working correctly');
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  validateTypes().then(success => {
+  validateTypes().then((success) => {
     process.exit(success ? 0 : 1);
   });
 }
 ```
 
 **Add to package.json:**
+
 ```json
 {
   "scripts": {
@@ -358,6 +385,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 ```
 
 ## Success Criteria
+
 - [ ] GraphQL Codegen configuration created
 - [ ] All 12 type files generated successfully
 - [ ] Index files created for all APIs and versions
@@ -368,18 +396,23 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 ## Common Issues & Solutions
 
 ### Issue: "Cannot find module" errors
+
 **Solution:** Ensure all paths use `.js` extension in imports (for ESM)
 
 ### Issue: GraphQL Codegen fails
+
 **Solution:** Check that all schema JSON files exist and are valid
 
 ### Issue: Type conflicts
+
 **Solution:** Verify scalar mappings match Shopify's conventions
 
 ### Issue: Index files not found
+
 **Solution:** Run `npm run generate-indexes` after type generation
 
 ## Notes for Other Agents
+
 - Generated files should NOT be edited manually
 - Always regenerate types after schema updates
 - The `.js` extension in imports is required for ESM
@@ -388,4 +421,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 - Generated types follow Shopify's naming conventions
 
 ## Next Phase
-Once type generation is working and validated, proceed to Phase 4: Build System and Export Configuration
+
+Once type generation is working and validated, proceed to Phase 4: Build System
+and Export Configuration

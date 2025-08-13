@@ -2,7 +2,9 @@
 
 ## Objective
 
-Deliver a single npm package providing robust TypeScript types and JSON schemas for Shopify’s Storefront, Customer Account, and Admin APIs. Each export covers the four latest API versions per Shopify’s quarterly release cycle.
+Deliver a single npm package providing robust TypeScript types and JSON schemas
+for Shopify’s Storefront, Customer Account, and Admin APIs. Each export covers
+the four latest API versions per Shopify’s quarterly release cycle.
 
 ## Requirements
 
@@ -10,12 +12,16 @@ Deliver a single npm package providing robust TypeScript types and JSON schemas 
   - **Storefront API**
   - **Customer Account API**
   - **Admin API (GraphQL)**
-- Types and schemas will be versioned, with exports for the four latest releases (e.g., `2025-07`, `2025-04`, `2025-01`, `2024-10`).
-- Each API and version receives clear, modular exports for both TypeScript types and JSON schemas.
+- Types and schemas will be versioned, with exports for the four latest releases
+  (e.g., `2025-07`, `2025-04`, `2025-01`, `2024-10`).
+- Each API and version receives clear, modular exports for both TypeScript types
+  and JSON schemas.
 - Use a single, traditional src-based package structure. No monorepo.
 - Publish all outputs to npm via automated CI/CD workflows.
-- Use deep reference implementations from Shopify’s `hydrogen-react`, and codegen infrastructure.
-- Prioritize clarity, maintainability, and compatibility for technical consumers.
+- Use deep reference implementations from Shopify’s `hydrogen-react`, and
+  codegen infrastructure.
+- Prioritize clarity, maintainability, and compatibility for technical
+  consumers.
 
 ## Reference Implementations
 
@@ -38,7 +44,8 @@ Deliver a single npm package providing robust TypeScript types and JSON schemas 
 
 - Scaffold the package in a clean src directory structure.
 - Configure TypeScript, linting, formatting, and testing infrastructure.
-- Integrate deep npm workflows using GitHub Actions, referencing best practices from Shopify’s `shopify-app-js`.
+- Integrate deep npm workflows using GitHub Actions, referencing best practices
+  from Shopify’s `shopify-app-js`.
 
 #### Milestones
 
@@ -50,8 +57,10 @@ Deliver a single npm package providing robust TypeScript types and JSON schemas 
 
 ### Phase 2: Schema and Type Generation
 
-- Implement codegen based on Shopify’s `hydrogen-codegen` and @graphql-codegen tooling[2][6].
-- Fetch and cache GraphQL schemas for Storefront, Admin, and Customer Account APIs for the last four versions.
+- Implement codegen based on Shopify’s `hydrogen-codegen` and @graphql-codegen
+  tooling[2][6].
+- Fetch and cache GraphQL schemas for Storefront, Admin, and Customer Account
+  APIs for the last four versions.
 - Automate GraphQL code generation for:
   - Base TypeScript types
   - Types for specific operations (queries/mutations)
@@ -60,7 +69,8 @@ Deliver a single npm package providing robust TypeScript types and JSON schemas 
 #### Milestones
 
 - Automated schema extraction scripted (supports parameterized API version).
-- Types and JSON schemas generated for `2025-07`, `2025-04`, `2025-01`, and `2024-10`.
+- Types and JSON schemas generated for `2025-07`, `2025-04`, `2025-01`, and
+  `2024-10`.
 - Fully validated types match Shopify API reference implementations.
 
 ---
@@ -68,7 +78,8 @@ Deliver a single npm package providing robust TypeScript types and JSON schemas 
 ### Phase 3: Modular Export and Versioning Architecture
 
 - Design clear paths for importing types and schemas.
-- Structure build outputs so each API/version supports deep imports (e.g., `/sfapi/2025-01`).
+- Structure build outputs so each API/version supports deep imports (e.g.,
+  `/sfapi/2025-01`).
 - Document supported exports in README and inline comments.
 
 #### Milestones
@@ -95,7 +106,8 @@ Deliver a single npm package providing robust TypeScript types and JSON schemas 
 
 ### Phase 5: Documentation and Maintenance
 
-- Write concise README referencing API coverage, usage examples, versioning details.
+- Write concise README referencing API coverage, usage examples, versioning
+  details.
 - Create upgrade and troubleshooting guide with reference to upstream changes.
 - Maintain changelog and forecast compatibility impacts.
 
@@ -104,9 +116,12 @@ Deliver a single npm package providing robust TypeScript types and JSON schemas 
 ## Key Technical Decisions
 
 - **Single-package model:** No monorepo complexity; source-of-truth is `src/`.
-- **Automated schema-fetch/codegen:** Eliminates manual updates and reduces risk[2][5][15].
-- **Versioned exports:** Supports legacy migration and immediate adoption for major upgrades.
-- **Interface clarity:** All exports typed and documented for deep integration[1][12].
+- **Automated schema-fetch/codegen:** Eliminates manual updates and reduces
+  risk[2][5][15].
+- **Versioned exports:** Supports legacy migration and immediate adoption for
+  major upgrades.
+- **Interface clarity:** All exports typed and documented for deep
+  integration[1][12].
 
 ---
 
@@ -129,5 +144,4 @@ Deliver a single npm package providing robust TypeScript types and JSON schemas 
 
 ---
 
-Contact for technical review and architecture updates.
-n#L55
+Contact for technical review and architecture updates. n#L55

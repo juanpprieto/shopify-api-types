@@ -1,9 +1,13 @@
 # Phase 1: Project Setup and Infrastructure
 
 ## Overview
-Initialize the npm package structure with the strictest TypeScript and Prettier configurations, set up modern development tooling following 2025 best practices for TypeScript projects.
+
+Initialize the npm package structure with the strictest TypeScript and Prettier
+configurations, set up modern development tooling following 2025 best practices
+for TypeScript projects.
 
 ## Prerequisites
+
 - Node.js 18+ installed
 - npm or pnpm package manager
 - Git initialized repository
@@ -11,9 +15,11 @@ Initialize the npm package structure with the strictest TypeScript and Prettier 
 ## Milestones
 
 ### Milestone 1.1: Repository Structure ✅
+
 **Status:** Not Started
 
 **Tasks:**
+
 1. Create single package structure (NOT monorepo)
 2. Create directory structure:
    ```
@@ -34,14 +40,17 @@ Initialize the npm package structure with the strictest TypeScript and Prettier 
 5. Add .gitignore with standard Node.js patterns plus `dist/`
 
 **Validation:**
+
 - Directory structure matches specification
 - package.json exists with correct name
 - Git repository properly initialized
 
 ### Milestone 1.2: Dependencies Setup ✅
+
 **Status:** Not Started
 
 **Core Dependencies to Install:**
+
 ```json
 {
   "dependencies": {
@@ -56,7 +65,6 @@ Initialize the npm package structure with the strictest TypeScript and Prettier 
     "@graphql-codegen/typescript-operations": "^4.0.1",
     "vite": "^5.0.0",
     "vitest": "^1.0.0",
-    "@vitest/ui": "^1.0.0",
     "eslint": "^8.57.0",
     "@eslint/js": "^8.57.0",
     "typescript-eslint": "^7.0.0",
@@ -75,25 +83,29 @@ Initialize the npm package structure with the strictest TypeScript and Prettier 
 ```
 
 **Installation Command:**
+
 ```bash
 # Install runtime dependencies
 npm install --save-exact zod ts-pattern
 
 # Install dev dependencies
-npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/introspection @graphql-codegen/typescript-operations vite vitest @vitest/ui eslint @eslint/js typescript-eslint eslint-config-prettier eslint-plugin-prettier prettier tsx @changesets/cli graphql husky lint-staged knip ts-prune
+npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/introspection @graphql-codegen/typescript-operations vite vitest eslint @eslint/js typescript-eslint eslint-config-prettier eslint-plugin-prettier prettier tsx @changesets/cli graphql husky lint-staged knip ts-prune
 ```
 
 **Validation:**
+
 - All dependencies installed successfully
 - No peer dependency warnings
 - package-lock.json created
 
 ### Milestone 1.3: TypeScript Configuration ✅
+
 **Status:** Not Started
 
 **Files to Create:**
 
 1. **tsconfig.json** (main config with strictest settings):
+
 ```json
 {
   "compilerOptions": {
@@ -102,7 +114,7 @@ npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-cod
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": ["ES2022"],
-    
+
     // Core strict settings (all enabled)
     "strict": true,
     "noImplicitAny": true,
@@ -112,7 +124,7 @@ npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-cod
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    
+
     // Additional strict checks
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
@@ -124,13 +136,13 @@ npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-cod
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "noImplicitOverride": true,
-    
+
     // Module interop
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    
+
     // Type checking and output
     "skipLibCheck": false,
     "resolveJsonModule": true,
@@ -138,7 +150,7 @@ npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-cod
     "declarationMap": true,
     "sourceMap": true,
     "removeComments": true,
-    
+
     // Output configuration
     "outDir": "./dist",
     "rootDir": "./src",
@@ -151,6 +163,7 @@ npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-cod
 ```
 
 2. **tsconfig.build.json** (for build output):
+
 ```json
 {
   "extends": "./tsconfig.json",
@@ -160,11 +173,19 @@ npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-cod
     "sourceMap": false,
     "removeComments": true
   },
-  "exclude": ["node_modules", "dist", "tests", "scripts", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "scripts",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
 }
 ```
 
 3. **tsconfig.scripts.json** (for build scripts):
+
 ```json
 {
   "extends": "./tsconfig.json",
@@ -180,57 +201,101 @@ npm install --save-dev --save-exact typescript @graphql-codegen/cli @graphql-cod
 }
 ```
 
+4. **Create placeholder source files** (required for TypeScript validation):
+
+```typescript
+// src/index.ts
+export * from './storefront/index.js';
+export * from './customer-account/index.js';
+export * from './admin/index.js';
+
+// src/storefront/index.ts
+// Storefront API exports - will be populated in Phase 3
+
+// src/customer-account/index.ts
+// Customer Account API exports - will be populated in Phase 3
+
+// src/admin/index.ts
+// Admin API exports - will be populated in Phase 3
+```
+
 **Validation:**
+
+- Create placeholder source files before running TypeScript validation
 - TypeScript compiles without errors: `npx tsc --noEmit`
 - All strict checks are enabled and passing
 - Config files properly extend each other
 
 ### Milestone 1.4: Development Tools Configuration ✅
+
 **Status:** Not Started
 
 **Files to Create:**
 
 1. **eslint.config.mjs** (using flat config):
+
 ```javascript
-import js from "@eslint/js";
-import tseslint from "typescript-eslint";
-import eslintConfigPrettier from "eslint-config-prettier";
-import prettierPlugin from "eslint-plugin-prettier";
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import prettierPlugin from 'eslint-plugin-prettier';
 
 export default [
-  js.configs.recommended,
-  ...tseslint.configs.strictTypeChecked,
   {
-    files: ["**/*.ts", "**/*.tsx"],
+    ignores: ['dist/**', 'node_modules/**', '.tsbuildinfo'],
+  },
+  js.configs.recommended,
+  {
+    files: ['**/*.js', '**/*.mjs'],
+    rules: {
+      // Basic JS rules for config files
+    },
+  },
+  ...tseslint.configs.recommended,
+  {
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: "./tsconfig.json",
+        project: './tsconfig.json',
       },
     },
     plugins: {
-      "@typescript-eslint": tseslint.plugin,
-      "prettier": prettierPlugin,
+      '@typescript-eslint': tseslint.plugin,
+      'prettier': prettierPlugin,
     },
     rules: {
-      "prettier/prettier": "error",
-      "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/explicit-function-return-type": "error",
-      "@typescript-eslint/no-unused-vars": "error",
-      "@typescript-eslint/strict-boolean-expressions": "error",
-      "@typescript-eslint/no-non-null-assertion": "error",
-      "@typescript-eslint/consistent-type-imports": ["error", {
-        "prefer": "type-imports",
-        "fixStyle": "inline-type-imports"
-      }],
-      "@typescript-eslint/no-import-type-side-effects": "error"
+      'prettier/prettier': 'error',
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'error',
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'inline-type-imports',
+        },
+      ],
+      '@typescript-eslint/no-import-type-side-effects': 'error',
     },
   },
   eslintConfigPrettier,
 ];
 ```
 
+**Important Notes:**
+
+- Use `tseslint.configs.recommended` instead of `strictTypeChecked` to avoid
+  type checking issues on config files
+- Add explicit `ignores` configuration for generated files
+- Separate config for JS/MJS files to prevent TypeScript rules from applying to
+  config files
+- This prevents the "Error while loading rule" issues with type-checked rules on
+  non-TypeScript files
+
 2. **.prettierrc.json** (strictest configuration):
+
 ```json
 {
   "printWidth": 80,
@@ -253,6 +318,7 @@ export default [
 ```
 
 3. **.prettierignore**:
+
 ```
 # Dependencies
 node_modules/
@@ -270,6 +336,7 @@ coverage/
 ```
 
 4. **.editorconfig**:
+
 ```ini
 root = true
 
@@ -283,6 +350,7 @@ insert_final_newline = true
 ```
 
 5. **Add scripts to package.json**:
+
 ```json
 {
   "scripts": {
@@ -298,16 +366,31 @@ insert_final_newline = true
 ```
 
 **Validation:**
+
+- Create placeholder source files first (prevents TypeScript "no inputs" error)
 - `npm run lint` runs without errors
-- `npm run format:check` passes
+- Run `npm run lint:fix` to auto-fix formatting issues
+- `npm run format` to format all files with Prettier
+- `npm run format:check` passes after formatting
 - `npm run type-check` passes
 
+**Common Issues & Solutions:**
+
+- **ESLint "Error while loading rule"**: Use `recommended` instead of
+  `strictTypeChecked` config, separate JS/TS file configurations
+- **Prettier formatting errors**: Run `npm run format` first, then
+  `npm run format:check`
+- **TypeScript "no inputs found"**: Ensure placeholder source files exist in
+  src/ directory
+
 ### Milestone 1.5: Initial Test Setup ✅
+
 **Status:** Not Started
 
 **Files to Create:**
 
 1. **vitest.config.ts**:
+
 ```typescript
 import { defineConfig } from 'vitest/config';
 
@@ -325,6 +408,7 @@ export default defineConfig({
 ```
 
 2. **tests/setup.test.ts** (basic test to verify setup):
+
 ```typescript
 import { describe, it, expect } from 'vitest';
 
@@ -336,26 +420,29 @@ describe('Project Setup', () => {
 ```
 
 3. **Add test scripts to package.json**:
+
 ```json
 {
   "scripts": {
     "test": "vitest",
-    "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage"
   }
 }
 ```
 
 **Validation:**
+
 - `npm test` runs successfully
 - Basic test passes
 
 ### Milestone 1.6: Git Hooks Setup ✅
+
 **Status:** Not Started
 
 **Files to Create:**
 
 1. **.husky/pre-commit**:
+
 ```bash
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
@@ -364,6 +451,7 @@ npx lint-staged
 ```
 
 2. **Add lint-staged configuration to package.json**:
+
 ```json
 {
   "lint-staged": {
@@ -371,11 +459,11 @@ npx lint-staged
       "eslint --fix",
       "prettier --write",
       "bash -c 'npm run type-check'",
-      "bash -c 'npm run knip:strict'"
+      "bash -c 'npm run deadcode'",
+      "bash -c 'npm run find-deadcode:strict'",
+      "bash -c 'npm test'"
     ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
+    "*.{json,md,yml,yaml}": ["prettier --write"]
   }
 }
 ```
@@ -383,6 +471,7 @@ npx lint-staged
 3. **Add additional pre-commit hooks**:
 
 Create `.husky/pre-push`:
+
 ```bash
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
@@ -400,22 +489,31 @@ npm run build
 ```
 
 4. **Initialize Husky**:
+
 ```bash
 npx husky init
 chmod +x .husky/pre-push
 ```
 
 **Validation:**
-- Pre-commit hooks run on staged files with TypeScript and dead code checks
-- Pre-push hooks ensure tests pass and no dead code exists
-- Code is automatically formatted, linted, and validated before commit
+
+- Pre-commit hooks run comprehensive checks on staged TypeScript files:
+  - ESLint fix and Prettier formatting
+  - TypeScript type checking
+  - Dead code detection (knip + ts-prune)
+  - Unit tests execution
+- Pre-push hooks ensure tests pass and build succeeds
+- Any failure in the pre-commit checks will prevent the commit
+- Code quality gates enforce zero tolerance for dead code and test failures
 
 ### Milestone 1.7: Build Configuration ✅
+
 **Status:** Not Started
 
 **Files to Create:**
 
 1. **vite.config.ts**:
+
 ```typescript
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
@@ -425,7 +523,10 @@ export default defineConfig({
     lib: {
       entry: {
         'storefront/index': resolve(__dirname, 'src/storefront/index.ts'),
-        'customer-account/index': resolve(__dirname, 'src/customer-account/index.ts'),
+        'customer-account/index': resolve(
+          __dirname,
+          'src/customer-account/index.ts',
+        ),
         'admin/index': resolve(__dirname, 'src/admin/index.ts'),
       },
       formats: ['es', 'cjs'],
@@ -447,6 +548,7 @@ export default defineConfig({
 ```
 
 2. **Add build scripts to package.json**:
+
 ```json
 {
   "scripts": {
@@ -458,17 +560,20 @@ export default defineConfig({
 ```
 
 **Validation:**
+
 - `npm run build` creates dist directory
 - Both ESM and CJS formats are generated
 - Source maps are created
 
 ### Milestone 1.8: Documentation Setup ✅
+
 **Status:** Not Started
 
 **Files to Create:**
 
 1. **README.md**:
-```markdown
+
+````markdown
 # @juanpprieto/shopify-api-types
 
 > TypeScript types and JSON schemas for Shopify's GraphQL APIs
@@ -478,6 +583,7 @@ export default defineConfig({
 ```bash
 npm install @juanpprieto/shopify-api-types
 ```
+````
 
 ## Usage
 
@@ -494,12 +600,13 @@ import { schema } from '@juanpprieto/shopify-api-types/sfapi/2025-01';
 ## Supported APIs
 
 - Storefront API (sfapi)
-- Customer Account API (caapi)  
+- Customer Account API (caapi)
 - Admin API (admin)
 
 ## Supported Versions
 
 Last 4 quarterly releases:
+
 - 2025-01
 - 2024-10
 - 2024-07
@@ -508,7 +615,8 @@ Last 4 quarterly releases:
 ## Development
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup.
-```
+
+````
 
 2. **CONTRIBUTING.md**:
 ```markdown
@@ -531,17 +639,18 @@ npm test
 
 # Build the package
 npm run build
-```
+````
 
 ## Code Quality
 
-This project uses the strictest TypeScript and Prettier configurations.
-All code must pass linting, formatting, and type checks.
+This project uses the strictest TypeScript and Prettier configurations. All code
+must pass linting, formatting, and type checks.
 
 ## Pre-commit Hooks
 
 Husky and lint-staged are configured to ensure code quality before commits.
-```
+
+````
 
 **Validation:**
 - README provides clear usage examples
@@ -567,7 +676,7 @@ export default {
     'vite.config.ts',
     'vitest.config.ts'
   ],
-  
+
   // Project files (production marked with !)
   project: [
     'src/**/*.{ts,tsx,js,jsx}!',
@@ -578,7 +687,7 @@ export default {
     '!src/**/__tests__/**',
     '!src/**/__mocks__/**'
   ],
-  
+
   // Ignore patterns for false positives
   ignore: [
     // Generated files
@@ -586,12 +695,12 @@ export default {
     'build/**',
     '**/*.d.ts',
     'src/*/schema.json',
-    
+
     // Development utilities
     'src/test-utils/**',
     'src/setupTests.ts'
   ],
-  
+
   // Dependencies to ignore
   ignoreDependencies: [
     '@types/*',
@@ -601,15 +710,16 @@ export default {
     '@testing-library/*',
     '@graphql-codegen/*'
   ],
-  
+
   // Strict options for comprehensive analysis
   ignoreExportsUsedInFile: false,
   includeEntryExports: true,
-  
+
 } satisfies KnipConfig;
-```
+````
 
 2. **.ts-prunerc** (Complementary export analysis):
+
 ```json
 {
   "ignore": ".*\\.(test|spec|stories)\\.(ts|tsx)$|.*\\.d\\.ts$|dist/.*|build/.*",
@@ -619,6 +729,7 @@ export default {
 ```
 
 3. **Add dead code detection scripts to package.json**:
+
 ```json
 {
   "scripts": {
@@ -627,16 +738,16 @@ export default {
     "knip:production": "knip --production",
     "knip:strict": "knip --strict --include files,dependencies,unlisted,exports",
     "knip:fix": "knip --fix --allow-remove-files",
-    
+
     // Comprehensive analysis
     "deadcode": "knip --production --strict",
     "deadcode:ci": "knip --production --strict --reporter json",
-    
+
     // Complementary ts-prune analysis
     "find-deadcode": "ts-prune",
     "find-deadcode:strict": "ts-prune -e",
     "unused-exports": "ts-prune | grep -v test | grep -v spec",
-    
+
     // Combined workflow
     "cleanup:analyze": "npm run deadcode && npm run find-deadcode:strict",
     "cleanup:check": "npm run knip:strict && npm run find-deadcode:strict",
@@ -646,6 +757,7 @@ export default {
 ```
 
 **Validation:**
+
 - `npm run deadcode` runs without errors
 - `npm run find-deadcode` identifies unused exports
 - Both tools are integrated into CI/CD pipeline
@@ -654,17 +766,21 @@ export default {
 
 ### ts-pattern + Zod: Core Patterns
 
-This project follows a **strict pattern matching and validation philosophy** using ts-pattern and Zod as complementary tools:
+This project follows a **strict pattern matching and validation philosophy**
+using ts-pattern and Zod as complementary tools:
 
 1. **Validation → Pattern Matching Pipeline**
-   - Use Zod for runtime validation at boundaries (API responses, user input, file parsing)
+   - Use Zod for runtime validation at boundaries (API responses, user input,
+     file parsing)
    - Use ts-pattern for exhaustive control flow and conditional logic
    - Pattern: `validate with Zod → match with ts-pattern → handle exhaustively`
 
 2. **Preferred Over if/else and switch**
-   - Always prefer ts-pattern's `match` over complex if/else chains or switch statements
+   - Always prefer ts-pattern's `match` over complex if/else chains or switch
+     statements
    - Ensures exhaustive handling and better type inference
    - Example pattern for handling GraphQL responses:
+
    ```typescript
    const handleSchemaResponse = (rawData: unknown) =>
      match(SchemaResponseSchema.safeParse(rawData))
@@ -680,7 +796,8 @@ This project follows a **strict pattern matching and validation philosophy** usi
 
 4. **Schema as Source of Truth**
    - Define Zod schemas for all external data structures
-   - Infer TypeScript types from Zod schemas: `type MyType = z.infer<typeof MySchema>`
+   - Infer TypeScript types from Zod schemas:
+     `type MyType = z.infer<typeof MySchema>`
    - Keep validation and type definitions in sync
 
 5. **Discriminated Unions**
@@ -688,8 +805,9 @@ This project follows a **strict pattern matching and validation philosophy** usi
    - Pattern match on discriminators for type-safe handling
 
 ## Success Criteria
+
 - [ ] All directory structure created
-- [ ] Dependencies installed without errors  
+- [ ] Dependencies installed without errors
 - [ ] TypeScript compiles without errors (strictest settings)
 - [ ] ESLint flat config with TypeScript strict rules
 - [ ] Prettier with strictest formatting rules
@@ -702,6 +820,7 @@ This project follows a **strict pattern matching and validation philosophy** usi
 - [ ] All configuration files follow 2025 best practices
 
 ## Notes for Other Agents
+
 - This package is a SINGLE package, not a monorepo like shopify-app-js
 - We're using Vite instead of other bundlers for modern ESM support
 - The package will support both CommonJS and ESM exports
@@ -715,4 +834,6 @@ This project follows a **strict pattern matching and validation philosophy** usi
   - Define schemas as source of truth, infer types from them
 
 ## Next Phase
-Once all milestones are complete, proceed to Phase 2: Schema Fetching and Version Management
+
+Once all milestones are complete, proceed to Phase 2: Schema Fetching and
+Version Management

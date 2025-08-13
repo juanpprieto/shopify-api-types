@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+dist/
+build/
+coverage/
+
+# Generated files
+*.min.js
+*.min.css
+.tsbuildinfo
+
+# IDE
+.idea/

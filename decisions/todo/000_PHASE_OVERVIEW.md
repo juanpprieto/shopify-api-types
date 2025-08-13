@@ -1,18 +1,21 @@
 # Shopify API Types - Phase Tracking Overview
 
 ## Project Goal
-Create an npm package `@juanpprieto/shopify-api-types` that provides TypeScript types and JSON schemas for Shopify's GraphQL APIs (Storefront, Customer Account, and Admin) for the last 4 API versions.
+
+Create an npm package `@juanpprieto/shopify-api-types` that provides TypeScript
+types and JSON schemas for Shopify's GraphQL APIs (Storefront, Customer Account,
+and Admin) for the last 4 API versions.
 
 ## Phase Status
 
-| Phase | Status | Priority | Description |
-|-------|--------|----------|-------------|
-| [Phase 1](./001_Phase_1_Project_Setup.md) | 🟡 Not Started | High | Project Setup with Strict TypeScript/Prettier |
-| [Phase 2](./002_Phase_2_Schema_Fetching.md) | 🟡 Not Started | High | Schema Fetching and Version Management |
-| [Phase 3](./003_Phase_3_Code_Generation.md) | 🟡 Not Started | High | Code Generation Pipeline |
-| [Phase 4](./004_Phase_4_Build_System.md) | 🟡 Not Started | High | Build System and Export Configuration |
-| [Phase 5](./005_Phase_5_Testing.md) | 🟡 Not Started | Medium | Testing and Validation |
-| [Phase 6](./006_Phase_6_CICD_Publishing.md) | 🟡 Not Started | High | CI/CD and NPM Publishing |
+| Phase                                       | Status         | Priority | Description                                   |
+| ------------------------------------------- | -------------- | -------- | --------------------------------------------- |
+| [Phase 1](./001_Phase_1_Project_Setup.md)   | 🟡 Not Started | High     | Project Setup with Strict TypeScript/Prettier |
+| [Phase 2](./002_Phase_2_Schema_Fetching.md) | 🟡 Not Started | High     | Schema Fetching and Version Management        |
+| [Phase 3](./003_Phase_3_Code_Generation.md) | 🟡 Not Started | High     | Code Generation Pipeline                      |
+| [Phase 4](./004_Phase_4_Build_System.md)    | 🟡 Not Started | High     | Build System and Export Configuration         |
+| [Phase 5](./005_Phase_5_Testing.md)         | 🟡 Not Started | Medium   | Testing and Validation                        |
+| [Phase 6](./006_Phase_6_CICD_Publishing.md) | 🟡 Not Started | High     | CI/CD and NPM Publishing                      |
 
 ## Phase Dependencies
 
@@ -34,11 +37,14 @@ graph TD
 
 ## Important Notes
 
-- **Sequential Execution**: Phases must be completed in order due to dependencies
-- **Milestone Tracking**: Each phase document contains checkboxes for tracking progress
+- **Sequential Execution**: Phases must be completed in order due to
+  dependencies
+- **Milestone Tracking**: Each phase document contains checkboxes for tracking
+  progress
 - **Validation Steps**: Each milestone includes validation criteria
 - **Common Issues**: Each phase documents known issues and solutions
-- **Agent Handoff**: All critical information is documented for smooth transitions
+- **Agent Handoff**: All critical information is documented for smooth
+  transitions
 
 ## Key Technical Decisions
 
