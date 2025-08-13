@@ -7,12 +7,17 @@ export default {
     'vite.config.ts',
     'vitest.config.ts',
     'eslint.config.mjs',
+    // Scripts executed via npm scripts (not production)
+    'scripts/fetch-schemas.ts',
+    'scripts/validate-schemas.ts',
+    'scripts/version-utils.ts',
   ],
 
   // Project files (production marked with !)
   project: [
     'src/**/*.{ts,tsx,js,jsx}!',
     'tests/**/*.{ts,tsx,js,jsx}',
+    'scripts/**/*.{ts,tsx}',
     '!src/**/*.test.{ts,tsx}',
     '!src/**/*.spec.{ts,tsx}',
     '!src/**/__tests__/**',

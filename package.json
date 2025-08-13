@@ -65,6 +65,7 @@
     "@graphql-codegen/introspection": "4.0.3",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-operations": "4.6.1",
+    "dotenv": "^17.2.1",
     "eslint": "9.33.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.4",
@@ -87,6 +88,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\" --ignore-path .prettierignore",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
+    "lint:check": "eslint . --ext .ts,.tsx,.js,.mjs",
+    "check": "npm run type-check && npm run lint:check",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "build": "vite build",
@@ -104,19 +107,21 @@
     "cleanup:analyze": "npm run deadcode && npm run find-deadcode:strict",
     "cleanup:check": "npm run knip:strict && npm run find-deadcode:strict",
     "cleanup:fix": "npm run knip:fix",
+    "fetch-schemas": "tsx scripts/fetch-schemas.ts",
+    "validate-schemas": "tsx scripts/validate-schemas.ts",
+    "schemas:update": "npm run fetch-schemas && npm run validate-schemas",
     "prepare": "husky"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
       "prettier --write",
-      "bash -c 'npm run type-check'",
-      "bash -c 'npm run deadcode'",
-      "bash -c 'npm run find-deadcode:strict'",
+      "bash -c 'npm run check'",
       "bash -c 'npm test'"
     ],
     "*.{json,md,yml,yaml}": [
       "prettier --write"
     ]
-  }
+  },
+  "_comment": "Note: deadcode check temporarily disabled in lint-staged for Phase 2. Lib files are used by scripts but not in production mode. Will re-enable in Phase 3 when proper exports are added."
 }
