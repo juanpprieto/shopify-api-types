@@ -1,14 +1,18 @@
 # Phase 5: Testing and Validation
 
 ## Overview
-Create comprehensive tests to validate type definitions, schema exports, and package imports work correctly for all APIs and versions.
+
+Create comprehensive tests to validate type definitions, schema exports, and
+package imports work correctly for all APIs and versions.
 
 ## Prerequisites
+
 - Phase 4 completed (build system configured)
 - Vitest installed and configured
 - Built package in dist/ directory
 
 ## Critical Information
+
 - Tests should validate both development and production builds
 - Import paths must match what users will actually use
 - Type tests use expectTypeOf from vitest
@@ -17,13 +21,14 @@ Create comprehensive tests to validate type definitions, schema exports, and pac
 ## Milestones
 
 ### Milestone 5.1: Type Definition Tests ✅
+
 **Status:** Not Started
 
 **Create `tests/types.test.ts`:**
 
 ```typescript
 import { describe, it, expectTypeOf } from 'vitest';
-import type { 
+import type {
   Product,
   Collection,
   Cart,
@@ -31,7 +36,7 @@ import type {
   Customer as StorefrontCustomer,
   Order as StorefrontOrder,
 } from '../src/storefront/2025-01';
-import type { 
+import type {
   Customer,
   Order,
   OrderLineItem,
@@ -66,7 +71,9 @@ describe('Storefront API Types', () => {
 
   it('should handle nullable fields correctly', () => {
     type ProductDescription = Product['description'];
-    expectTypeOf<ProductDescription>().toEqualTypeOf<string | null | undefined>();
+    expectTypeOf<ProductDescription>().toEqualTypeOf<
+      string | null | undefined
+    >();
   });
 });
 
@@ -97,7 +104,7 @@ describe('Admin API Types', () => {
   it('should export Admin-specific types', () => {
     expectTypeOf<AdminProduct>().toBeObject();
     expectTypeOf<AdminProduct>().toHaveProperty('id').toBeString();
-    
+
     expectTypeOf<AdminOrder>().toBeObject();
     expectTypeOf<AdminCustomer>().toBeObject();
     expectTypeOf<InventoryItem>().toBeObject();
@@ -124,6 +131,7 @@ describe('Type Compatibility', () => {
 ```
 
 ### Milestone 5.2: Schema Export Tests ✅
+
 **Status:** Not Started
 
 **Create `tests/schemas.test.ts`:**
@@ -150,11 +158,11 @@ describe('Schema Structure Validation', () => {
     expect(storefrontSchema2025.__schema).toHaveProperty('queryType');
     expect(storefrontSchema2025.__schema).toHaveProperty('mutationType');
     expect(Array.isArray(storefrontSchema2025.__schema.types)).toBe(true);
-    
+
     // Customer Account schema
     expect(customerSchema2025).toHaveProperty('__schema');
     expect(customerSchema2025.__schema).toHaveProperty('types');
-    
+
     // Admin schema
     expect(adminSchema2025).toHaveProperty('__schema');
     expect(adminSchema2025.__schema).toHaveProperty('types');
@@ -167,8 +175,10 @@ describe('Schema Structure Validation', () => {
   });
 
   it('should contain expected root types', () => {
-    const storefrontTypes = storefrontSchema2025.__schema.types.map((t: any) => t.name);
-    
+    const storefrontTypes = storefrontSchema2025.__schema.types.map(
+      (t: any) => t.name,
+    );
+
     // Check for common Storefront types
     expect(storefrontTypes).toContain('Product');
     expect(storefrontTypes).toContain('Collection');
@@ -180,7 +190,7 @@ describe('Schema Structure Validation', () => {
 
   it('should have consistent schema across versions', () => {
     const versions = getLastFourVersions();
-    
+
     // This test assumes all schemas are fetched
     // In practice, you'd import all versions dynamically
     expect(versions.length).toBe(4);
@@ -193,13 +203,13 @@ describe('Schema Type Definitions', () => {
     const scalarTypes = storefrontSchema2025.__schema.types
       .filter((t: any) => t.kind === 'SCALAR')
       .map((t: any) => t.name);
-    
+
     expect(scalarTypes).toContain('String');
     expect(scalarTypes).toContain('Int');
     expect(scalarTypes).toContain('Float');
     expect(scalarTypes).toContain('Boolean');
     expect(scalarTypes).toContain('ID');
-    
+
     // Shopify custom scalars
     expect(scalarTypes).toContain('DateTime');
     expect(scalarTypes).toContain('URL');
@@ -210,6 +220,7 @@ describe('Schema Type Definitions', () => {
 ```
 
 ### Milestone 5.3: Import Path Tests ✅
+
 **Status:** Not Started
 
 **Create `tests/imports.test.ts`:**
@@ -220,10 +231,10 @@ import { getLastFourVersions } from '../scripts/version-utils';
 
 describe('Package Import Paths', () => {
   const versions = getLastFourVersions();
-  
+
   it('should import from root', async () => {
     const rootModule = await import('../src/index');
-    
+
     expect(rootModule).toHaveProperty('storefront');
     expect(rootModule).toHaveProperty('customerAccount');
     expect(rootModule).toHaveProperty('admin');
@@ -232,17 +243,19 @@ describe('Package Import Paths', () => {
   it('should import from specific API paths', async () => {
     // Test first available version
     const version = versions[0];
-    
+
     // Storefront
     const storefront = await import(`../src/storefront/${version}/index`);
     expect(storefront).toBeDefined();
     expect(storefront).toHaveProperty('schema');
-    
+
     // Customer Account
-    const customerAccount = await import(`../src/customer-account/${version}/index`);
+    const customerAccount = await import(
+      `../src/customer-account/${version}/index`
+    );
     expect(customerAccount).toBeDefined();
     expect(customerAccount).toHaveProperty('schema');
-    
+
     // Admin
     const admin = await import(`../src/admin/${version}/index`);
     expect(admin).toBeDefined();
@@ -253,11 +266,11 @@ describe('Package Import Paths', () => {
     // Pattern 1: Direct version import
     const directImport = await import('../src/storefront/2025-01');
     expect(directImport).toHaveProperty('schema');
-    
+
     // Pattern 2: API root import
     const apiImport = await import('../src/storefront');
     expect(apiImport).toHaveProperty('v2025_01');
-    
+
     // Pattern 3: Root package import
     const rootImport = await import('../src');
     expect(rootImport.storefront).toHaveProperty('v2025_01');
@@ -271,9 +284,9 @@ describe('Package Import Paths', () => {
       `import type { Order } from '@juanpprieto/shopify-api-types/admin/2025-01'`,
       `import { schema } from '@juanpprieto/shopify-api-types/sfapi/2025-01'`,
     ];
-    
+
     // Just verify the syntax is what we expect
-    expectedImports.forEach(imp => {
+    expectedImports.forEach((imp) => {
       expect(imp).toMatch(/@juanpprieto\/shopify-api-types/);
     });
   });
@@ -284,22 +297,43 @@ describe('Build Output Tests', () => {
     // This test would run after build
     const fs = await import('fs/promises');
     const path = await import('path');
-    
+
     // Check if built files exist (when running against built package)
-    if (await fs.access('dist').then(() => true).catch(() => false)) {
+    if (
+      await fs
+        .access('dist')
+        .then(() => true)
+        .catch(() => false)
+    ) {
       const esmFile = path.join('dist', 'index.js');
       const cjsFile = path.join('dist', 'index.cjs');
       const dtsFile = path.join('dist', 'index.d.ts');
-      
-      expect(await fs.access(esmFile).then(() => true).catch(() => false)).toBe(true);
-      expect(await fs.access(cjsFile).then(() => true).catch(() => false)).toBe(true);
-      expect(await fs.access(dtsFile).then(() => true).catch(() => false)).toBe(true);
+
+      expect(
+        await fs
+          .access(esmFile)
+          .then(() => true)
+          .catch(() => false),
+      ).toBe(true);
+      expect(
+        await fs
+          .access(cjsFile)
+          .then(() => true)
+          .catch(() => false),
+      ).toBe(true);
+      expect(
+        await fs
+          .access(dtsFile)
+          .then(() => true)
+          .catch(() => false),
+      ).toBe(true);
     }
   });
 });
 ```
 
 ### Milestone 5.4: Integration Tests ✅
+
 **Status:** Not Started
 
 **Create `tests/integration.test.ts`:**
@@ -323,7 +357,7 @@ describe('Integration Tests', () => {
       tags: ['tag1', 'tag2'],
       // Add other required fields based on actual type
     } as Product;
-    
+
     expect(mockProduct.id).toContain('Product');
     expect(mockProduct.title).toBeTruthy();
   });
@@ -332,7 +366,7 @@ describe('Integration Tests', () => {
     interface ProductQuery {
       product: Product | null;
     }
-    
+
     const mockResponse: ProductQuery = {
       product: {
         id: 'gid://shopify/Product/456',
@@ -340,20 +374,20 @@ describe('Integration Tests', () => {
         handle: 'another-product',
       } as Product,
     };
-    
+
     expect(mockResponse.product?.id).toBeDefined();
   });
 
   it('should validate schema can be used for GraphQL operations', () => {
     // Find Product type in schema
     const productType = storefrontSchema.__schema.types.find(
-      (t: any) => t.name === 'Product'
+      (t: any) => t.name === 'Product',
     );
-    
+
     expect(productType).toBeDefined();
     expect(productType.kind).toBe('OBJECT');
     expect(productType.fields).toBeDefined();
-    
+
     // Check that Product has expected fields
     const fields = productType.fields.map((f: any) => f.name);
     expect(fields).toContain('id');
@@ -368,17 +402,17 @@ describe('Error Cases', () => {
       id: 'gid://shopify/Product/789',
       title: 'Minimal Product',
     };
-    
+
     expect(partialProduct.description).toBeUndefined();
     expect(partialProduct.handle).toBeUndefined();
   });
 
   it('should maintain type safety with strict null checks', () => {
     type MaybeProduct = Product | null | undefined;
-    
+
     const nullProduct: MaybeProduct = null;
     const undefinedProduct: MaybeProduct = undefined;
-    
+
     expect(nullProduct).toBeNull();
     expect(undefinedProduct).toBeUndefined();
   });
@@ -386,6 +420,7 @@ describe('Error Cases', () => {
 ```
 
 ### Milestone 5.5: Test Configuration Updates ✅
+
 **Status:** Not Started
 
 **Update `vitest.config.ts`:**
@@ -439,6 +474,7 @@ export default defineConfig({
 ```
 
 ## Success Criteria
+
 - [ ] All type definition tests pass
 - [ ] Schema structure validation passes
 - [ ] Import path tests confirm all patterns work
@@ -447,6 +483,7 @@ export default defineConfig({
 - [ ] No TypeScript errors in tests
 
 ## Test Execution Order
+
 1. Run type generation first: `npm run build:types`
 2. Run type checking: `npm run test:types`
 3. Run unit tests: `npm run test:run`
@@ -456,18 +493,23 @@ export default defineConfig({
 ## Common Issues & Solutions
 
 ### Issue: Import errors in tests
+
 **Solution:** Ensure all paths use correct extensions (.js for ESM)
 
 ### Issue: Type test failures
+
 **Solution:** Regenerate types if schemas have changed
 
 ### Issue: Coverage too low
+
 **Solution:** Focus on testing public API, not generated code
 
 ### Issue: Tests timing out
+
 **Solution:** Schema files are large, increase timeout if needed
 
 ## Notes for Other Agents
+
 - Tests run against source files, not built files
 - Type tests use expectTypeOf for compile-time checking
 - Schema tests validate JSON structure at runtime
@@ -476,4 +518,5 @@ export default defineConfig({
 - All test files should be in tests/ directory
 
 ## Next Phase
+
 Once all tests are passing, proceed to Phase 6: CI/CD and NPM Publishing

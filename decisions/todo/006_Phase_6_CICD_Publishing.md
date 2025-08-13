@@ -1,15 +1,19 @@
 # Phase 6: CI/CD and NPM Publishing
 
 ## Overview
-Set up GitHub Actions for continuous integration, automated testing, and NPM package publishing using Changesets for version management.
+
+Set up GitHub Actions for continuous integration, automated testing, and NPM
+package publishing using Changesets for version management.
 
 ## Prerequisites
+
 - All previous phases completed
 - GitHub repository created
 - NPM account with publishing rights
 - Understanding of GitHub Actions and Changesets
 
 ## Critical Information
+
 - Uses Changesets for version management
 - Publishes to NPM on merge to main
 - Requires NPM_TOKEN secret in GitHub
@@ -18,6 +22,7 @@ Set up GitHub Actions for continuous integration, automated testing, and NPM pac
 ## Milestones
 
 ### Milestone 6.1: GitHub Actions CI Workflow ✅
+
 **Status:** Not Started
 
 **Create `.github/workflows/ci.yml`:**
@@ -99,8 +104,10 @@ jobs:
         run: npm run build:types
         env:
           # Add tokens if needed for schema fetching
-          SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
-          SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN }}
+          SHOPIFY_STOREFRONT_ACCESS_TOKEN:
+            ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
+          SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN:
+            ${{ secrets.SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN }}
           SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
 
       - name: Run tests
@@ -137,8 +144,10 @@ jobs:
       - name: Build package
         run: npm run build
         env:
-          SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
-          SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN }}
+          SHOPIFY_STOREFRONT_ACCESS_TOKEN:
+            ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
+          SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN:
+            ${{ secrets.SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN }}
           SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
 
       - name: Validate build
@@ -153,9 +162,11 @@ jobs:
 ```
 
 ### Milestone 6.2: Changesets Configuration ✅
+
 **Status:** Not Started
 
 **Initialize Changesets:**
+
 ```bash
 npx changeset init
 ```
@@ -181,10 +192,11 @@ npx changeset init
 
 **Create changeset template: `.changeset/README.md`:**
 
-```markdown
+````markdown
 # Changesets
 
-This repo uses [changesets](https://github.com/changesets/changesets) to manage versioning and changelogs.
+This repo uses [changesets](https://github.com/changesets/changesets) to manage
+versioning and changelogs.
 
 ## Creating a changeset
 
@@ -193,8 +205,10 @@ When you make a change that should be released, run:
 ```bash
 npx changeset
 ```
+````
 
 This will prompt you to:
+
 1. Select the type of change (major, minor, patch)
 2. Write a summary of the change
 
@@ -213,7 +227,8 @@ This will prompt you to:
 - **patch**: Bug fixes and minor updates (0.0.X)
 - **minor**: New features that don't break existing code (0.X.0)
 - **major**: Breaking changes (X.0.0)
-```
+
+````
 
 **Add Changeset scripts to package.json:**
 
@@ -225,9 +240,10 @@ This will prompt you to:
     "release": "npm run build && changeset publish"
   }
 }
-```
+````
 
 ### Milestone 6.3: Release Workflow ✅
+
 **Status:** Not Started
 
 **Create `.github/workflows/release.yml`:**
@@ -271,8 +287,10 @@ jobs:
       - name: Build package
         run: npm run build
         env:
-          SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
-          SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN }}
+          SHOPIFY_STOREFRONT_ACCESS_TOKEN:
+            ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
+          SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN:
+            ${{ secrets.SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN }}
           SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
 
       - name: Create Release Pull Request or Publish
@@ -297,6 +315,7 @@ jobs:
 ```
 
 ### Milestone 6.4: Additional Workflows ✅
+
 **Status:** Not Started
 
 **Create `.github/workflows/schema-update.yml` for weekly schema updates:**
@@ -333,8 +352,10 @@ jobs:
       - name: Fetch latest schemas
         run: npm run fetch-schemas
         env:
-          SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
-          SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN }}
+          SHOPIFY_STOREFRONT_ACCESS_TOKEN:
+            ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
+          SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN:
+            ${{ secrets.SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN }}
           SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
 
       - name: Generate types
@@ -354,13 +375,13 @@ jobs:
           title: 'chore: update GraphQL schemas and types'
           body: |
             ## Automated Schema Update
-            
+
             This PR updates the GraphQL schemas and regenerated types for all APIs.
-            
+
             ### Changes
             - Updated schema files to latest versions
             - Regenerated TypeScript types
-            
+
             Please review the changes and merge if everything looks correct.
           branch: update-schemas
           delete-branch: true
@@ -403,6 +424,7 @@ jobs:
 ```
 
 ### Milestone 6.5: NPM Publishing Setup ✅
+
 **Status:** Not Started
 
 **Update package.json for publishing:**
@@ -480,9 +502,11 @@ temp/
 ```
 
 ### Milestone 6.6: Security and Secrets Setup ✅
+
 **Status:** Not Started
 
 **Required GitHub Secrets:**
+
 1. `NPM_TOKEN`: NPM automation token for publishing
 2. `SHOPIFY_STOREFRONT_ACCESS_TOKEN`: For fetching Storefront API schemas
 3. `SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN`: For Customer Account API
@@ -490,6 +514,7 @@ temp/
 5. `CODECOV_TOKEN`: (Optional) For coverage reporting
 
 **Create NPM automation token:**
+
 1. Log in to npmjs.com
 2. Go to Access Tokens
 3. Generate new token (Automation type)
@@ -498,21 +523,23 @@ temp/
 **Security checks to add:**
 
 Create `.github/dependabot.yml`:
+
 ```yaml
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     assignees:
-      - "juanpprieto"
+      - 'juanpprieto'
     commit-message:
-      prefix: "chore"
-      include: "scope"
+      prefix: 'chore'
+      include: 'scope'
 ```
 
 ## Success Criteria
+
 - [ ] CI workflow runs on all PRs
 - [ ] Tests pass in CI environment
 - [ ] Build artifacts are created
@@ -523,6 +550,7 @@ updates:
 - [ ] First version published to NPM
 
 ## Manual Release Process
+
 1. Create feature branch
 2. Make changes
 3. Run `npx changeset` to create changeset
@@ -535,18 +563,23 @@ updates:
 ## Common Issues & Solutions
 
 ### Issue: NPM publish fails with 401
+
 **Solution:** Check NPM_TOKEN is valid and has publish rights
 
 ### Issue: Schema fetch fails in CI
+
 **Solution:** Ensure Shopify tokens are set as secrets
 
 ### Issue: Release PR not created
+
 **Solution:** Check Changesets action permissions
 
 ### Issue: Coverage upload fails
+
 **Solution:** CODECOV_TOKEN is optional, can be skipped
 
 ## Notes for Other Agents
+
 - Never commit tokens or secrets
 - All workflows use Node 18 as baseline
 - Changesets handle version bumping automatically
@@ -555,6 +588,7 @@ updates:
 - Dry run on PRs helps catch publish issues early
 
 ## Post-Publishing Checklist
+
 - [ ] Package visible on npmjs.com
 - [ ] Install works: `npm install @juanpprieto/shopify-api-types`
 - [ ] Types resolve correctly in IDE
@@ -562,6 +596,7 @@ updates:
 - [ ] Documentation updated if needed
 
 ## Maintenance Tasks
+
 - Monitor weekly schema update PRs
 - Keep dependencies updated via Dependabot
 - Review and merge Changesets version PRs

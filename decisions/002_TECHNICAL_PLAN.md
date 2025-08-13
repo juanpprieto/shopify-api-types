@@ -1,16 +1,21 @@
 # Shopify API Types - Technical Implementation Plan
 
 ## Project Overview
-Create an npm package `@juanpprieto/shopify-api-types` that provides TypeScript types and JSON schemas for Shopify's GraphQL APIs (Storefront, Customer Account, and Admin) for the last 4 API versions.
+
+Create an npm package `@juanpprieto/shopify-api-types` that provides TypeScript
+types and JSON schemas for Shopify's GraphQL APIs (Storefront, Customer Account,
+and Admin) for the last 4 API versions.
 
 ## Phase 1: Project Setup and Infrastructure
 
 ### Milestone 1.1: Repository Structure
+
 - Initialize npm package with single `src/` folder structure
 - Set up TypeScript configuration based on Shopify's patterns
 - Configure ESLint, Prettier, and development tools
 
 **Structure:**
+
 ```
 shopify-api-types/
 ├── src/
@@ -28,7 +33,9 @@ shopify-api-types/
 ```
 
 ### Milestone 1.2: Dependencies Setup
+
 **Core Dependencies:**
+
 - `typescript`: ^5.x
 - `@graphql-codegen/cli`: ^5.x
 - `@graphql-codegen/typescript`: ^4.x
@@ -36,6 +43,7 @@ shopify-api-types/
 - `@graphql-codegen/typescript-operations`: ^4.x
 
 **Dev Dependencies:**
+
 - `vite`: For build system
 - `vitest`: For testing
 - `eslint` & `prettier`: Code quality
@@ -43,6 +51,7 @@ shopify-api-types/
 - `changesets`: Version management
 
 ### Milestone 1.3: TypeScript Configuration
+
 ```json
 // tsconfig.json
 {
@@ -69,7 +78,9 @@ shopify-api-types/
 ## Phase 2: Schema Fetching and Version Management
 
 ### Milestone 2.1: API Version Calculator
-Create utility to calculate the last 4 API versions based on Shopify's release cycle (01, 04, 07, 10).
+
+Create utility to calculate the last 4 API versions based on Shopify's release
+cycle (01, 04, 07, 10).
 
 ```typescript
 // scripts/version-utils.ts
@@ -77,19 +88,21 @@ export function getLastFourVersions(): string[] {
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
-  
+
   // Calculate current API version
   const quarters = [1, 4, 7, 10];
-  const currentQuarter = quarters.reverse().find(q => currentMonth >= q) || 10;
-  
+  const currentQuarter =
+    quarters.reverse().find((q) => currentMonth >= q) || 10;
+
   // Generate last 4 versions
   const versions: string[] = [];
-  let year = currentQuarter === 10 && currentMonth < 10 ? currentYear - 1 : currentYear;
+  let year =
+    currentQuarter === 10 && currentMonth < 10 ? currentYear - 1 : currentYear;
   let quarter = currentQuarter;
-  
+
   for (let i = 0; i < 4; i++) {
     versions.push(`${year}-${quarter.toString().padStart(2, '0')}`);
-    
+
     // Move to previous quarter
     const currentIndex = quarters.indexOf(quarter);
     if (currentIndex === 0) {
@@ -99,12 +112,13 @@ export function getLastFourVersions(): string[] {
       quarter = quarters[currentIndex - 1];
     }
   }
-  
+
   return versions;
 }
 ```
 
 ### Milestone 2.2: Schema Fetcher
+
 Implement schema fetching for all three APIs with proper authentication.
 
 ```typescript
@@ -134,7 +148,9 @@ export async function fetchAllSchemas(versions: string[]) {
 ```
 
 ### Milestone 2.3: Schema Storage
+
 Store fetched schemas in a structured format:
+
 ```
 src/
 ├── schemas/
@@ -151,7 +167,9 @@ src/
 ## Phase 3: Code Generation Pipeline
 
 ### Milestone 3.1: GraphQL Codegen Configuration
-Create a flexible codegen configuration that generates types for all API versions.
+
+Create a flexible codegen configuration that generates types for all API
+versions.
 
 ```typescript
 // codegen.ts
@@ -166,7 +184,7 @@ const config: CodegenConfig = {
 };
 
 // Generate config for each API and version
-versions.forEach(version => {
+versions.forEach((version) => {
   // Storefront API
   config.generates[`./src/storefront/${version}/types.ts`] = {
     schema: `./src/schemas/storefront/${version}.json`,
@@ -183,7 +201,7 @@ versions.forEach(version => {
       },
     },
   };
-  
+
   // Similar for Customer Account and Admin APIs
 });
 
@@ -191,6 +209,7 @@ export default config;
 ```
 
 ### Milestone 3.2: Type Generation Scripts
+
 ```json
 // package.json scripts
 {
@@ -204,7 +223,9 @@ export default config;
 ```
 
 ### Milestone 3.3: Index Files Generation
+
 Generate index files for easy imports:
+
 ```typescript
 // src/storefront/2025-01/index.ts
 export * from './types';
@@ -214,6 +235,7 @@ export { default as schema } from '../../schemas/storefront/2025-01.json';
 ## Phase 4: Build System and Export Configuration
 
 ### Milestone 4.1: Package.json Exports
+
 Configure multiple export paths for different APIs and versions:
 
 ```json
@@ -248,6 +270,7 @@ Configure multiple export paths for different APIs and versions:
 ```
 
 ### Milestone 4.2: Vite Build Configuration
+
 ```typescript
 // vite.config.ts
 import { defineConfig } from 'vite';
@@ -258,9 +281,12 @@ const versions = getLastFourVersions();
 const entries: Record<string, string> = {};
 
 // Generate entry points for all APIs and versions
-['storefront', 'customer-account', 'admin'].forEach(api => {
-  versions.forEach(version => {
-    entries[`${api}/${version}/index`] = resolve(__dirname, `src/${api}/${version}/index.ts`);
+['storefront', 'customer-account', 'admin'].forEach((api) => {
+  versions.forEach((version) => {
+    entries[`${api}/${version}/index`] = resolve(
+      __dirname,
+      `src/${api}/${version}/index.ts`,
+    );
   });
 });
 
@@ -286,6 +312,7 @@ export default defineConfig({
 ```
 
 ### Milestone 4.3: Build Scripts
+
 ```json
 {
   "scripts": {
@@ -301,7 +328,9 @@ export default defineConfig({
 ## Phase 5: Testing and Validation
 
 ### Milestone 5.1: Type Testing
+
 Create tests to validate generated types:
+
 ```typescript
 // tests/types.test.ts
 import { describe, it, expectTypeOf } from 'vitest';
@@ -313,7 +342,7 @@ describe('Type definitions', () => {
     expectTypeOf<Product>().toBeObject();
     expectTypeOf<Product>().toHaveProperty('id');
   });
-  
+
   it('should export Customer Account API types', () => {
     expectTypeOf<Customer>().toBeObject();
     expectTypeOf<Customer>().toHaveProperty('email');
@@ -322,7 +351,9 @@ describe('Type definitions', () => {
 ```
 
 ### Milestone 5.2: Schema Validation
+
 Validate that schemas are properly formatted and accessible:
+
 ```typescript
 // tests/schemas.test.ts
 import { describe, it, expect } from 'vitest';
@@ -337,7 +368,9 @@ describe('Schema exports', () => {
 ```
 
 ### Milestone 5.3: Import Testing
+
 Test that package exports work correctly:
+
 ```typescript
 // tests/imports.test.ts
 describe('Package imports', () => {
@@ -351,6 +384,7 @@ describe('Package imports', () => {
 ## Phase 6: CI/CD and NPM Publishing
 
 ### Milestone 6.1: GitHub Actions Workflow
+
 ```yaml
 # .github/workflows/ci.yml
 name: CI
@@ -394,6 +428,7 @@ jobs:
 ```
 
 ### Milestone 6.2: Changesets Configuration
+
 ```json
 // .changeset/config.json
 {
@@ -409,6 +444,7 @@ jobs:
 ```
 
 ### Milestone 6.3: Release Scripts
+
 ```json
 {
   "scripts": {
@@ -423,7 +459,8 @@ jobs:
 
 1. **Initial Setup**: Clone repo, install dependencies
 2. **Fetch Schemas**: Run `npm run fetch-schemas` to get latest schemas
-3. **Generate Types**: Run `npm run generate-types` to create TypeScript definitions
+3. **Generate Types**: Run `npm run generate-types` to create TypeScript
+   definitions
 4. **Build**: Run `npm run build` to compile everything
 5. **Test**: Run `npm run test` to validate types and exports
 6. **Release**: Create changeset, bump version, and publish

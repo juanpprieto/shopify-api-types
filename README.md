@@ -1,14 +1,6 @@
 # @juanpprieto/shopify-api-types
 
-TypeScript types and JSON schemas for Shopify GraphQL APIs - Storefront, Customer Account, and Admin APIs.
-
-## Features
-
-- =æ Complete TypeScript types for all three Shopify GraphQL APIs
-- = Support for the last 4 API versions (quarterly releases)
-- =Ë JSON schema exports for runtime validation
-- =€ Automatic type generation from official GraphQL schemas
-- =Á Clean import paths for each API and version
+> TypeScript types and JSON schemas for Shopify's GraphQL APIs
 
 ## Installation
 
@@ -19,29 +11,30 @@ npm install @juanpprieto/shopify-api-types
 ## Usage
 
 ```typescript
-// Import types from specific API versions
+// Import types from specific versions
 import type { Product } from '@juanpprieto/shopify-api-types/sfapi/2025-01';
-import type { Order } from '@juanpprieto/shopify-api-types/sfapi/2024-10';
 import type { Customer } from '@juanpprieto/shopify-api-types/caapi/2025-01';
+import type { Order } from '@juanpprieto/shopify-api-types/admin/2024-10';
 
-// Import JSON schemas for validation
-import { schema as StorefrontSchema } from '@juanpprieto/shopify-api-types/sfapi/2025-01';
+// Import schemas for validation
+import { schema } from '@juanpprieto/shopify-api-types/sfapi/2025-01';
 ```
 
 ## Supported APIs
 
-- **Storefront API** (`sfapi`) - Public product, collection, and checkout types
-- **Customer Account API** (`caapi`) - Customer authentication and account management
-- **Admin API** (`admin`) - Store management and administration
+- Storefront API (sfapi)
+- Customer Account API (caapi)
+- Admin API (admin)
 
-## API Versions
+## Supported Versions
 
-Supports the last 4 quarterly releases following Shopify's release cycle (January, April, July, October).
+Last 4 quarterly releases:
 
-## Development Status
+- 2025-01
+- 2024-10
+- 2024-07
+- 2024-04
 
-=§ **Work in Progress** - This package is under active development.
+## Development
 
-## License
-
-MIT
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup.
