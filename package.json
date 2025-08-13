@@ -110,6 +110,11 @@
     "fetch-schemas": "tsx scripts/fetch-schemas.ts",
     "validate-schemas": "tsx scripts/validate-schemas.ts",
     "schemas:update": "npm run fetch-schemas && npm run validate-schemas",
+    "generate-types": "graphql-codegen --config scripts/codegen.ts",
+    "generate-indexes": "tsx scripts/generate-indexes.ts",
+    "validate-types": "tsx scripts/validate-types.ts",
+    "build:types": "npm run fetch-schemas && npm run generate-types",
+    "postgenerate-types": "npm run format && npm run generate-indexes",
     "prepare": "husky"
   },
   "lint-staged": {

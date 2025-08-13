@@ -5,7 +5,7 @@ import prettierPlugin from 'eslint-plugin-prettier';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', '.tsbuildinfo'],
+    ignores: ['dist/**', 'node_modules/**', '.tsbuildinfo', 'src/**/types.ts'],
   },
   js.configs.recommended,
 

@@ -30,11 +30,18 @@ async function fetchApiSchema(
     throw new Error(`No access token configured for ${apiType} API`);
   }
 
-  const url = matchApiEndpoint(
+  let url = matchApiEndpoint(
     apiType,
     version,
     process.env['SHOPIFY_STORE_DOMAIN'],
   );
+
+  const isCustomerAccount = apiType === 'customer-account';
+
+  // Customer Account API needs special query parameters
+  if (apiType === 'customer-account') {
+    url = `${url}?api_client_api_key=${token}&api_version=${version}`;
+  }
   const headers = matchAuthHeaders(apiType, token);
 
   // eslint-disable-next-line no-console -- CLI output for user feedback during schema fetching
@@ -77,7 +84,7 @@ async function fetchApiSchema(
           isDeprecated
           deprecationReason
         }
-        inputFields {
+        inputFields(includeDeprecated: true) {
           ...InputValue
         }
         interfaces {
@@ -135,23 +142,38 @@ async function fetchApiSchema(
       }
     `;
 
-    const response = await fetch(url, {
-      method: 'POST',
+    const fetchOptions: RequestInit = {
+      method: isCustomerAccount ? 'GET' : 'POST',
       headers,
-      body: JSON.stringify({ query }),
-    });
+    };
+
+    if (!isCustomerAccount) {
+      fetchOptions.body = JSON.stringify({ query });
+    }
+
+    const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const json = (await response.json()) as {
-      data?: unknown;
-      errors?: unknown;
-    };
+    let schemaData: unknown;
 
-    if (json.errors) {
-      throw new Error(`GraphQL errors: ${JSON.stringify(json.errors)}`);
+    if (isCustomerAccount) {
+      // Customer Account API returns schema directly
+      schemaData = await response.json();
+    } else {
+      // Storefront and Admin APIs return GraphQL response with data field
+      const json = (await response.json()) as {
+        data?: unknown;
+        errors?: unknown;
+      };
+
+      if (json.errors) {
+        throw new Error(`GraphQL errors: ${JSON.stringify(json.errors)}`);
+      }
+
+      schemaData = json.data;
     }
 
     // Save schema
@@ -159,7 +181,7 @@ async function fetchApiSchema(
     await fs.mkdir(outputDir, { recursive: true });
 
     const outputPath = path.join(outputDir, `${version}.json`);
-    await fs.writeFile(outputPath, JSON.stringify(json.data, null, 2));
+    await fs.writeFile(outputPath, JSON.stringify(schemaData, null, 2));
 
     // eslint-disable-next-line no-console -- CLI output for success feedback
     console.log(`✓ Saved ${apiType} schema to ${outputPath}`);

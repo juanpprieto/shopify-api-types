@@ -1,4 +1,4 @@
-// Main entry point for @juanpprieto/shopify-api-types
-export * from './storefront/index.js';
-export * from './customer-account/index.js';
-export * from './admin/index.js';
+// Auto-generated root index
+export * as storefront from './storefront/index.js';
+export * as customerAccount from './customer-account/index.js';
+export * as admin from './admin/index.js';
