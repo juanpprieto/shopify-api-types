@@ -1,60 +1,133 @@
-# Shopify-api-types
+# Shopify API Types Package: Technical Implementation Plan
 
-## GOAL:
+## Objective
 
-PRODUCE A DETAILED TECHNICAL PLAN WITH PHASES AND SMALL MILESTONES
+Deliver a single npm package providing robust TypeScript types and JSON schemas for Shopify’s Storefront, Customer Account, and Admin APIs. Each export covers the four latest API versions per Shopify’s quarterly release cycle.
 
-## BRIEF:
+## Requirements
 
-This project we will create an npm package with a full build system and deployment workflows to publish to
-npm.
+- Package must support:
+  - **Storefront API**
+  - **Customer Account API**
+  - **Admin API (GraphQL)**
+- Types and schemas will be versioned, with exports for the four latest releases (e.g., `2025-07`, `2025-04`, `2025-01`, `2024-10`).
+- Each API and version receives clear, modular exports for both TypeScript types and JSON schemas.
+- Use a single, traditional src-based package structure. No monorepo.
+- Publish all outputs to npm via automated CI/CD workflows.
+- Use deep reference implementations from Shopify’s `hydrogen-react`, and codegen infrastructure.
+- Prioritize clarity, maintainability, and compatibility for technical consumers.
 
-The package main goal is to provide Shopify Storefront API, Customer Account API and Admin API Typescript types and
-schemas for the last 4 API versions of each API.
+## Reference Implementations
 
-For typescript config, tooling and npm publishing reference deeply research this repository github workflows
-https://github.com/Shopify/shopify-app-js
-but we won't need a complex monorepo as this will be a single package that will live on a src folder like
-traditional single packages.
+- [Shopify Hydrogen codegen.ts](https://github.com/Shopify/hydrogen/blob/main/packages/hydrogen-react/codegen.ts)
+- [Shopify hydrogen-react package.js configuration](https://github.com/Shopify/hydrogen/blob/315ebe2c2772bb4b13457f19377a8b5e2d180123/packages/hydrogen-react/package.json)
+- [Shopify admin API docs](https://shopify.dev/docs/api/admin-graphql)
+- [Storefront Types and Schemas Examples](https://shopify.dev/docs/api/hydrogen/2023-07/utilities/storefront-api-types)
 
-We will want specific export for each API types e.g
+## Deliverables
 
-// Types example imports we should support
-import type { Order } from "@juanpprieto/shopify-api-types/sfapi/2024-10"
-import type { Product } from "@juanpprieto/shopify-api-types/sfapi/2025-01"
-import type { Customer } from "@juanpprieto/shopify-api-types/caapi/2025-01"
-// Schemas example import we should support (json)
-import { CustomerAccountApiSchema } from "@juanpprieto/shopify-api-types/caapi/2025-01"
+- Modular import pattern for consumers:
+  - `import type { Order } from "@juanpprieto/shopify-api-types/sfapi/2024-10"`
+  - `import { CustomerAccountApiSchema } from "@juanpprieto/shopify-api-types/caapi/2025-01"`
+- Typed exports and schema for each API and version.
+- Fully automated version roll-forward process.
 
-https://github.com/Shopify/hydrogen/blob/315ebe2c2772bb4b13457f19377a8b5e2d180123/packages/hydrogen-react/package.js
-on#L20 Provides an example of how to provide multiple exports In terms of how to generate types and schemas we
-will rely on the codegen package
-Deeply follow and investigate the call stack of this script in this repository and you will find the core logi
-https://github.com/Shopify/hydrogen/blob/315ebe2c2772bb4b13457f19377a8b5e2d180123/packages/hydrogen-react/package.js
-on#L124
+## Implementation Plan
 
-Core types and schema generation for APIs:
-https://github.com/Shopify/hydrogen/blob/main/packages/hydrogen-react/codegen.ts
+### Phase 1: Setup & Build System
 
-We want to follow codeine.ts as much as possible but we will want to do a few things differently. We will want to
-add support also for Shopify Admin API types https://shopify.dev/docs/api/admin-graphql
+- Scaffold the package in a clean src directory structure.
+- Configure TypeScript, linting, formatting, and testing infrastructure.
+- Integrate deep npm workflows using GitHub Actions, referencing best practices from Shopify’s `shopify-app-js`.
 
-And more importantly we wil want to export types and schemas not only the latest available api version but 3 more
-versions going backwards. Luckily Shopify API release cycle is consistent for all apis and very simple. 4 releases
-per year. On month 01, month 04, month 07 and month 10. So if the current api version is 2025-07 we should be able
-to generate and export types for 2025-04, 2025-01, 2024-10
+#### Milestones
 
-Let’s do a deep dive on the hydrogen-react to really get a full picture of all the requirements
-Example of customer account
-schemahttps://github.com/Shopify/hydrogen/blob/main/packages/hydrogen-react/customer-account.schema.json
+- Directory and project scaffolding reviewed.
+- TypeScript, Prettier, ESLint, Jest configured.
+- Initial npm publish test with placeholder exports.
 
-Example of storefront api schema
-https://github.com/Shopify/hydrogen/blob/main/packages/hydrogen-react/storefront.schema.json
+---
 
-Example of generated storefront api types
-https://github.com/Shopify/hydrogen/blob/315ebe2c2772bb4b13457f19377a8b5e2d180123/packages/hydrogen-react/package.js
-on#L92
+### Phase 2: Schema and Type Generation
 
-And customer account types
-https://github.com/Shopify/hydrogen/blob/315ebe2c2772bb4b13457f19377a8b5e2d180123/packages/hydrogen-react/package.js
-on#L55
+- Implement codegen based on Shopify’s `hydrogen-codegen` and @graphql-codegen tooling[2][6].
+- Fetch and cache GraphQL schemas for Storefront, Admin, and Customer Account APIs for the last four versions.
+- Automate GraphQL code generation for:
+  - Base TypeScript types
+  - Types for specific operations (queries/mutations)
+  - JSON schemas for outbound validation
+
+#### Milestones
+
+- Automated schema extraction scripted (supports parameterized API version).
+- Types and JSON schemas generated for `2025-07`, `2025-04`, `2025-01`, and `2024-10`.
+- Fully validated types match Shopify API reference implementations.
+
+---
+
+### Phase 3: Modular Export and Versioning Architecture
+
+- Design clear paths for importing types and schemas.
+- Structure build outputs so each API/version supports deep imports (e.g., `/sfapi/2025-01`).
+- Document supported exports in README and inline comments.
+
+#### Milestones
+
+- Consumer import tests validated for all APIs and recent versions.
+- Internal CI pipeline checks for missing/broken exports per release.
+
+---
+
+### Phase 4: CI/CD Workflows and Publishing
+
+- Build out robust GitHub Actions for lint, test, build, and publish[7].
+- Automate quarterly API version roll-forward:
+  - Schema pull for new release
+  - Regenerate types/schemas
+  - Automated npm publish with updated versions
+
+#### Milestones
+
+- CI/CD pipeline triggers and recovers from edge build/test failures.
+- New API version exported within 24 hours of Shopify’s upstream release.
+
+---
+
+### Phase 5: Documentation and Maintenance
+
+- Write concise README referencing API coverage, usage examples, versioning details.
+- Create upgrade and troubleshooting guide with reference to upstream changes.
+- Maintain changelog and forecast compatibility impacts.
+
+---
+
+## Key Technical Decisions
+
+- **Single-package model:** No monorepo complexity; source-of-truth is `src/`.
+- **Automated schema-fetch/codegen:** Eliminates manual updates and reduces risk[2][5][15].
+- **Versioned exports:** Supports legacy migration and immediate adoption for major upgrades.
+- **Interface clarity:** All exports typed and documented for deep integration[1][12].
+
+---
+
+## Risks & Mitigations
+
+| **Risk**                                | **Mitigation**                                |
+| --------------------------------------- | --------------------------------------------- |
+| Shopify API schema changes              | Automated codegen pipeline, quarterly sync    |
+| Type drift between codegen and live API | Schema validation tests per version cycle     |
+| CI/CD publish errors                    | Lint, test, build gates, rollback routines    |
+| Consumers using outdated versions       | Document support channels, encourage upgrades |
+
+---
+
+## Next Steps
+
+- Review base scaffold.
+- Approve initial codegen strategy and output verification protocol.
+- Align on quarterly update cadence.
+
+---
+
+Contact for technical review and architecture updates.
+n#L55
