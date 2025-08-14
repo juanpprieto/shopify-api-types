@@ -1,0 +1,36 @@
+{
+  "changesets": [
+    {
+      "releases": [
+        {
+          "name": "@juanpprieto/shopify-api-types",
+          "type": "major"
+        }
+      ],
+      "summary": "Add support for Shopify API 2025-10\n\n- Added new types for Q4 2025 API release\n- Updated scalar mappings for new GraphQL types\n- Added support for new Admin API mutations\n- Deprecated 2024-07 API version (now oldest supported)\n- Breaking: Removed support for 2024-04 and earlier versions\n\nThis release updates the package to support the latest Shopify API version (2025-10) and maintains the rolling 4-version support window.",
+      "id": "example-major-api-update"
+    },
+    {
+      "releases": [
+        {
+          "name": "@juanpprieto/shopify-api-types",
+          "type": "patch"
+        }
+      ],
+      "summary": "Fix TypeScript declaration generation for JSON imports\n\n- Fixed issue where JSON schema imports were stripped during declaration generation\n- Improved error handling in schema validation\n- Updated build process to handle import attributes correctly\n\nThis patch resolves TypeScript compilation errors when importing schema JSON files.",
+      "id": "example-patch-bugfix"
+    }
+  ],
+  "releases": [
+    {
+      "name": "@juanpprieto/shopify-api-types",
+      "type": "major",
+      "oldVersion": "2025.7.0",
+      "changesets": [
+        "example-major-api-update",
+        "example-patch-bugfix"
+      ],
+      "newVersion": "2026.0.0"
+    }
+  ]
+}

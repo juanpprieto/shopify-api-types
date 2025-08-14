@@ -6,7 +6,7 @@ import {
   AccessTokenSchema,
   GraphQLSchemaSchema,
   safeParse,
-} from '../../src/lib/schemas.js';
+} from '../../src/lib/zod.js';
 
 describe('schemas', () => {
   describe('ApiTypeSchema', () => {

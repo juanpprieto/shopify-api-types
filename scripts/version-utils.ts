@@ -1,4 +1,4 @@
-import { ApiVersionSchema, type ApiVersion } from '../src/lib/schemas.js';
+import { ApiVersionSchema, type ApiVersion } from '../src/lib/zod.js';
 
 export function getLastFourVersions(): ApiVersion[] {
   const now = new Date();

@@ -26,7 +26,7 @@ describe('validate-schemas logic', () => {
 
   describe('GraphQL schema validation', () => {
     it('should validate GraphQL schema structure', async () => {
-      const { GraphQLSchemaSchema } = await import('../../src/lib/schemas.js');
+      const { GraphQLSchemaSchema } = await import('../../src/lib/zod.js');
 
       const validSchema = {
         __schema: {

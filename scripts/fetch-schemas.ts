@@ -3,12 +3,113 @@ import fs from 'fs/promises';
 import path from 'path';
 import { match } from 'ts-pattern';
 import { getLastFourVersions } from './version-utils.js';
-import type { ApiType, ApiVersion } from '../src/lib/schemas.js';
+import type { ApiType, ApiVersion } from '../src/lib/zod.js';
 import {
   matchApiEndpoint,
   matchAuthHeaders,
   validateEnvironment,
+  classifyHttpError,
+  classifyFileSystemError,
+  createFileOperationHandler,
 } from '../src/lib/patterns.js';
+
+/**
+ * GraphQL introspection query - single source of truth
+ * Standard introspection query that works across all Shopify GraphQL APIs
+ */
+const GRAPHQL_INTROSPECTION_QUERY = `
+  query IntrospectionQuery {
+    __schema {
+      queryType { name }
+      mutationType { name }
+      subscriptionType { name }
+      types {
+        ...FullType
+      }
+      directives {
+        name
+        description
+        locations
+        args {
+          ...InputValue
+        }
+      }
+    }
+  }
+
+  fragment FullType on __Type {
+    kind
+    name
+    description
+    fields(includeDeprecated: true) {
+      name
+      description
+      args {
+        ...InputValue
+      }
+      type {
+        ...TypeRef
+      }
+      isDeprecated
+      deprecationReason
+    }
+    inputFields(includeDeprecated: true) {
+      ...InputValue
+    }
+    interfaces {
+      ...TypeRef
+    }
+    enumValues(includeDeprecated: true) {
+      name
+      description
+      isDeprecated
+      deprecationReason
+    }
+    possibleTypes {
+      ...TypeRef
+    }
+  }
+
+  fragment InputValue on __InputValue {
+    name
+    description
+    type { ...TypeRef }
+    defaultValue
+  }
+
+  fragment TypeRef on __Type {
+    kind
+    name
+    ofType {
+      kind
+      name
+      ofType {
+        kind
+        name
+        ofType {
+          kind
+          name
+          ofType {
+            kind
+            name
+            ofType {
+              kind
+              name
+              ofType {
+                kind
+                name
+                ofType {
+                  kind
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 async function fetchApiSchema(
   apiType: ApiType,
@@ -44,103 +145,11 @@ async function fetchApiSchema(
   }
   const headers = matchAuthHeaders(apiType, token);
 
-  // eslint-disable-next-line no-console -- CLI output for user feedback during schema fetching
   console.log(`Fetching ${apiType} schema for version ${version}...`);
 
   try {
-    const query = `
-      query IntrospectionQuery {
-        __schema {
-          queryType { name }
-          mutationType { name }
-          subscriptionType { name }
-          types {
-            ...FullType
-          }
-          directives {
-            name
-            description
-            locations
-            args {
-              ...InputValue
-            }
-          }
-        }
-      }
-
-      fragment FullType on __Type {
-        kind
-        name
-        description
-        fields(includeDeprecated: true) {
-          name
-          description
-          args {
-            ...InputValue
-          }
-          type {
-            ...TypeRef
-          }
-          isDeprecated
-          deprecationReason
-        }
-        inputFields(includeDeprecated: true) {
-          ...InputValue
-        }
-        interfaces {
-          ...TypeRef
-        }
-        enumValues(includeDeprecated: true) {
-          name
-          description
-          isDeprecated
-          deprecationReason
-        }
-        possibleTypes {
-          ...TypeRef
-        }
-      }
-
-      fragment InputValue on __InputValue {
-        name
-        description
-        type { ...TypeRef }
-        defaultValue
-      }
-
-      fragment TypeRef on __Type {
-        kind
-        name
-        ofType {
-          kind
-          name
-          ofType {
-            kind
-            name
-            ofType {
-              kind
-              name
-              ofType {
-                kind
-                name
-                ofType {
-                  kind
-                  name
-                  ofType {
-                    kind
-                    name
-                    ofType {
-                      kind
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
+    // Use standardized introspection query
+    const query = GRAPHQL_INTROSPECTION_QUERY;
 
     const fetchOptions: RequestInit = {
       method: isCustomerAccount ? 'GET' : 'POST',
@@ -154,7 +163,10 @@ async function fetchApiSchema(
     const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      const { category, retry } = classifyHttpError(response.status);
+      throw new Error(
+        `HTTP ${response.status} (${category}): ${response.statusText}${retry ? ' - Retryable' : ''}`,
+      );
     }
 
     let schemaData: unknown;
@@ -176,20 +188,42 @@ async function fetchApiSchema(
       schemaData = json.data;
     }
 
-    // Save schema
-    const outputDir = path.join('src', 'schemas', apiType);
-    await fs.mkdir(outputDir, { recursive: true });
-
+    // Save schema using enhanced file operation handler
+    const fileHandler = createFileOperationHandler();
+    const outputDir = path.join('src', 'graphql-schemas', apiType);
     const outputPath = path.join(outputDir, `${version}.json`);
-    await fs.writeFile(outputPath, JSON.stringify(schemaData, null, 2));
+    const schemaJson = JSON.stringify(schemaData, null, 2);
 
-    // eslint-disable-next-line no-console -- CLI output for success feedback
-    console.log(`✓ Saved ${apiType} schema to ${outputPath}`);
-  } catch (error) {
-    console.error(
-      `✗ Failed to fetch ${apiType} schema for ${version}:`,
-      error instanceof Error ? error.message : error,
+    const result = await fileHandler(
+      {
+        operation: 'write',
+        target: outputPath,
+        metadata: { apiType, version, schemaSize: schemaJson.length },
+      },
+      async () => {
+        await fs.mkdir(outputDir, { recursive: true });
+        await fs.writeFile(outputPath, schemaJson, 'utf-8');
+        return { size: Buffer.byteLength(schemaJson, 'utf-8') };
+      },
     );
+
+    if (result.success) {
+      console.log(
+        `✓ Saved ${apiType}/${version}.json (${result.data.size} bytes)`,
+      );
+    } else {
+      throw new Error(`Failed to save schema: ${result.error}`);
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      const { category } = classifyFileSystemError(error);
+      console.error(
+        `✗ Failed to fetch ${apiType}/${version} (${category}):`,
+        error.message,
+      );
+    } else {
+      console.error(`✗ Failed to fetch ${apiType}/${version}:`, String(error));
+    }
     throw error;
   }
 }
@@ -203,7 +237,6 @@ async function fetchSchemas(): Promise<void> {
     process.exit(1);
   }
 
-  // eslint-disable-next-line no-console -- CLI output for operation start
   console.log('Fetching GraphQL schemas for configured APIs...\n');
 
   const versions = getLastFourVersions();
@@ -217,7 +250,7 @@ async function fetchSchemas(): Promise<void> {
 
   try {
     await Promise.all(fetchPromises);
-    // eslint-disable-next-line no-console -- CLI output for operation success
+
     console.log('\nAll schemas fetched successfully!');
   } catch {
     console.error('\nSome schemas failed to fetch');

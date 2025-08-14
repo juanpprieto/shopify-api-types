@@ -1,33 +1,59 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'path';
+import { getLastFourVersions } from './scripts/version-utils.js';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
+// Get all versions
+const versions = getLastFourVersions();
+
+// Build entry points for all API versions
+const entry: Record<string, string> = {
+  index: resolve(__dirname, 'src/index.ts'),
+};
+
+// Add API root indexes
+['storefront', 'customer-account', 'admin'].forEach((api) => {
+  entry[`${api}/index`] = resolve(__dirname, `src/${api}/index.ts`);
+
+  // Add version-specific entries
+  versions.forEach((version) => {
+    entry[`${api}/${version}/index`] = resolve(
+      __dirname,
+      `src/${api}/${version}/index.ts`,
+    );
+  });
+});
+
+// Note: JSON schemas are imported by index files with 'type: json' attributes
+// No need to add them as separate entry points to avoid import conflicts
 
 export default defineConfig({
   build: {
     lib: {
-      entry: {
-        'storefront/index': resolve(__dirname, 'src/storefront/index.ts'),
-        'customer-account/index': resolve(
-          __dirname,
-          'src/customer-account/index.ts',
-        ),
-        'admin/index': resolve(__dirname, 'src/admin/index.ts'),
-      },
+      entry,
       formats: ['es', 'cjs'],
+      fileName: (format, entryName) => {
+        // Use .cjs for CommonJS to maintain .js for ESM
+        const ext = format === 'es' ? 'js' : 'cjs';
+        return `${entryName}.${ext}`;
+      },
     },
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: true,
     rollupOptions: {
-      external: ['graphql'],
+      external: [], // No external dependencies
       output: {
-        preserveModules: true,
-        preserveModulesRoot: 'src',
-        entryFileNames: '[name].[format].js',
+        preserveModules: false, // Bundle each entry point
         exports: 'named',
+        generatedCode: {
+          constBindings: true,
+        },
       },
     },
     target: 'node18',
-    sourcemap: true,
-    minify: false,
+    minify: false, // Keep readable for debugging
+  },
+  resolve: {
+    extensions: ['.ts', '.js', '.json'],
   },
 });

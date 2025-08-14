@@ -1,35 +1,93 @@
 {
   "name": "@juanpprieto/shopify-api-types",
-  "version": "0.1.0",
-  "description": "TypeScript types and JSON schemas for Shopify's GraphQL APIs",
-  "type": "module",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.es.js",
-  "types": "dist/index.d.ts",
+  "version": "2025.7.0",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js"
-    },
-    "./storefront/*": {
-      "types": "./dist/storefront/*.d.ts",
-      "import": "./dist/storefront/*.es.js",
-      "require": "./dist/storefront/*.cjs.js"
-    },
-    "./customer-account/*": {
-      "types": "./dist/customer-account/*.d.ts",
-      "import": "./dist/customer-account/*.es.js",
-      "require": "./dist/customer-account/*.cjs.js"
-    },
-    "./admin/*": {
-      "types": "./dist/admin/*.d.ts",
-      "import": "./dist/admin/*.es.js",
-      "require": "./dist/admin/*.cjs.js"
+    ".": "./dist/index.d.ts",
+    "./sfapi/2025-07": "./dist/storefront/2025-07/index.d.ts",
+    "./caapi/2025-07": "./dist/customer-account/2025-07/index.d.ts",
+    "./admin/2025-07": "./dist/admin/2025-07/index.d.ts",
+    "./sfapi/2025-04": "./dist/storefront/2025-04/index.d.ts",
+    "./caapi/2025-04": "./dist/customer-account/2025-04/index.d.ts",
+    "./admin/2025-04": "./dist/admin/2025-04/index.d.ts",
+    "./sfapi/2025-01": "./dist/storefront/2025-01/index.d.ts",
+    "./caapi/2025-01": "./dist/customer-account/2025-01/index.d.ts",
+    "./admin/2025-01": "./dist/admin/2025-01/index.d.ts",
+    "./sfapi/2024-10": "./dist/storefront/2024-10/index.d.ts",
+    "./caapi/2024-10": "./dist/customer-account/2024-10/index.d.ts",
+    "./admin/2024-10": "./dist/admin/2024-10/index.d.ts",
+    "./sfapi": "./dist/storefront/index.d.ts",
+    "./caapi": "./dist/customer-account/index.d.ts",
+    "./admin": "./dist/admin/index.d.ts",
+    "./schemas/sfapi/2025-07": "./dist/schemas/storefront/2025-07.json",
+    "./schemas/caapi/2025-07": "./dist/schemas/customer-account/2025-07.json",
+    "./schemas/admin/2025-07": "./dist/schemas/admin/2025-07.json",
+    "./schemas/sfapi/2025-04": "./dist/schemas/storefront/2025-04.json",
+    "./schemas/caapi/2025-04": "./dist/schemas/customer-account/2025-04.json",
+    "./schemas/admin/2025-04": "./dist/schemas/admin/2025-04.json",
+    "./schemas/sfapi/2025-01": "./dist/schemas/storefront/2025-01.json",
+    "./schemas/caapi/2025-01": "./dist/schemas/customer-account/2025-01.json",
+    "./schemas/admin/2025-01": "./dist/schemas/admin/2025-01.json",
+    "./schemas/sfapi/2024-10": "./dist/schemas/storefront/2024-10.json",
+    "./schemas/caapi/2024-10": "./dist/schemas/customer-account/2024-10.json",
+    "./schemas/admin/2024-10": "./dist/schemas/admin/2024-10.json"
+  },
+  "typesVersions": {
+    "*": {
+      "sfapi": [
+        "./dist/storefront/index.d.ts"
+      ],
+      "caapi": [
+        "./dist/customer-account/index.d.ts"
+      ],
+      "admin": [
+        "./dist/admin/index.d.ts"
+      ],
+      "sfapi/2025-07": [
+        "./dist/storefront/2025-07/index.d.ts"
+      ],
+      "caapi/2025-07": [
+        "./dist/customer-account/2025-07/index.d.ts"
+      ],
+      "admin/2025-07": [
+        "./dist/admin/2025-07/index.d.ts"
+      ],
+      "sfapi/2025-04": [
+        "./dist/storefront/2025-04/index.d.ts"
+      ],
+      "caapi/2025-04": [
+        "./dist/customer-account/2025-04/index.d.ts"
+      ],
+      "admin/2025-04": [
+        "./dist/admin/2025-04/index.d.ts"
+      ],
+      "sfapi/2025-01": [
+        "./dist/storefront/2025-01/index.d.ts"
+      ],
+      "caapi/2025-01": [
+        "./dist/customer-account/2025-01/index.d.ts"
+      ],
+      "admin/2025-01": [
+        "./dist/admin/2025-01/index.d.ts"
+      ],
+      "sfapi/2024-10": [
+        "./dist/storefront/2024-10/index.d.ts"
+      ],
+      "caapi/2024-10": [
+        "./dist/customer-account/2024-10/index.d.ts"
+      ],
+      "admin/2024-10": [
+        "./dist/admin/2024-10/index.d.ts"
+      ]
     }
   },
+  "description": "TypeScript types and JSON schemas for Shopify's GraphQL APIs",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=18.0.0"
@@ -59,7 +117,8 @@
     "zod": "4.0.17"
   },
   "devDependencies": {
-    "@changesets/cli": "2.29.5",
+    "@changesets/cli": "^2.29.5",
+    "@changesets/get-github-info": "^0.6.0",
     "@eslint/js": "9.33.0",
     "@graphql-codegen/cli": "5.0.7",
     "@graphql-codegen/introspection": "4.0.3",
@@ -86,15 +145,21 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\" --ignore-path .prettierignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\" --ignore-path .prettierignore",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit --project tsconfig.check.json",
     "type-check:watch": "tsc --noEmit --watch",
     "lint:check": "eslint . --ext .ts,.tsx,.js,.mjs",
     "check": "npm run type-check && npm run lint:check",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "build": "vite build",
-    "build:watch": "vite build --watch",
+    "prebuild": "npm run clean && npm run generate-exports",
+    "build": "npm run build:declarations && npm run postbuild",
+    "build:declarations": "tsc --emitDeclarationOnly --project tsconfig.build.json",
+    "postbuild": "npm run copy-schemas",
     "clean": "rm -rf dist .tsbuildinfo",
+    "generate-exports": "tsx scripts/generate-exports.ts",
+    "copy-schemas": "tsx scripts/copy-schemas.ts",
+    "validate-build": "tsx scripts/validate-build.ts",
+    "build:check": "npm run build && npm run validate-build",
     "knip": "knip",
     "knip:production": "knip --production",
     "knip:strict": "knip --strict --include files,dependencies,unlisted,exports",
@@ -115,6 +180,14 @@
     "validate-types": "tsx scripts/validate-types.ts",
     "build:types": "npm run fetch-schemas && npm run generate-types",
     "postgenerate-types": "npm run format && npm run generate-indexes",
+    "docs": "tsx scripts/generate-docs.ts",
+    "count-types": "tsx scripts/count-types.ts",
+    "release": "tsx scripts/release.ts",
+    "release:dry": "tsx scripts/release.ts --dry-run",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "version": "tsx scripts/calver-version.ts",
     "prepare": "husky"
   },
   "lint-staged": {

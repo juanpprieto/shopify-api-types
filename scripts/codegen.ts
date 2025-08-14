@@ -1,78 +1,62 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 import { getLastFourVersions } from './version-utils.js';
+import { SUPPORTED_APIS } from '../src/lib/zod.js';
+import {
+  generateCodeGenConfig,
+  analyzeCodeGenConfig,
+  handleOperationResult,
+} from '../src/lib/patterns.js';
 
-const versions = getLastFourVersions();
+/**
+ * Consolidated CodeGen configuration using atomic schemas and ts-pattern
+ */
+function createCodegenConfig(): CodegenConfig {
+  const versions = getLastFourVersions();
 
-// Shopify scalar type mappings (from hydrogen-react)
-const scalarMappings = {
-  DateTime: 'string',
-  Decimal: 'string',
-  HTML: 'string',
-  URL: 'string',
-  JSON: 'unknown',
-  Color: 'string',
-  UnsignedInt64: 'string',
-  Money: 'string',
-  ISO8601DateTime: 'string',
-};
-
-const config: CodegenConfig = {
-  overwrite: true,
-  generates: {},
-};
-
-// Generate configuration for each API and version
-versions.forEach((version) => {
-  // Storefront API
-  config.generates[`./src/storefront/${version}/types.ts`] = {
-    schema: `./src/schemas/storefront/${version}.json`,
-    plugins: ['typescript'],
-    config: {
-      skipTypename: true,
-      enumsAsTypes: true,
-      scalars: scalarMappings,
-      avoidOptionals: false,
-      maybeValue: 'T | null | undefined',
-      namingConvention: {
-        typeNames: 'pascal-case#pascalCase',
-        enumValues: 'upper-case#upperCase',
+  // Generate configuration using consolidated patterns
+  const configResult = generateCodeGenConfig(SUPPORTED_APIS, versions, '.', {
+    overwrite: true,
+    apiSpecificConfigs: {
+      'customer-account': {
+        // Customer Account API tends to have more optional fields
+        avoidOptionals: true,
       },
     },
-  };
+  });
 
-  // Customer Account API
-  config.generates[`./src/customer-account/${version}/types.ts`] = {
-    schema: `./src/schemas/customer-account/${version}.json`,
-    plugins: ['typescript'],
-    config: {
-      skipTypename: true,
-      enumsAsTypes: true,
-      scalars: scalarMappings,
-      avoidOptionals: false,
-      maybeValue: 'T | null | undefined',
-      namingConvention: {
-        typeNames: 'pascal-case#pascalCase',
-        enumValues: 'upper-case#upperCase',
-      },
-    },
-  };
+  return handleOperationResult(configResult, {
+    onSuccess: (data) => {
+      // Analyze the configuration for optimization opportunities
+      const analysis = analyzeCodeGenConfig(data);
 
-  // Admin API
-  config.generates[`./src/admin/${version}/types.ts`] = {
-    schema: `./src/schemas/admin/${version}.json`,
-    plugins: ['typescript'],
-    config: {
-      skipTypename: true,
-      enumsAsTypes: true,
-      scalars: scalarMappings,
-      avoidOptionals: false,
-      maybeValue: 'T | null | undefined',
-      namingConvention: {
-        typeNames: 'pascal-case#pascalCase',
-        enumValues: 'upper-case#upperCase',
-      },
+      console.log(`📊 CodeGen Analysis:`);
+      console.log(`   Total outputs: ${analysis.totalOutputs}`);
+      console.log(
+        `   API breakdown: ${Object.entries(analysis.apiBreakdown)
+          .map(([api, count]) => `${api}=${count}`)
+          .join(', ')}`,
+      );
+
+      if (analysis.duplicateConfigs.length > 0) {
+        console.log(`   Duplicates: ${analysis.duplicateConfigs.length} found`);
+      }
+
+      if (analysis.recommendedOptimizations.length > 0) {
+        console.log(`   Recommendations:`);
+        analysis.recommendedOptimizations.forEach((rec) =>
+          console.log(`     - ${rec}`),
+        );
+      }
+
+      return data as CodegenConfig;
     },
-  };
-});
+    onError: (error) => {
+      console.error('❌ Failed to generate CodeGen configuration:', error);
+      process.exit(1);
+    },
+  });
+}
+
+const config = createCodegenConfig();
 
 export default config;

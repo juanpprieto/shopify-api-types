@@ -1,8 +1,19 @@
 import { execSync } from 'child_process';
 import fs from 'fs/promises';
+import { match } from 'ts-pattern';
+import { TypeValidationResultSchema } from '../src/lib/zod.js';
+import {
+  classifyTypeScriptError,
+  classifyFileSystemError,
+} from '../src/lib/patterns.js';
+
+interface TypecheckResult {
+  success: boolean;
+  output: string;
+  errorType: 'compilation' | 'import' | 'runtime' | 'unknown';
+}
 
 async function validateTypes(): Promise<boolean> {
-  // eslint-disable-next-line no-console -- CLI output for operation start
   console.log('Validating generated types...\n');
 
   try {
@@ -45,22 +56,68 @@ console.log('✓ All type imports working correctly');
     await fs.mkdir('temp', { recursive: true });
     await fs.writeFile('temp/type-test.ts', testContent, 'utf-8');
 
-    // Type check
-    execSync(
-      'npx tsc --noEmit temp/type-test.ts --module esnext --moduleResolution bundler --resolveJsonModule --esModuleInterop --allowImportingTsExtensions',
-      {
-        stdio: 'inherit',
-      },
-    );
+    // Type check with pattern matching for error analysis
+    let typecheckResult: TypecheckResult;
+    try {
+      const output = execSync(
+        'npx tsc --noEmit temp/type-test.ts --module esnext --moduleResolution bundler --resolveJsonModule --esModuleInterop --allowImportingTsExtensions',
+        { encoding: 'utf-8' },
+      );
+
+      typecheckResult = { success: true, output, errorType: 'unknown' };
+    } catch (error) {
+      const output = error instanceof Error ? error.message : String(error);
+
+      // Use shared error categorization
+      const { category } = classifyTypeScriptError(output);
+      const errorType = category === 'unknown' ? 'unknown' : category;
+
+      typecheckResult = { success: false, output, errorType };
+    }
 
     // Clean up
     await fs.rm('temp', { recursive: true, force: true });
 
-    // eslint-disable-next-line no-console -- CLI output for success feedback
-    console.log('\n✅ Type validation passed!');
-    return true;
+    // Process results based on success/failure
+    const result = match(typecheckResult)
+      .with({ success: true }, () => {
+        console.log('\n✅ Type validation passed!');
+        return { valid: true, errors: [] };
+      })
+      .with({ success: false, errorType: 'import' }, (r) => {
+        console.error('\n❌ Import errors detected:');
+        console.error(r.output);
+        return { valid: false, errors: ['Import resolution failed'] };
+      })
+      .with({ success: false, errorType: 'compilation' }, (r) => {
+        console.error('\n❌ Type compilation errors:');
+        console.error(r.output);
+        return { valid: false, errors: ['Type compilation failed'] };
+      })
+      .with({ success: false }, (r) => {
+        console.error('\n❌ Type validation failed:', r.output);
+        return { valid: false, errors: ['Unknown validation error'] };
+      })
+      .exhaustive();
+
+    // Validate result structure
+    const validationResult = TypeValidationResultSchema.safeParse(result);
+    if (!validationResult.success) {
+      throw new Error('Invalid validation result format');
+    }
+
+    return validationResult.data.valid;
   } catch (error) {
-    console.error('\n❌ Type validation failed:', error);
+    // Use shared file system error categorization
+    if (error instanceof Error) {
+      const { category } = classifyFileSystemError(error);
+      console.error(`\n❌ Type validation setup failed (${category}):`, error);
+    } else {
+      console.error(
+        '\n❌ Type validation setup failed (unknown error):',
+        error,
+      );
+    }
 
     // Clean up on error
     try {

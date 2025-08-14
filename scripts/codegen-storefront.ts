@@ -1,43 +1,44 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 import { getLastFourVersions } from './version-utils.js';
+import {
+  createApiSpecificCodeGenConfig,
+  handleOperationResult,
+} from '../src/lib/patterns.js';
 
-const versions = getLastFourVersions();
+/**
+ * Storefront API specific CodeGen configuration
+ * Uses consolidated patterns with API-specific optimizations
+ */
+function createStorefrontCodegenConfig(): CodegenConfig {
+  const versions = getLastFourVersions();
 
-// Shopify scalar type mappings (from hydrogen-react)
-const scalarMappings = {
-  DateTime: 'string',
-  Decimal: 'string',
-  HTML: 'string',
-  URL: 'string',
-  JSON: 'unknown',
-  Color: 'string',
-  UnsignedInt64: 'string',
-  Money: 'string',
-  ISO8601DateTime: 'string',
-};
+  // Generate Storefront API specific configuration
+  const configResult = createApiSpecificCodeGenConfig(
+    'storefront',
+    versions,
+    '.',
+  );
 
-const config: CodegenConfig = {
-  overwrite: true,
-  generates: {},
-};
+  return handleOperationResult(configResult, {
+    onSuccess: (data) => {
+      console.log(
+        `🏪 Storefront CodeGen configured for ${versions.length} versions`,
+      );
+      console.log(`   Versions: ${versions.join(', ')}`);
+      console.log(`   Output files: ${Object.keys(data.generates).length}`);
 
-// Generate configuration for Storefront API only
-versions.forEach((version) => {
-  config.generates[`./src/storefront/${version}/types.ts`] = {
-    schema: `./src/schemas/storefront/${version}.json`,
-    plugins: ['typescript'],
-    config: {
-      skipTypename: true,
-      enumsAsTypes: true,
-      scalars: scalarMappings,
-      avoidOptionals: false,
-      maybeValue: 'T | null | undefined',
-      namingConvention: {
-        typeNames: 'pascal-case#pascalCase',
-        enumValues: 'upper-case#upperCase',
-      },
+      return data as CodegenConfig;
     },
-  };
-});
+    onError: (error) => {
+      console.error(
+        '❌ Failed to generate Storefront CodeGen configuration:',
+        error,
+      );
+      process.exit(1);
+    },
+  });
+}
+
+const config = createStorefrontCodegenConfig();
 
 export default config;

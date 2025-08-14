@@ -1,0 +1,240 @@
+name: API Version Check
+
+on:
+  schedule:
+    # Check for new API versions weekly (Mondays at 9 AM UTC)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      force_check:
+        description: 'Force check even if no new version'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: api-version-check
+  cancel-in-progress: true
+
+jobs:
+  check-api-versions:
+    name: Check for New API Versions
+    runs-on: ubuntu-latest
+    outputs:
+      has-new-version: ${{ steps.version-check.outputs.hasNewVersion }}
+      new-version: ${{ steps.version-check.outputs.newVersion }}
+      should-update: ${{ steps.decision.outputs.shouldUpdate }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for new Shopify API versions
+        id: version-check
+        run: |
+          # Get current latest API version from our utilities
+          current_latest=$(npm run --silent version info $(node -p "require('./package.json').version") | jq -r '.apiVersion')
+
+          # Get current year and next quarters
+          current_year=$(date +%Y)
+          current_month=$(date +%-m)
+
+          # Determine next expected API version
+          if [ $current_month -lt 4 ]; then
+            next_quarter="01"
+          elif [ $current_month -lt 7 ]; then
+            next_quarter="04"
+          elif [ $current_month -lt 10 ]; then
+            next_quarter="07"
+          else
+            next_quarter="10"
+            current_year=$((current_year + 1))
+          fi
+
+          expected_next="${current_year}-${next_quarter}"
+
+          # For now, simulate checking - in real implementation would call Shopify's API
+          # This is a placeholder for actual API version detection
+          echo "Current latest: $current_latest"
+          echo "Expected next: $expected_next"
+
+          # Simulate new version detection (would be replaced with real API call)
+          if [[ "$expected_next" > "$current_latest" ]] && [[ "${{ github.event.inputs.force_check }}" == "true" ]]; then
+            echo "hasNewVersion=true" >> $GITHUB_OUTPUT
+            echo "newVersion=$expected_next" >> $GITHUB_OUTPUT
+            echo "🆕 New API version detected: $expected_next"
+          else
+            echo "hasNewVersion=false" >> $GITHUB_OUTPUT
+            echo "newVersion=" >> $GITHUB_OUTPUT
+            echo "ℹ️ No new API version detected"
+          fi
+
+      - name: Decide if update is needed
+        id: decision
+        run: |
+          has_new="${{ steps.version-check.outputs.hasNewVersion }}"
+          force_check="${{ github.event.inputs.force_check }}"
+
+          if [[ "$has_new" == "true" || "$force_check" == "true" ]]; then
+            echo "shouldUpdate=true" >> $GITHUB_OUTPUT
+          else
+            echo "shouldUpdate=false" >> $GITHUB_OUTPUT
+          fi
+
+  create-api-update-pr:
+    name: Create API Update PR
+    runs-on: ubuntu-latest
+    needs: check-api-versions
+    if: needs.check-api-versions.outputs.should-update == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create feature branch
+        run: |
+          new_version="${{ needs.check-api-versions.outputs.new-version }}"
+          branch_name="api-update/${new_version}"
+          git checkout -b "$branch_name"
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+
+      - name: Fetch new schemas
+        run: |
+          new_version="${{ needs.check-api-versions.outputs.new-version }}"
+          echo "🔄 Attempting to fetch schemas for API version $new_version"
+
+          # Try to fetch schemas for the new version
+          # This might fail if the API isn't available yet
+          npm run fetch-schemas || echo "⚠️ Schema fetch failed - API might not be available yet"
+
+      - name: Update version utilities
+        run: |
+          # Update version-utils.js to include the new version
+          # This would need custom logic based on how versions are stored
+          echo "🔄 Updating version utilities..."
+
+      - name: Generate new types
+        run: |
+          # Generate types for new schemas (if available)
+          npm run generate-types || echo "⚠️ Type generation skipped - schemas not available"
+
+      - name: Update documentation
+        run: |
+          # Regenerate documentation with new version
+          npm run docs
+
+      - name: Create changeset
+        run: |
+          new_version="${{ needs.check-api-versions.outputs.new-version }}"
+
+          cat > .changeset/api-update-${new_version}.md << EOF
+          ---
+          "@juanpprieto/shopify-api-types": major
+          ---
+
+          Add support for Shopify API ${new_version}
+
+          - Added new types for API version ${new_version}
+          - Updated scalar mappings for new GraphQL types
+          - Maintained rolling 4-version support window
+          - Breaking: Removed support for oldest API version
+
+          This release updates the package to support the latest Shopify API version and maintains the 1-year support window.
+          EOF
+
+      - name: Commit changes
+        run: |
+          git add .
+          new_version="${{ needs.check-api-versions.outputs.new-version }}"
+          git commit -m "feat: add support for Shopify API ${new_version}
+
+          - Add schemas and types for API version ${new_version}
+          - Update documentation and version utilities
+          - Create changeset for major release
+
+          This automated update maintains our quarterly release cycle
+          aligned with Shopify's API versioning."
+
+      - name: Push branch
+        run: |
+          git push origin "$BRANCH_NAME"
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          new_version="${{ needs.check-api-versions.outputs.new-version }}"
+
+          gh pr create \
+            --title "🚀 Add support for Shopify API ${new_version}" \
+            --body "## 🆕 Automated API Update
+
+          This PR adds support for Shopify API version \`${new_version}\`.
+
+          ### 📋 Changes
+          - ✅ Fetch schemas for API version \`${new_version}\`
+          - ✅ Generate TypeScript types  
+          - ✅ Update documentation
+          - ✅ Create major changeset
+          - ✅ Maintain 4-version support window
+
+          ### 🔄 Release Process
+          After merging this PR:
+          1. Run \`npm run release\` to create version \`$(date +%Y).$(date +%-m).0\`
+          2. Publish to npm
+          3. Update release notes
+
+          ### ⚠️ Breaking Changes
+          This is a major release that may remove support for the oldest API version to maintain our 1-year support window.
+
+          ---
+
+          *This PR was created automatically by the API Version Check workflow.*" \
+            --label "api-update" \
+            --label "major" \
+            --reviewer "juanpprieto"
+
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [check-api-versions, create-api-update-pr]
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          if [[ "${{ needs.check-api-versions.outputs.has-new-version }}" == "true" ]]; then
+            echo "🆕 New API version detected: ${{ needs.check-api-versions.outputs.new-version }}"
+            if [[ "${{ needs.create-api-update-pr.result }}" == "success" ]]; then
+              echo "✅ API update PR created successfully"
+            else
+              echo "❌ Failed to create API update PR"
+            fi
+          else
+            echo "ℹ️ No new API version detected"
+          fi

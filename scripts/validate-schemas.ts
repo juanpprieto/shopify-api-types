@@ -6,10 +6,11 @@ import {
   type ApiType,
   type ValidationResult,
   GraphQLSchemaSchema,
-} from '../src/lib/schemas.js';
+  SUPPORTED_APIS,
+} from '../src/lib/zod.js';
 import { processValidationResults } from '../src/lib/patterns.js';
 
-const APIS: ApiType[] = ['storefront', 'customer-account', 'admin'];
+const APIS = SUPPORTED_APIS;
 
 async function validateSingleSchema(
   apiType: ApiType,
@@ -61,7 +62,6 @@ async function validateSingleSchema(
 }
 
 async function validateSchemas(): Promise<void> {
-  // eslint-disable-next-line no-console -- CLI output for operation start
   console.log('Validating GraphQL schemas...\n');
 
   const versions = getLastFourVersions();
@@ -77,7 +77,6 @@ async function validateSchemas(): Promise<void> {
   const { allValid, validCount, totalCount } =
     processValidationResults(results);
 
-  // eslint-disable-next-line no-console -- CLI output for validation summary
   console.log(
     `\nValidation complete: ${validCount}/${totalCount} schemas valid`,
   );
