@@ -91,10 +91,10 @@ export * from './types.js';
   // Use shared analysis function
   const analysis = analyzeFileOperations(results);
   console.log(
-    `\nConversion complete: ${analysis.successful} successful, ${analysis.otherErrors} failed`,
+    `\nConversion complete: ${analysis.successful} successful, ${analysis.failed} failed`,
   );
 
-  if (analysis.otherErrors > 0) {
+  if (analysis.failed > 0) {
     const skippedPaths = results
       .filter((r) => !r.success)
       .map((r) => `${r.filePath}: ${r.error}`)

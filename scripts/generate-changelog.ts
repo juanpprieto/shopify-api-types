@@ -40,14 +40,12 @@ async function loadSchema(
   const pathResolver = createFilePathResolver(process.cwd());
   const fileHandler = createFileOperationHandler();
 
-  const schemaPathResult = pathResolver(api, version, 'schema', 'source');
-  if (!schemaPathResult.success) {
-    throw new Error(
-      `Cannot resolve schema path for ${api}/${version}: ${schemaPathResult.error}`,
-    );
-  }
-
-  const schemaPath = schemaPathResult.data;
+  const schemaPath = pathResolver.resolve(
+    'src',
+    'graphql-schemas',
+    api,
+    `${version}.json`,
+  );
 
   const readResult = await fileHandler(
     { operation: 'read', target: schemaPath },

@@ -8,7 +8,6 @@ import {
   matchApiEndpoint,
   matchAuthHeaders,
   validateEnvironment,
-  classifyHttpError,
   classifyFileSystemError,
   createFileOperationHandler,
 } from '../src/lib/patterns.js';
@@ -163,9 +162,10 @@ async function fetchApiSchema(
     const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
-      const { category, retry } = classifyHttpError(response.status);
+      const isRetryable = [408, 429, 502, 503, 504].includes(response.status);
+      const category = response.status >= 500 ? 'server' : 'client';
       throw new Error(
-        `HTTP ${response.status} (${category}): ${response.statusText}${retry ? ' - Retryable' : ''}`,
+        `HTTP ${response.status} (${category}): ${response.statusText}${isRetryable ? ' - Retryable' : ''}`,
       );
     }
 
@@ -231,9 +231,11 @@ async function fetchApiSchema(
 async function fetchSchemas(): Promise<void> {
   const env = validateEnvironment(process.env);
 
-  if (!env.hasValidTokens) {
-    console.error('No valid API tokens found in environment');
-    env.warnings.forEach((warning) => console.error(`- ${warning}`));
+  if (!env.success) {
+    console.error('Environment validation failed:');
+    if (env.error) {
+      console.error(`- ${env.error}`);
+    }
     process.exit(1);
   }
 
@@ -255,7 +257,7 @@ async function fetchSchemas(): Promise<void> {
 
   const fetchPromises: Promise<void>[] = [];
 
-  for (const api of env.availableApis) {
+  for (const api of ['storefront', 'customer-account', 'admin'] as ApiType[]) {
     for (const version of allVersions) {
       fetchPromises.push(fetchApiSchema(api, version));
     }

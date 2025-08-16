@@ -138,14 +138,12 @@ async function countTypes(): Promise<TypeAnalysis> {
     console.log(`\nAnalyzing ${api} API...`);
 
     for (const version of versions) {
-      const schemaPathResult = pathResolver(api, version, 'schema', 'source');
-
-      if (!schemaPathResult.success) {
-        console.warn(`⚠️  Could not resolve schema path for ${api}/${version}`);
-        continue;
-      }
-
-      const schemaPath = schemaPathResult.data;
+      const schemaPath = pathResolver.resolve(
+        'src',
+        'graphql-schemas',
+        api,
+        `${version}.json`,
+      );
 
       try {
         // Read schema file

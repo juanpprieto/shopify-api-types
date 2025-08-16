@@ -103,17 +103,8 @@ async function generatePackageExports(): Promise<void> {
   versions.forEach((version) => {
     API_MAPPINGS.forEach(([exportKey, api]) => {
       // Use path resolver for consistent path generation
-      const pathResult = pathResolver(api, version, 'index', 'dist');
-      if (!pathResult.success) {
-        throw new Error(
-          `Failed to resolve path for ${api}/${version}: ${pathResult.error}`,
-        );
-      }
-      const exportPath = pathResult.data.replace(process.cwd(), '.');
-      const pathValidation = DistPathSchema.safeParse(exportPath);
-      if (!pathValidation.success) {
-        throw new Error(`Invalid export path: ${exportPath}`);
-      }
+      const distPath = pathResolver.resolve('dist', api, version, 'index.d.ts');
+      const exportPath = distPath.replace(process.cwd(), '.');
 
       const fullKey = `./${exportKey}/${version}`;
       exports[fullKey] = createTypeExportCondition(exportPath);
@@ -221,34 +212,33 @@ async function generatePackageExports(): Promise<void> {
 
   versions.forEach((version) => {
     if (typesVersions['*']) {
-      const storefrontResult = pathResolver(
+      const storefrontPath = pathResolver.resolve(
+        'dist',
         'storefront',
         version,
-        'index',
-        'dist',
+        'index.d.ts',
       );
-      const customerAccountResult = pathResolver(
+      const customerAccountPath = pathResolver.resolve(
+        'dist',
         'customer-account',
         version,
-        'index',
-        'dist',
+        'index.d.ts',
       );
-      const adminResult = pathResolver('admin', version, 'index', 'dist');
+      const adminPath = pathResolver.resolve(
+        'dist',
+        'admin',
+        version,
+        'index.d.ts',
+      );
 
       typesVersions['*'][`sfapi/${version}`] = [
-        storefrontResult.success
-          ? storefrontResult.data.replace(process.cwd(), '.')
-          : `./dist/storefront/${version}/index.d.ts`,
+        storefrontPath.replace(process.cwd(), '.'),
       ];
       typesVersions['*'][`caapi/${version}`] = [
-        customerAccountResult.success
-          ? customerAccountResult.data.replace(process.cwd(), '.')
-          : `./dist/customer-account/${version}/index.d.ts`,
+        customerAccountPath.replace(process.cwd(), '.'),
       ];
       typesVersions['*'][`admin/${version}`] = [
-        adminResult.success
-          ? adminResult.data.replace(process.cwd(), '.')
-          : `./dist/admin/${version}/index.d.ts`,
+        adminPath.replace(process.cwd(), '.'),
       ];
     }
   });

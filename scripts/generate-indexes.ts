@@ -9,11 +9,9 @@ import {
   type CategorizedFileResult,
 } from '../src/lib/zod.js';
 import {
-  categorizeFileResults,
   createFileOperationHandler,
   createFilePathResolver,
   createApiIndexPath,
-  createRootIndexPath,
 } from '../src/lib/patterns.js';
 
 const INDEX_TEMPLATE = `// Auto-generated index file
@@ -65,19 +63,12 @@ async function generateIndexFiles(): Promise<void> {
 
     for (const version of versions) {
       // Use path resolver for consistent path generation
-      const indexPathResult = pathResolver(
+      const indexPath = pathResolver.resolve(
+        'src',
         api.type,
         version,
-        'index',
-        'source',
+        'index.ts',
       );
-      if (!indexPathResult.success) {
-        console.error(
-          `✗ Failed to resolve path for ${api.type}/${version}: ${indexPathResult.error}`,
-        );
-        continue;
-      }
-      const indexPath = indexPathResult.data;
       const versionDir = path.dirname(indexPath);
 
       // Generate and validate index.ts content
@@ -199,14 +190,14 @@ export * as admin from './admin/index.js';
       throw new Error('Root index content is invalid');
     }
 
-    const rootIndexPath = createRootIndexPath(process.cwd(), 'source');
+    const rootIndexPath = path.join(process.cwd(), 'src', 'index.ts');
     await fs.writeFile(rootIndexPath, rootIndexContent, 'utf-8');
 
     console.log('✓ Generated root index: src/index.ts');
     results.push({ filePath: rootIndexPath, success: true, category: 'root' });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const rootIndexPath = createRootIndexPath(process.cwd(), 'source');
+    const rootIndexPath = path.join(process.cwd(), 'src', 'index.ts');
     console.error('✗ Failed to generate src/index.ts:', errorMessage);
     results.push({
       filePath: rootIndexPath,
@@ -216,15 +207,18 @@ export * as admin from './admin/index.js';
     });
   }
 
-  // Use shared analysis function
-  const analysis = categorizeFileResults(results);
+  // Analyze results
+  const versionCount = results.filter((r) => r.category === 'version').length;
+  const apiCount = results.filter((r) => r.category === 'api').length;
+  const rootCount = results.filter((r) => r.category === 'root').length;
+  const failedResults = results.filter((r) => !r.success);
+
   console.log(
-    `\nGeneration complete: ${analysis.version} version, ${analysis.api} API, ${analysis.root} root indexes created`,
+    `\nGeneration complete: ${versionCount} version, ${apiCount} API, ${rootCount} root indexes created`,
   );
 
-  if (analysis.failed > 0) {
-    const failedFiles = results
-      .filter((r) => !r.success)
+  if (failedResults.length > 0) {
+    const failedFiles = failedResults
       .map((r) => `${r.filePath}: ${r.error}`)
       .join('\n  ');
     console.error(`Failed generations:\n  ${failedFiles}`);

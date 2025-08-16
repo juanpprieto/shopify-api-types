@@ -74,8 +74,19 @@ async function validateSchemas(): Promise<void> {
   }
 
   const results = await Promise.all(validationPromises);
-  const { allValid, validCount, totalCount } =
-    processValidationResults(results);
+  const validCount = results.filter((r) => r.isValid).length;
+  const totalCount = results.length;
+  const allValid = validCount === totalCount;
+
+  // Create BatchValidationResult for processValidationResults
+  const batchResult = {
+    results,
+    allValid,
+    validCount,
+    totalCount,
+  };
+
+  processValidationResults(batchResult);
 
   console.log(
     `\nValidation complete: ${validCount}/${totalCount} schemas valid`,

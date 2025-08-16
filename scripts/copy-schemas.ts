@@ -4,7 +4,6 @@ import { getLastFourVersions } from './version-utils.js';
 import { type FileOperationResult, SUPPORTED_APIS } from '../src/lib/zod.js';
 import {
   createFileOperationHandler,
-  processOperationResults,
   analyzeFileOperations,
 } from '../src/lib/patterns.js';
 
@@ -67,39 +66,36 @@ async function copySchemas(): Promise<void> {
     }
   }
 
-  // Process all results using shared patterns
-  processOperationResults(allResults, {
-    onAllSuccess: () =>
-      console.log('\n✅ All schema files copied successfully'),
-    onPartialFailure: (successful, failed) => {
+  // Process results manually
+  const successful = allResults.filter((r) => r.success);
+  const failed = allResults.filter((r) => !r.success);
+
+  if (allResults.length === 0) {
+    console.warn('\n⚠️  No schemas to copy');
+  } else if (failed.length === 0) {
+    console.log('\n✅ All schema files copied successfully');
+  } else if (successful.length > 0) {
+    console.log(
+      `\n⚠️  Copied ${successful.length} files, ${failed.length} skipped (source not found)`,
+    );
+    failed.forEach((f) =>
       console.log(
-        `\n⚠️  Copied ${successful.length} files, ${failed.length} skipped (source not found)`,
-      );
-      failed.forEach((f) =>
-        console.log(
-          `  ⏭ Skipped ${f.filePath}: ${f.error || 'Source file not found'}`,
-        ),
-      );
-    },
-    onAllFailure: (results) => {
-      console.log('\n❌ No schema files found to copy');
-      results.forEach((f) =>
-        console.log(
-          `  ⏭ Skipped ${f.filePath}: ${f.error || 'Source file not found'}`,
-        ),
-      );
-    },
-    onEmpty: () => console.warn('\n⚠️  No schemas to copy'),
-  });
+        `  ⏭ Skipped ${f.filePath}: ${f.error || 'Source file not found'}`,
+      ),
+    );
+  } else {
+    console.log('\n❌ No schema files found to copy');
+    failed.forEach((f) =>
+      console.log(
+        `  ⏭ Skipped ${f.filePath}: ${f.error || 'Source file not found'}`,
+      ),
+    );
+  }
 
   const analysis = analyzeFileOperations(allResults);
   console.log(
-    `\nCopy summary: ${analysis.successful} successful (${analysis.totalSize} bytes), ${analysis.failed} failed`,
+    `\nCopy summary: ${analysis.successful} successful, ${analysis.failed} failed`,
   );
-
-  if (analysis.missingFiles > 0) {
-    console.warn(`Warning: ${analysis.missingFiles} source files not found`);
-  }
 }
 
 // Run if called directly

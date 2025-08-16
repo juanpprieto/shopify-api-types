@@ -70,7 +70,11 @@ console.log('✓ All type imports working correctly');
 
       // Use shared error categorization
       const { category } = classifyTypeScriptError(output);
-      const errorType = category === 'unknown' ? 'unknown' : category;
+      const errorType = match(category)
+        .with('module', () => 'import' as const)
+        .with('type', () => 'compilation' as const)
+        .with('syntax', () => 'compilation' as const)
+        .otherwise(() => 'unknown' as const);
 
       typecheckResult = { success: false, output, errorType };
     }
