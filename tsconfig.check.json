@@ -11,6 +11,7 @@
     "**/*.d.ts",
     "src/schemas/**/*.json",
     "scripts/validate-build.ts",
-    "tests/e2e/**/*"
+    "tests/e2e/**/*",
+    "src/**/types.ts"
   ]
 }
