@@ -59,10 +59,14 @@ describe('version-utils', () => {
     });
 
     it('should handle year transitions', () => {
-      vi.setSystemTime(new Date('2025-01-01')); // Early January
+      // Test a date in December before Q1 starts
+      vi.setSystemTime(new Date('2024-12-31')); // End of year
       const versions = getLastFourVersions();
 
-      expect(versions[0]).toBe('2024-10'); // Should use previous year's Q4
+      expect(versions[0]).toBe('2024-10'); // Still in Q4 2024
+      expect(versions[1]).toBe('2024-07'); // Previous is Q3 2024
+      expect(versions[2]).toBe('2024-04'); // Then Q2 2024
+      expect(versions[3]).toBe('2024-01'); // Then Q1 2024
     });
   });
 

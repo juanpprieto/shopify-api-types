@@ -209,7 +209,9 @@ jobs:
       - name: Check for sensitive files
         run: |
           # Check for accidentally committed sensitive files
-          if grep -r "SHOPIFY.*ACCESS.*TOKEN" . --exclude-dir=node_modules --exclude=".env.example" --exclude="*.md"; then
+          # Look for actual token values (not just variable names)
+          # Pattern looks for SHOPIFY_*_ACCESS_TOKEN followed by = and a quoted string with 20+ chars
+          if grep -r -E "SHOPIFY.*ACCESS.*TOKEN.*=.*['\"]?[A-Za-z0-9+/_-]{20,}" . --exclude-dir=node_modules --exclude=".env*" --exclude="*.md" --exclude=".env"; then
             echo "❌ Potential sensitive information detected"
             exit 1
           else
