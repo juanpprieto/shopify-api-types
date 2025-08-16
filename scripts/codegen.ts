@@ -1,5 +1,5 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
-import { getLastFourVersions } from './version-utils.js';
+import { getSupportedVersions } from './version-utils.js';
 import { SUPPORTED_APIS } from '../src/lib/zod.js';
 import {
   generateCodeGenConfig,
@@ -11,7 +11,8 @@ import {
  * Consolidated CodeGen configuration using atomic schemas and ts-pattern
  */
 function createCodegenConfig(): CodegenConfig {
-  const versions = getLastFourVersions();
+  // Get only the 4 supported versions
+  const versions = getSupportedVersions();
 
   // Generate configuration using consolidated patterns
   const configResult = generateCodeGenConfig(SUPPORTED_APIS, versions, '.', {

@@ -15,6 +15,18 @@ export default {
     'scripts/generate-indexes.ts',
     'scripts/validate-types.ts',
     'scripts/codegen.ts',
+    'scripts/generate.ts',
+    'scripts/generate-*.ts',
+    'scripts/ci/*.ts',
+    'scripts/count-types.ts',
+    'scripts/changeset-changelog.js',
+    // Library files used by scripts
+    'src/lib/claude-sdk.ts',
+    'src/lib/patterns.ts',
+    'src/lib/readme-types.ts',
+    'src/lib/readme-utils.ts',
+    'src/lib/schema-compare.ts',
+    'src/lib/zod.ts',
   ],
 
   // Project files (production marked with !)
@@ -38,6 +50,9 @@ export default {
     // Development utilities
     'src/test-utils/**',
     'src/setupTests.ts',
+
+    // Generated GraphQL types - these are intentional public API
+    'src/**/types.ts',
   ],
 
   // Dependencies currently used in Phase 1 setup only
@@ -52,6 +67,8 @@ export default {
     '@graphql-codegen/introspection', // Schema introspection - Phase 3
     '@graphql-codegen/typescript-operations', // Operations - Phase 3
     '@vitest/coverage-v8', // Coverage reporting for Vitest
+    '@anthropic-ai/sdk', // Used by claude-sdk.ts for AI agent integration
+    '@graphql-inspector/core', // Used by schema-compare.ts for schema diffing
   ],
 
   // Strict options for comprehensive analysis

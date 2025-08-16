@@ -3,48 +3,79 @@
 TypeScript definitions for all Shopify APIs, generated from the latest GraphQL
 schemas.
 
-## Supported API Versions
+## Version Overview
 
-### 📦 2025.7.0 (Current)
+| Version Type  | API Version | Status       | Description                                        |
+| :------------ | :---------- | :----------- | :------------------------------------------------- |
+| **Current**   | `2025-07`   | ✅ Stable    | Latest stable release with full support            |
+| **Previous**  | `2025-04`   | Stable       | Previous stable release with security patches only |
+| **Next (RC)** | `2025-10`   | Preview      | Release candidate for upcoming quarter             |
+| **Unstable**  | `unstable`  | Experimental | Bleeding edge development version                  |
 
-| **Shopify API Version** | **Status**  |
-| :---------------------- | :---------- |
-| 2025-07                 | ✅ Latest   |
-| 2025-04                 | ✓ Supported |
-| 2025-01                 | ✓ Supported |
-| 2024-10                 | ✓ Supported |
+## What's New
 
-### 📦 2025.4.1 (Previous)
+### Latest Release: 2025-07
 
-| **Shopify API Version** | **Status**  |
-| :---------------------- | :---------- |
-| 2025-04                 | ✅ Latest   |
-| 2025-01                 | ✓ Supported |
-| 2024-10                 | ✓ Supported |
-| 2024-07                 | ✓ Supported |
+_Changes from 2025-04 to 2025-07_
 
-### 📦 2025.1.0 (Older)
+| API              | Additions | Removals | Modifications | Breaking | Impact  |
+| :--------------- | --------: | -------: | ------------: | -------: | :------ |
+| Storefront       |         2 |        0 |            35 |        0 | 🟢 Low  |
+| Admin            |       172 |        5 |            57 |       13 | 🔴 High |
+| Customer Account |        12 |        0 |            26 |        0 | 🟢 Low  |
 
-| **Shopify API Version** | **Status**  |
-| :---------------------- | :---------- |
-| 2025-01                 | ✅ Latest   |
-| 2024-10                 | ✓ Supported |
-| 2024-07                 | ✓ Supported |
-| 2024-04                 | ✓ Supported |
+**Summary**: 409 total changes, 13 breaking changes across 3 APIs
 
-### 📦 2024.10.2 (Oldest)
+**Key Changes**:
 
-| **Shopify API Version** | **Status**  |
-| :---------------------- | :---------- |
-| 2024-10                 | ✅ Latest   |
-| 2024-07                 | ✓ Supported |
-| 2024-04                 | ✓ Supported |
-| 2024-01                 | ✓ Supported |
+- **Admin**: Major expansion of inventory management with comprehensive transfer
+  and shipment operations
+- **Admin** (Breaking): Removed deprecated merchant checkout features and
+  simplified metafield grant system
+- **Storefront**: Enhanced cart operations with personal data removal and
+  improved error/warning handling
+- **Customer Account**: Added subscription discount tracking and exchange order
+  support
 
----
+### Notable Changes by API
 
-_Showing last 4 releases (1 year history). Install specific version:
-`npm install @juanpprieto/shopify-api-types@<version>`_
+#### Storefront API
+
+| Change Type | Field/Type/Mutation                     | Description                                                                   | Breaking |
+| :---------- | :-------------------------------------- | :---------------------------------------------------------------------------- | :------- |
+| Added       | `cartRemovePersonalData` mutation       | Remove personal data from abandoned carts                                     | No       |
+| Modified    | `CartErrorCode` enum                    | Added 7 new error codes for cart validation and payment handling              | No       |
+| Modified    | `UnitPriceMeasurementMeasuredUnit` enum | Added Imperial measurement units (FLOZ, PT, QT, GAL, LB, OZ, IN, FT, YD, FT2) | No       |
+
+#### Admin API
+
+| Change Type | Field/Type/Mutation                         | Description                                                                | Breaking |
+| :---------- | :------------------------------------------ | :------------------------------------------------------------------------- | :------- |
+| Added       | `inventoryTransferCreate` mutation          | Create inventory transfers between locations                               | No       |
+| Added       | `inventoryShipmentCreate` mutation          | Create shipments for inventory tracking                                    | No       |
+| Added       | `returnProcess` mutation                    | Process returns with comprehensive exchange and refund handling            | No       |
+| Removed     | `draftOrderCreateMerchantCheckout` mutation | Deprecated merchant checkout functionality removed                         | Yes      |
+| Modified    | `SubscriptionDeliveryAddress` type          | Now uses standard `MailingAddress` instead of `SubscriptionMailingAddress` | Yes      |
+
+#### Customer Account API
+
+| Change Type | Field/Type/Mutation                   | Description                                              | Breaking |
+| :---------- | :------------------------------------ | :------------------------------------------------------- | :------- |
+| Added       | `SubscriptionDiscountAllocation` type | Track discount allocations on subscriptions              | No       |
+| Added       | `ExchangeLineItem` type               | Support for order exchanges and returns                  | No       |
+| Modified    | `UnitPriceMeasurementUnit` enum       | Added Imperial measurement units matching Storefront API | No       |
+
+### Coming Next: 2025-10 (Preview)
+
+_Upcoming changes from 2025-07 to 2025-10_
+
+| API              | Additions | Removals | Modifications | Breaking | Impact    |
+| :--------------- | --------: | -------: | ------------: | -------: | :-------- |
+| Storefront       |         4 |        0 |             1 |        0 | 🟢 Low    |
+| Admin            |        14 |        0 |            73 |        0 | 🟡 Medium |
+| Customer Account |         0 |        0 |             0 |        0 | —         |
+
+**Summary**: 92 total changes, 0 breaking changes across 2 APIs
 
 ## Installation
 
@@ -52,67 +83,125 @@ _Showing last 4 releases (1 year history). Install specific version:
 npm install @juanpprieto/shopify-api-types
 ```
 
-## Usage Examples
+## Usage
 
 ### Storefront API
 
-Product catalog, cart, checkout, and others (~200 types available)
+Product catalog, cart, checkout, and others (~261 types)
 
 ```typescript
-import {
-  Product,
-  Cart,
-  Checkout,
-} from '@juanpprieto/shopify-api-types/storefront/v2025_07';
-import {
-  Product,
-  Cart,
-  Checkout,
-} from '@juanpprieto/shopify-api-types/storefront/v2025_04';
-```
+// Latest stable version (currently 2025-07)
+import { Product, Cart, Checkout } from '@juanpprieto/shopify-api-types/sfapi';
 
-### Customer Account API
+// Specific stable versions
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/2025-07'; // Current
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/2025-04'; // Previous
 
-Customer profiles, orders, addresses, and others (~50 types available)
+// Release candidate
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/2025-10'; // Release candidate
 
-```typescript
-import {
-  Customer,
-  Order,
-  MailingAddress,
-} from '@juanpprieto/shopify-api-types/customer-account/v2025_07';
-import {
-  Customer,
-  Order,
-  MailingAddress,
-} from '@juanpprieto/shopify-api-types/customer-account/v2025_04';
+// Unstable/experimental
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/unstable'; // Bleeding edge
+
+// All supported versions
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/2025-04';
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/2025-07';
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/2025-10';
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/unstable';
 ```
 
 ### Admin API
 
-Store management, webhooks, analytics, and others (~500 types available)
+Store management, webhooks, analytics, and others (~1758 types)
 
 ```typescript
+// Latest stable version (currently 2025-07)
 import {
   Shop,
   Webhook,
   InventoryLevel,
-} from '@juanpprieto/shopify-api-types/admin/v2025_07';
-import {
-  Shop,
-  Webhook,
-  InventoryLevel,
-} from '@juanpprieto/shopify-api-types/admin/v2025_04';
+} from '@juanpprieto/shopify-api-types/admin';
+
+// Specific stable versions
+import { Shop } from '@juanpprieto/shopify-api-types/admin/2025-07'; // Current
+import { Shop } from '@juanpprieto/shopify-api-types/admin/2025-04'; // Previous
+
+// Release candidate
+import { Shop } from '@juanpprieto/shopify-api-types/admin/2025-10'; // Release candidate
+
+// Unstable/experimental
+import { Shop } from '@juanpprieto/shopify-api-types/admin/unstable'; // Bleeding edge
+
+// All supported versions
+import { Shop } from '@juanpprieto/shopify-api-types/admin/2025-04';
+import { Shop } from '@juanpprieto/shopify-api-types/admin/2025-07';
+import { Shop } from '@juanpprieto/shopify-api-types/admin/2025-10';
+import { Shop } from '@juanpprieto/shopify-api-types/admin/unstable';
 ```
 
-## Schema Access
+### Customer Account API
 
-Access the raw GraphQL schemas:
+Customer profiles, orders, addresses, and others (~296 types)
 
 ```typescript
-import { schema } from '@juanpprieto/shopify-api-types/storefront/v2025_07';
-// schema contains the full GraphQL introspection result
+// Latest stable version (currently 2025-07)
+import {
+  Customer,
+  Order,
+  MailingAddress,
+} from '@juanpprieto/shopify-api-types/caapi';
+
+// Specific stable versions
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/2025-07'; // Current
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/2025-04'; // Previous
+
+// Release candidate
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/2025-10'; // Release candidate
+
+// Unstable/experimental
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/unstable'; // Bleeding edge
+
+// All supported versions
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/2025-04';
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/2025-07';
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/2025-10';
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/unstable';
 ```
+
+## Available Exports
+
+### TypeScript Types
+
+| API              | Latest Import                          | Available Versions                  |
+| :--------------- | :------------------------------------- | :---------------------------------- |
+| Storefront       | `@juanpprieto/shopify-api-types/sfapi` | 2025-04, 2025-07, 2025-10, unstable |
+| Admin            | `@juanpprieto/shopify-api-types/admin` | 2025-04, 2025-07, 2025-10, unstable |
+| Customer Account | `@juanpprieto/shopify-api-types/caapi` | 2025-04, 2025-07, 2025-10, unstable |
+
+### GraphQL Schemas
+
+Access raw GraphQL schema definitions:
+
+```typescript
+// Example imports
+import storefrontSchema from '@juanpprieto/shopify-api-types/schemas/sfapi/2025-07';
+import adminSchema from '@juanpprieto/shopify-api-types/schemas/admin/2025-07';
+import customerSchema from '@juanpprieto/shopify-api-types/schemas/caapi/2025-07';
+```
+
+### Schema Comparisons
+
+Access detailed change reports between API versions:
+
+```typescript
+import currentChanges from '@juanpprieto/shopify-api-types/comparisons/current';
+import nextChanges from '@juanpprieto/shopify-api-types/comparisons/next';
+```
+
+| Comparison      | From    | To      | Import Path            |
+| :-------------- | :------ | :------ | :--------------------- |
+| Current Release | 2025-04 | 2025-07 | `/comparisons/current` |
+| Next Release    | 2025-07 | 2025-10 | `/comparisons/next`    |
 
 ## API Documentation
 
@@ -133,31 +222,35 @@ quarterly API releases.
 
 ### Release Types
 
-#### 🚀 **Major Releases** (API Updates)
+#### Major Releases (API Updates)
 
 Released quarterly when Shopify publishes new API versions:
 
 ```bash
 # Create changeset for new API version
 npm run changeset
+
 # Select "major" and describe API changes
 
 # Release new API version
 npm run release
+
 # 2025.7.0 → 2025.10.0
 ```
 
-#### 🐛 **Patch Releases** (Bug Fixes)
+#### Patch Releases (Bug Fixes)
 
 Released as needed for bug fixes and improvements:
 
 ```bash
 # Create changeset for bug fix
 npm run changeset
+
 # Select "patch" and describe the fix
 
 # Release patch
 npm run release
+
 # 2025.7.0 → 2025.7.1
 ```
 
@@ -226,10 +319,7 @@ _Patch releases are published as needed between quarterly releases._
 - **Previous 3 versions** receive critical patches only
 - **Older versions** are deprecated and removed
 
-## License
-
-MIT
-
 ---
 
-_Last updated: 8/13/2025_ _Package version: 2025.7.0_
+_Last updated: August 15, 2025_  
+_Package version: 2025.7.0_

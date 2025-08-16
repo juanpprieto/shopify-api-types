@@ -1,9 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { match, P } from 'ts-pattern';
-import { getLastFourVersions } from './version-utils.js';
+import { getSupportedVersions, getCurrentVersionSet } from './version-utils.js';
 import {
-  ApiTypeSchema,
   ApiVersionSchema,
   DistPathSchema,
   PackageJsonSchema,
@@ -17,8 +16,15 @@ import {
 interface ExportEntry {
   key: string;
   value: string;
-  category: 'root' | 'api-root' | 'api-version' | 'schema';
+  category: 'root' | 'api-root' | 'api-version' | 'schema' | 'comparison';
 }
+
+// API mapping constants - defined once, used multiple times
+const API_MAPPINGS: ReadonlyArray<readonly [string, ApiType]> = [
+  ['sfapi', 'storefront'],
+  ['caapi', 'customer-account'],
+  ['admin', 'admin'],
+] as const;
 
 async function generatePackageExports(): Promise<void> {
   const packagePath = path.join(process.cwd(), 'package.json');
@@ -32,14 +38,19 @@ async function generatePackageExports(): Promise<void> {
   }
   const packageJson = packageJsonValidation.data;
 
-  const versions = getLastFourVersions();
+  // Get only the 4 supported versions
+  const versions = getSupportedVersions();
+  const versionSet = getCurrentVersionSet(); // Need this for comparison exports
   const exportEntries: ExportEntry[] = [];
 
   // Validate input data
   for (const version of versions) {
-    const versionValidation = ApiVersionSchema.safeParse(version);
-    if (!versionValidation.success) {
-      throw new Error(`Invalid version: ${version}`);
+    // Skip validation for 'unstable' as it's not a date format
+    if (version !== 'unstable') {
+      const versionValidation = ApiVersionSchema.safeParse(version);
+      if (!versionValidation.success) {
+        throw new Error(`Invalid version: ${version}`);
+      }
     }
   }
 
@@ -57,21 +68,9 @@ async function generatePackageExports(): Promise<void> {
 
   // Add specific version exports
   versions.forEach((version) => {
-    const apiMappings: Array<[string, string]> = [
-      ['sfapi', 'storefront'],
-      ['caapi', 'customer-account'],
-      ['admin', 'admin'],
-    ];
-
-    apiMappings.forEach(([exportKey, api]) => {
-      // Validate API
-      const apiValidation = ApiTypeSchema.safeParse(api);
-      if (!apiValidation.success) {
-        throw new Error(`Invalid API: ${api}`);
-      }
-
+    API_MAPPINGS.forEach(([exportKey, api]) => {
       // Use path resolver for consistent path generation
-      const pathResult = pathResolver(api as ApiType, version, 'index', 'dist');
+      const pathResult = pathResolver(api, version, 'index', 'dist');
       if (!pathResult.success) {
         throw new Error(
           `Failed to resolve path for ${api}/${version}: ${pathResult.error}`,
@@ -94,19 +93,8 @@ async function generatePackageExports(): Promise<void> {
   });
 
   // Add API root exports
-  const apiRootMappings: Array<[string, string]> = [
-    ['sfapi', 'storefront'],
-    ['caapi', 'customer-account'],
-    ['admin', 'admin'],
-  ];
-
-  apiRootMappings.forEach(([exportKey, api]) => {
-    const apiValidation = ApiTypeSchema.safeParse(api);
-    if (!apiValidation.success) {
-      throw new Error(`Invalid API: ${api}`);
-    }
-
-    const exportPath = createApiIndexPath('.', api as ApiType, 'dist');
+  API_MAPPINGS.forEach(([exportKey, api]) => {
+    const exportPath = createApiIndexPath('.', api, 'dist');
     const pathValidation = DistPathSchema.safeParse(exportPath);
     if (!pathValidation.success) {
       throw new Error(`Invalid API root export path: ${exportPath}`);
@@ -123,18 +111,7 @@ async function generatePackageExports(): Promise<void> {
 
   // Add schema exports for runtime access
   versions.forEach((version) => {
-    const schemaMappings: Array<[string, string]> = [
-      ['sfapi', 'storefront'],
-      ['caapi', 'customer-account'],
-      ['admin', 'admin'],
-    ];
-
-    schemaMappings.forEach(([exportKey, api]) => {
-      const apiValidation = ApiTypeSchema.safeParse(api);
-      if (!apiValidation.success) {
-        throw new Error(`Invalid schema API: ${api}`);
-      }
-
+    API_MAPPINGS.forEach(([exportKey, api]) => {
       // Schema paths go to dist/schemas (copied by copy-schemas script)
       const schemaPath = `./dist/schemas/${api}/${version}.json`;
       const fullKey = `./schemas/${exportKey}/${version}`;
@@ -144,6 +121,27 @@ async function generatePackageExports(): Promise<void> {
         value: schemaPath,
         category: 'schema',
       });
+    });
+  });
+
+  // Add comparison exports (Phase 5 feature)
+  const comparisonExports: ReadonlyArray<readonly [string, string]> = [
+    [
+      './comparisons/current',
+      `./dist/comparisons/${versionSet.previous}-to-${versionSet.current}.json`,
+    ],
+    [
+      './comparisons/next',
+      `./dist/comparisons/${versionSet.current}-to-${versionSet.releaseCandidate}.json`,
+    ],
+  ] as const;
+
+  comparisonExports.forEach(([key, value]) => {
+    exports[key] = value;
+    exportEntries.push({
+      key,
+      value,
+      category: 'comparison',
     });
   });
 
@@ -198,10 +196,17 @@ async function generatePackageExports(): Promise<void> {
         .with({ category: 'api-root' }, () => acc.apiRootExports++)
         .with({ category: 'api-version' }, () => acc.versionExports++)
         .with({ category: 'schema' }, () => acc.schemaExports++)
+        .with({ category: 'comparison' }, () => acc.comparisonExports++)
         .exhaustive();
       return acc;
     },
-    { rootExports: 0, apiRootExports: 0, versionExports: 0, schemaExports: 0 },
+    {
+      rootExports: 0,
+      apiRootExports: 0,
+      versionExports: 0,
+      schemaExports: 0,
+      comparisonExports: 0,
+    },
   );
 
   // Update package.json
@@ -225,7 +230,7 @@ async function generatePackageExports(): Promise<void> {
     versions.join(', '),
   );
   console.log(
-    `Generated exports: ${exportAnalysis.rootExports} root, ${exportAnalysis.apiRootExports} API root, ${exportAnalysis.versionExports} version, ${exportAnalysis.schemaExports} schema`,
+    `Generated exports: ${exportAnalysis.rootExports} root, ${exportAnalysis.apiRootExports} API root, ${exportAnalysis.versionExports} version, ${exportAnalysis.schemaExports} schema, ${exportAnalysis.comparisonExports} comparison`,
   );
 
   // Log export validation

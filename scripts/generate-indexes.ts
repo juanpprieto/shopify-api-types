@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { getLastFourVersions } from './version-utils.js';
+import { getSupportedVersions } from './version-utils.js';
 import {
   ApiTypeSchema,
-  ApiVersionSchema,
+  ExtendedApiVersionSchema,
   TemplateContentSchema,
   type ApiType,
   type CategorizedFileResult,
@@ -30,7 +30,8 @@ const API_INDEX_TEMPLATE = `// Auto-generated API index file
 `;
 
 async function generateIndexFiles(): Promise<void> {
-  const versions = getLastFourVersions();
+  // Get only the 4 supported versions
+  const versions = getSupportedVersions();
   const pathResolver = createFilePathResolver(process.cwd());
   const apis: Array<{ type: ApiType; dir: string; schemaDir: string }> = [
     { type: 'storefront', dir: 'storefront', schemaDir: 'storefront' },
@@ -45,7 +46,8 @@ async function generateIndexFiles(): Promise<void> {
 
   // Validate input data
   for (const version of versions) {
-    const versionValidation = ApiVersionSchema.safeParse(version);
+    // Use ExtendedApiVersionSchema to support 'unstable'
+    const versionValidation = ExtendedApiVersionSchema.safeParse(version);
     if (!versionValidation.success) {
       throw new Error(`Invalid version: ${version}`);
     }
@@ -232,3 +234,5 @@ export * as admin from './admin/index.js';
 if (import.meta.url === `file://${process.argv[1]}`) {
   generateIndexFiles().catch(console.error);
 }
+
+export { generateIndexFiles };

@@ -2,8 +2,8 @@ import 'dotenv/config';
 import fs from 'fs/promises';
 import path from 'path';
 import { match } from 'ts-pattern';
-import { getLastFourVersions } from './version-utils.js';
-import type { ApiType, ApiVersion } from '../src/lib/zod.js';
+import { getCurrentVersionSet } from './version-utils.js';
+import type { ApiType, ExtendedApiVersion } from '../src/lib/zod.js';
 import {
   matchApiEndpoint,
   matchAuthHeaders,
@@ -113,7 +113,7 @@ const GRAPHQL_INTROSPECTION_QUERY = `
 
 async function fetchApiSchema(
   apiType: ApiType,
-  version: ApiVersion,
+  version: ExtendedApiVersion,
 ): Promise<void> {
   const token = match(apiType)
     .with(
@@ -237,13 +237,26 @@ async function fetchSchemas(): Promise<void> {
     process.exit(1);
   }
 
-  console.log('Fetching GraphQL schemas for configured APIs...\n');
+  console.log('🔄 Fetching GraphQL schemas for all version types...\n');
 
-  const versions = getLastFourVersions();
+  const versionSet = getCurrentVersionSet();
+  const allVersions: ExtendedApiVersion[] = [
+    versionSet.current,
+    versionSet.previous,
+    versionSet.releaseCandidate,
+    versionSet.unstable,
+  ];
+
+  console.log(`📋 Fetching schemas for:`);
+  console.log(`   Current: ${versionSet.current}`);
+  console.log(`   Previous: ${versionSet.previous}`);
+  console.log(`   Release Candidate: ${versionSet.releaseCandidate}`);
+  console.log(`   Unstable: ${versionSet.unstable}\n`);
+
   const fetchPromises: Promise<void>[] = [];
 
   for (const api of env.availableApis) {
-    for (const version of versions) {
+    for (const version of allVersions) {
       fetchPromises.push(fetchApiSchema(api, version));
     }
   }

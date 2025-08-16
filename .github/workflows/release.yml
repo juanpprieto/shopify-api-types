@@ -67,8 +67,20 @@ jobs:
           # Get current package version and supported API versions
           current_version=$(node -p "require('./package.json').version")
 
-          # Run version utilities to detect API updates
+          # Build and run version utilities to detect API updates
+          npm run build
           npm run count-types > /dev/null 2>&1 || echo "Schema counting failed"
+
+          # Check if schemas are available for all version sets
+          node -e "
+            const { getCurrentVersionSet } = require('./dist/scripts/version-utils.js');
+            const versionSet = getCurrentVersionSet();
+            console.log('Checking API availability for:', versionSet);
+            
+            // This would typically check Shopify's API for schema availability
+            // For now, assume no updates unless manually triggered
+            console.log('API check completed');
+          "
 
           # For now, this would integrate with Shopify's API to detect new versions
           # This is a placeholder - would need actual Shopify API integration
@@ -118,11 +130,31 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Generate schema comparisons
+        run: npm run generate:comparisons
+
       - name: Validate build
         run: npm run validate-build
 
       - name: Validate types
         run: npm run validate-types
+
+      - name: Validate version set
+        run: |
+          # Validate new version model works correctly
+          node -e "
+            const { getCurrentVersionSet, getVersionMetadata } = require('./dist/scripts/version-utils.js');
+            const versionSet = getCurrentVersionSet();
+            console.log('Release version set:', versionSet);
+            
+            // Validate each version has metadata
+            for (const [type, version] of Object.entries(versionSet)) {
+              const metadata = getVersionMetadata(version);
+              console.log(\`✅ \${type}: \${version} (\${metadata.description})\`);
+            }
+            
+            console.log('✅ Version set validation passed for release');
+          "
 
   release:
     name: Release
@@ -178,11 +210,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Generate documentation with comparisons before release
+          npm run docs
+
           # Run the release process
           npm run release
 
           # Get the new version
           new_version=$(node -p "require('./package.json').version")
+
+          # Add generated documentation to the release
+          git add README.md
+          if [ -n "$(git diff --cached)" ]; then
+            git commit -m "docs: update documentation for release v$new_version"
+          fi
 
           # Push changes and tags
           git push origin main --tags

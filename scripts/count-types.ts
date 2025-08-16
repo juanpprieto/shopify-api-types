@@ -161,7 +161,14 @@ async function countTypes(): Promise<TypeAnalysis> {
           onSuccess: (data) => {
             // Parse and validate schema
             const schemaData = JSON.parse(data.content);
-            const schemaValidation = GraphQLSchemaSchema.safeParse(schemaData);
+
+            // Normalize customer-account schema structure (it's wrapped in a "data" object)
+            const normalizedSchema = schemaData.data?.__schema
+              ? schemaData.data
+              : schemaData;
+
+            const schemaValidation =
+              GraphQLSchemaSchema.safeParse(normalizedSchema);
 
             if (!schemaValidation.success) {
               console.warn(`⚠️  Invalid schema format: ${api}/${version}`);
@@ -276,9 +283,40 @@ function displayResults(analysis: TypeAnalysis): void {
   }
 }
 
+/**
+ * Parse command line arguments
+ */
+function parseArgs(): { api?: ApiType } {
+  const args = process.argv.slice(2);
+  const apiIndex = args.indexOf('--api');
+
+  if (apiIndex !== -1 && args[apiIndex + 1]) {
+    const apiArg = args[apiIndex + 1];
+    // Validate API type
+    const result = ApiTypeSchema.safeParse(apiArg);
+    if (result.success) {
+      return { api: result.data };
+    }
+  }
+
+  return {};
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
+  const { api } = parseArgs();
+
   countTypes()
-    .then(displayResults)
+    .then((analysis) => {
+      if (api) {
+        // Filter and display only for specific API
+        const latestCount = analysis.summary.latestVersionCounts[api];
+        console.log(`\n📊 Type count for ${api} API`);
+        console.log(`Total: ${latestCount}`);
+      } else {
+        // Default behavior - display all
+        displayResults(analysis);
+      }
+    })
     .catch((error) => {
       console.error('❌ Type counting failed:', error);
       process.exit(1);

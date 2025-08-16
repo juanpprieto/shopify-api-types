@@ -182087,13 +182087,13 @@
         "enumValues": [
           {
             "name": "DEFAULT",
-            "description": "The default strategy; keep the standalone variant (when product has only a single or default variant) when creating variants in bulk.",
+            "description": "The default strategy. Deletes the standalone default (\"Default Title\") variant when it's the only variant on the product. Preserves the standalone custom variant.",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "REMOVE_STANDALONE_VARIANT",
-            "description": "Delete the standalone variant (when product has only a single or default variant) when creating new variants in bulk.",
+            "description": "Deletes the existing standalone variant when the product has only a single default (\"Default Title\") or custom variant.",
             "isDeprecated": false,
             "deprecationReason": null
           }

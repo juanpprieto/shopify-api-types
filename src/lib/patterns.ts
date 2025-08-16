@@ -1,8 +1,9 @@
 import { match, P } from 'ts-pattern';
-import type { z } from 'zod';
+import { z } from 'zod';
 import type {
   ApiType,
   ApiVersion,
+  ExtendedApiVersion,
   OperationResult,
   SchemaFetchResult,
   ValidationResult,
@@ -20,8 +21,8 @@ import { DEFAULT_REPRESENTATIVE_TYPES, SHOPIFY_SCALARS } from './zod.js';
 import {
   ApiTypeSchema,
   ApiVersionSchema,
+  ExtendedApiVersionSchema,
   FilePathSchema,
-  NonEmptyStringSchema,
   CodeGenOutputConfigSchema,
   FullCodeGenConfigSchema,
 } from './zod.js';
@@ -35,7 +36,7 @@ import {
  */
 export function matchApiEndpoint(
   apiType: ApiType,
-  version: ApiVersion,
+  version: ExtendedApiVersion,
   storeDomain?: string,
 ): string {
   return match(apiType)
@@ -357,12 +358,12 @@ export function createFilePathResolver(basePath: string) {
 
   return (
     api: ApiType,
-    version: ApiVersion,
+    version: ExtendedApiVersion,
     fileType: FileType,
     variant: PathVariant = 'source',
   ): OperationResult<string> => {
     return validateAndProcess(ApiTypeSchema, api, (validApi) =>
-      validateAndProcess(ApiVersionSchema, version, (validVersion) => {
+      validateAndProcess(ExtendedApiVersionSchema, version, (validVersion) => {
         const resolvedPath = match({ fileType, variant, api: validApi })
           .with(
             { fileType: 'types', variant: 'source' },
@@ -830,21 +831,18 @@ export function createDocsConfig(
   latestApiVersion: ApiVersion,
   supportedVersions: ApiVersion[],
 ): OperationResult<DocsConfig> {
-  return validateAndProcess(
-    NonEmptyStringSchema,
-    packageVersion,
-    (validVersion) =>
-      validateAndProcess(ApiVersionSchema, latestApiVersion, (validLatest) => {
-        const config: DocsConfig = {
-          currentPackageVersion: validVersion,
-          latestShopifyApiVersion: validLatest,
-          supportedVersions: supportedVersions.slice(0, 4), // Last 4 versions only
-          representativeTypes: DEFAULT_REPRESENTATIVE_TYPES,
-          generatedAt: new Date().toISOString(),
-        };
+  return validateAndProcess(z.string().min(1), packageVersion, (validVersion) =>
+    validateAndProcess(ApiVersionSchema, latestApiVersion, (validLatest) => {
+      const config: DocsConfig = {
+        currentPackageVersion: validVersion,
+        latestShopifyApiVersion: validLatest,
+        supportedVersions: supportedVersions.slice(0, 4), // Last 4 versions only
+        representativeTypes: DEFAULT_REPRESENTATIVE_TYPES,
+        generatedAt: new Date().toISOString(),
+      };
 
-        return { success: true as const, data: config };
-      }),
+      return { success: true as const, data: config };
+    }),
   );
 }
 
@@ -1060,12 +1058,12 @@ export const DEFAULT_CODEGEN_CONFIG = {
  */
 export function createCodeGenOutputConfig(
   api: ApiType,
-  version: ApiVersion,
+  version: ExtendedApiVersion,
   basePath: string = '.',
   customConfig: Partial<CodeGenOutputConfig['config']> = {},
 ): OperationResult<CodeGenOutputConfig> {
   return validateAndProcess(ApiTypeSchema, api, (validApi) =>
-    validateAndProcess(ApiVersionSchema, version, (validVersion) => {
+    validateAndProcess(ExtendedApiVersionSchema, version, (validVersion) => {
       const schemaPath = `${basePath}/src/graphql-schemas/${validApi}/${validVersion}.json`;
 
       const config: CodeGenOutputConfig = {
@@ -1096,7 +1094,7 @@ export function createCodeGenOutputConfig(
  */
 export function generateCodeGenConfig(
   apis: ApiType[],
-  versions: ApiVersion[],
+  versions: ExtendedApiVersion[],
   basePath: string = '.',
   options: {
     overwrite?: boolean;

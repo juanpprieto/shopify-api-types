@@ -41,6 +41,161 @@ export const ApiVersionSchema = z
 export type ApiVersion = z.infer<typeof ApiVersionSchema>;
 
 /**
+ * Enhanced version schemas for Phase 5
+ */
+export const UnstableApiVersionSchema = z.literal('unstable');
+
+export const ExtendedApiVersionSchema = z.union([
+  ApiVersionSchema,
+  UnstableApiVersionSchema,
+]);
+export type ExtendedApiVersion = z.infer<typeof ExtendedApiVersionSchema>;
+
+/**
+ * Version categories for pattern matching
+ */
+export const VersionCategorySchema = z.enum([
+  'current',
+  'previous',
+  'release-candidate', // Next CalVer version (RC/preview)
+  'unstable',
+]);
+export type VersionCategory = z.infer<typeof VersionCategorySchema>;
+
+/**
+ * Export path aliases for semantic imports
+ */
+export const ExportPathSchema = z.enum([
+  'current',
+  'previous',
+  'next', // Alias for release candidate
+  'unstable',
+]);
+export type ExportPath = z.infer<typeof ExportPathSchema>;
+
+/**
+ * Version set representing all supported versions
+ */
+export const VersionSetSchema = z.object({
+  current: ApiVersionSchema,
+  previous: ApiVersionSchema,
+  releaseCandidate: ApiVersionSchema, // Next CalVer version (RC/preview)
+  unstable: UnstableApiVersionSchema,
+});
+export type VersionSet = z.infer<typeof VersionSetSchema>;
+
+/**
+ * Mapping between API versions and export paths
+ */
+export const VersionToExportPathSchema = z.object({
+  current: z.object({
+    apiVersion: ApiVersionSchema,
+    exportPath: z.literal('current'),
+  }),
+  previous: z.object({
+    apiVersion: ApiVersionSchema,
+    exportPath: z.literal('previous'),
+  }),
+  releaseCandidate: z.object({
+    apiVersion: ApiVersionSchema,
+    exportPath: z.literal('next'),
+  }),
+  unstable: z.object({
+    apiVersion: UnstableApiVersionSchema,
+    exportPath: z.literal('unstable'),
+  }),
+});
+export type VersionToExportPath = z.infer<typeof VersionToExportPathSchema>;
+
+// =============================================================================
+// Schema Comparison and Changelog Types
+// =============================================================================
+
+/**
+ * Types of changes that can occur to GraphQL fields
+ */
+export const FieldChangeSchema = z.object({
+  name: z.string().min(1),
+  type: z.string().min(1),
+  changeType: z.enum(['added', 'removed', 'modified', 'deprecated']),
+  description: z.string().optional(),
+  deprecationReason: z.string().optional(),
+  breaking: z.boolean(),
+  oldType: z.string().optional(), // For modified fields
+  newType: z.string().optional(), // For modified fields
+});
+export type FieldChange = z.infer<typeof FieldChangeSchema>;
+
+/**
+ * Types of changes that can occur to GraphQL types
+ */
+export const TypeChangeSchema = z.object({
+  name: z.string().min(1),
+  kind: z.enum([
+    'OBJECT',
+    'INTERFACE',
+    'UNION',
+    'ENUM',
+    'SCALAR',
+    'INPUT_OBJECT',
+  ]),
+  changeType: z.enum(['added', 'removed', 'modified']),
+  fields: z.array(FieldChangeSchema).optional(),
+  breaking: z.boolean(),
+  description: z.string().optional(),
+});
+export type TypeChange = z.infer<typeof TypeChangeSchema>;
+
+/**
+ * Comprehensive changelog between two schema versions
+ */
+export const SchemaChangelogSchema = z.object({
+  fromVersion: ExtendedApiVersionSchema,
+  toVersion: ExtendedApiVersionSchema,
+  apiType: ApiTypeSchema,
+  generatedAt: z.string().datetime(),
+  summary: z.object({
+    totalChanges: z.number(),
+    breakingChanges: z.number(),
+    deprecations: z.number(),
+    additions: z.number(),
+    removals: z.number(),
+    modifications: z.number(),
+  }),
+  changes: z.object({
+    types: z.array(TypeChangeSchema),
+    queries: z.array(FieldChangeSchema),
+    mutations: z.array(FieldChangeSchema),
+    subscriptions: z.array(FieldChangeSchema),
+    enums: z.array(TypeChangeSchema),
+  }),
+});
+export type SchemaChangelog = z.infer<typeof SchemaChangelogSchema>;
+
+/**
+ * Collection of changelogs for all APIs
+ */
+export const MultiApiChangelogSchema = z.object({
+  fromVersion: ExtendedApiVersionSchema,
+  toVersion: ExtendedApiVersionSchema,
+  generatedAt: z.string().datetime(),
+  changelogs: z.record(ApiTypeSchema, SchemaChangelogSchema),
+  summary: z.object({
+    totalApis: z.number(),
+    totalChanges: z.number(),
+    totalBreakingChanges: z.number(),
+    apisSummary: z.record(
+      ApiTypeSchema,
+      z.object({
+        changes: z.number(),
+        breaking: z.number(),
+      }),
+    ),
+  }),
+});
+export type MultiApiChangelog = z.infer<typeof MultiApiChangelogSchema>;
+
+/**
  * Shopify store domain (without .myshopify.com suffix)
  */
 export const StoreDomainSchema = z
@@ -262,43 +417,48 @@ export function parseEnvConfig(
 /**
  * Basic string validation atoms
  */
-export const NonEmptyStringSchema = z.string().min(1);
-export const MinLengthContentSchema = z.string().min(10);
+// Note: These were removed to eliminate code smells. Use z.string().min(1) or z.string().min(10) directly instead.
 
 /**
  * File path atoms for different file types
  */
-export const FilePathSchema = NonEmptyStringSchema;
-export const JsonFilePathSchema = NonEmptyStringSchema.refine(
-  (path) => path.endsWith('.json'),
-  'Must be a JSON file path',
-);
-export const TypescriptFilePathSchema = NonEmptyStringSchema.refine(
-  (path) => path.endsWith('.ts'),
-  'Must be a TypeScript file path',
-);
-export const DeclarationFilePathSchema = NonEmptyStringSchema.refine(
-  (path) => path.endsWith('.d.ts'),
-  'Must be a TypeScript declaration file path',
-);
-export const DistPathSchema = NonEmptyStringSchema.refine(
-  (path) => path.startsWith('./dist/'),
-  'Must be a dist directory path',
-);
+export const FilePathSchema = z.string().min(1);
+export const JsonFilePathSchema = z
+  .string()
+  .min(1)
+  .refine((path) => path.endsWith('.json'), 'Must be a JSON file path');
+export const TypescriptFilePathSchema = z
+  .string()
+  .min(1)
+  .refine((path) => path.endsWith('.ts'), 'Must be a TypeScript file path');
+export const DeclarationFilePathSchema = z
+  .string()
+  .min(1)
+  .refine(
+    (path) => path.endsWith('.d.ts'),
+    'Must be a TypeScript declaration file path',
+  );
+export const DistPathSchema = z
+  .string()
+  .min(1)
+  .refine(
+    (path) => path.startsWith('./dist/'),
+    'Must be a dist directory path',
+  );
 
 /**
  * Content validation atoms
  */
-export const TemplateContentSchema = MinLengthContentSchema;
-export const IndexFileContentSchema = NonEmptyStringSchema;
+export const TemplateContentSchema = z.string().min(10);
+export const IndexFileContentSchema = z.string().min(1);
 
 /**
  * Package.json structure validation
  */
 export const PackageJsonSchema = z
   .object({
-    name: NonEmptyStringSchema,
-    version: NonEmptyStringSchema,
+    name: z.string().min(1),
+    version: z.string().min(1),
     exports: z.record(z.string(), z.string()).optional(),
     typesVersions: z
       .record(z.string(), z.record(z.string(), z.array(z.string())))
@@ -314,7 +474,7 @@ export const PackageJsonSchema = z
  * Base operation result atoms
  */
 export const SuccessSchema = z.boolean();
-export const ErrorMessageSchema = NonEmptyStringSchema.optional();
+export const ErrorMessageSchema = z.string().min(1).optional();
 export const FileSizeSchema = z.number().min(0).optional();
 
 /**
@@ -366,7 +526,7 @@ export const HttpErrorStatusSchema = z.number().int().min(400).max(599);
  */
 export const HttpResponseSchema = z.object({
   status: HttpStatusCodeSchema,
-  statusText: NonEmptyStringSchema,
+  statusText: z.string().min(1),
   data: z.unknown(),
 });
 
@@ -419,15 +579,15 @@ export const SHOPIFY_SCALARS: ShopifyScalarMapping = {
  * Generic scalar mapping schema for custom mappings
  */
 export const ScalarMappingSchema = z.record(
-  NonEmptyStringSchema,
-  NonEmptyStringSchema,
+  z.string().min(1),
+  z.string().min(1),
 );
 
 /**
  * CodeGen plugin configuration
  */
 export const CodeGenPluginSchema = z.union([
-  NonEmptyStringSchema,
+  z.string().min(1),
   z.object({}).passthrough(),
 ]);
 
@@ -435,7 +595,7 @@ export const CodeGenPluginSchema = z.union([
  * CodeGen configuration schema
  */
 export const CodeGenConfigSchema = z.object({
-  schema: NonEmptyStringSchema,
+  schema: z.string().min(1),
   plugins: z.array(CodeGenPluginSchema),
   config: z.object({}).passthrough().optional(),
 });
@@ -444,16 +604,16 @@ export const CodeGenConfigSchema = z.object({
  * Naming convention configuration
  */
 export const NamingConventionSchema = z.object({
-  typeNames: NonEmptyStringSchema.optional(),
-  enumValues: NonEmptyStringSchema.optional(),
-  fieldNames: NonEmptyStringSchema.optional(),
+  typeNames: z.string().min(1).optional(),
+  enumValues: z.string().min(1).optional(),
+  fieldNames: z.string().min(1).optional(),
 });
 
 /**
  * Complete codegen output configuration
  */
 export const CodeGenOutputConfigSchema = z.object({
-  schema: NonEmptyStringSchema,
+  schema: z.string().min(1),
   plugins: z.array(CodeGenPluginSchema),
   config: z
     .object({
@@ -461,7 +621,7 @@ export const CodeGenOutputConfigSchema = z.object({
       enumsAsTypes: z.boolean().optional(),
       scalars: ScalarMappingSchema.optional(),
       avoidOptionals: z.boolean().optional(),
-      maybeValue: NonEmptyStringSchema.optional(),
+      maybeValue: z.string().min(1).optional(),
       namingConvention: NamingConventionSchema.optional(),
     })
     .passthrough()
@@ -473,7 +633,7 @@ export const CodeGenOutputConfigSchema = z.object({
  */
 export const FullCodeGenConfigSchema = z.object({
   overwrite: z.boolean().optional(),
-  generates: z.record(NonEmptyStringSchema, CodeGenOutputConfigSchema),
+  generates: z.record(z.string().min(1), CodeGenOutputConfigSchema),
 });
 
 export type CodeGenOutputConfig = z.infer<typeof CodeGenOutputConfigSchema>;
@@ -488,7 +648,7 @@ export type FullCodeGenConfig = z.infer<typeof FullCodeGenConfigSchema>;
  */
 export const TestResultSchema = BaseResultSchema.extend({
   duration: z.number().min(0).optional(),
-  output: NonEmptyStringSchema.optional(),
+  output: z.string().min(1).optional(),
 });
 
 /**
@@ -508,9 +668,9 @@ export const FileExistenceSchema = z.object({
  * Representative types for each API - used in README examples
  */
 export const RepresentativeTypesSchema = z.object({
-  types: z.array(NonEmptyStringSchema).min(1),
+  types: z.array(z.string().min(1)).min(1),
   total: z.number().min(1),
-  description: NonEmptyStringSchema,
+  description: z.string().min(1),
 });
 
 export type RepresentativeTypes = z.infer<typeof RepresentativeTypesSchema>;
@@ -530,7 +690,7 @@ export type ApiDocsConfig = z.infer<typeof ApiDocsConfigSchema>;
  * Complete documentation configuration
  */
 export const DocsConfigSchema = z.object({
-  currentPackageVersion: NonEmptyStringSchema,
+  currentPackageVersion: z.string().min(1),
   latestShopifyApiVersion: ApiVersionSchema,
   supportedVersions: z.array(ApiVersionSchema).min(1).max(4),
   representativeTypes: ApiDocsConfigSchema,
@@ -543,7 +703,7 @@ export type DocsConfig = z.infer<typeof DocsConfigSchema>;
  * Package release history for historical documentation
  */
 export const PackageReleaseSchema = z.object({
-  version: NonEmptyStringSchema,
+  version: z.string().min(1),
   supportedApiVersions: z.array(ApiVersionSchema).min(1).max(4),
   releaseDate: z.string().datetime(),
   status: z.enum(['current', 'previous', 'older', 'oldest']),

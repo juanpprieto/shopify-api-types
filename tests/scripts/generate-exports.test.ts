@@ -11,12 +11,18 @@ import {
 
 // Mock the version-utils module
 vi.mock('../../scripts/version-utils.js', () => ({
-  getLastFourVersions: vi.fn(() => [
+  getSupportedVersions: vi.fn(() => [
     '2025-07',
     '2025-04',
-    '2025-01',
-    '2024-10',
+    '2025-10',
+    'unstable',
   ]),
+  getCurrentVersionSet: vi.fn(() => ({
+    current: '2025-07',
+    previous: '2025-04',
+    releaseCandidate: '2025-10',
+    unstable: 'unstable',
+  })),
 }));
 
 describe('generate-exports', () => {
@@ -113,12 +119,12 @@ describe('generate-exports', () => {
           'sfapi/2025-04': ['./dist/storefront/2025-04/index.d.ts'],
           'caapi/2025-04': ['./dist/customer-account/2025-04/index.d.ts'],
           'admin/2025-04': ['./dist/admin/2025-04/index.d.ts'],
-          'sfapi/2025-01': ['./dist/storefront/2025-01/index.d.ts'],
-          'caapi/2025-01': ['./dist/customer-account/2025-01/index.d.ts'],
-          'admin/2025-01': ['./dist/admin/2025-01/index.d.ts'],
-          'sfapi/2024-10': ['./dist/storefront/2024-10/index.d.ts'],
-          'caapi/2024-10': ['./dist/customer-account/2024-10/index.d.ts'],
-          'admin/2024-10': ['./dist/admin/2024-10/index.d.ts'],
+          'sfapi/2025-10': ['./dist/storefront/2025-10/index.d.ts'],
+          'caapi/2025-10': ['./dist/customer-account/2025-10/index.d.ts'],
+          'admin/2025-10': ['./dist/admin/2025-10/index.d.ts'],
+          'sfapi/unstable': ['./dist/storefront/unstable/index.d.ts'],
+          'caapi/unstable': ['./dist/customer-account/unstable/index.d.ts'],
+          'admin/unstable': ['./dist/admin/unstable/index.d.ts'],
         },
       });
     });
@@ -159,7 +165,7 @@ describe('generate-exports', () => {
       expect(packageJson['typesVersions']).not.toHaveProperty('old');
     });
 
-    it('should handle all four versions from getLastFourVersions', async () => {
+    it('should handle all four versions from getSupportedVersions', async () => {
       await createMockPackageJson(tempDir);
       await generatePackageExports();
 
@@ -172,7 +178,7 @@ describe('generate-exports', () => {
       };
 
       // Check that all four versions are included
-      const expectedVersions = ['2025-07', '2025-04', '2025-01', '2024-10'];
+      const expectedVersions = ['2025-07', '2025-04', '2025-10', 'unstable'];
 
       for (const version of expectedVersions) {
         // Check exports

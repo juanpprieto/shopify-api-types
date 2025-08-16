@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { match, P } from 'ts-pattern';
 import { z } from 'zod';
-import { validateBuild } from '../../scripts/validate-build.js';
+import { validateBuild } from '../../scripts/ci/validate-build.js';
 import {
   createTempDir,
   cleanupTempDir,
@@ -135,7 +135,7 @@ describe('validate-build', () => {
       const result = await validateBuild();
 
       // Use pattern matching to categorize errors
-      const missingApiErrors = result.errors.filter((error) =>
+      const missingApiErrors = result.errors.filter((error: string) =>
         match(error)
           .with(P.string.includes('customer-account'), () => true)
           .with(P.string.includes('admin'), () => true)
@@ -166,7 +166,7 @@ describe('validate-build', () => {
 
       expect(result.valid).toBe(false);
 
-      const schemaErrors = result.errors.filter((error) =>
+      const schemaErrors = result.errors.filter((error: string) =>
         error.includes('Missing schema:'),
       );
       expect(schemaErrors.length).toBeGreaterThan(0);
@@ -327,7 +327,7 @@ describe('validate-build', () => {
         other: 0,
       };
 
-      result.errors.forEach((error) => {
+      result.errors.forEach((error: string) => {
         match(error)
           .with(P.string.includes('Missing root file:'), () => {
             errorCategories.missingRootFiles++;
