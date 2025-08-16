@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "@juanpprieto/shopify-api-types/*": ["../../../dist/*"],
+      "@juanpprieto/shopify-api-types": ["../../../dist/index.d.ts"]
+    }
+  },
+  "include": ["src/**/*", "tests/**/*"]
+}

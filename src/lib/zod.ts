@@ -453,13 +453,25 @@ export const TemplateContentSchema = z.string().min(10);
 export const IndexFileContentSchema = z.string().min(1);
 
 /**
+ * Export condition for package.json exports field
+ */
+export const ExportConditionSchema = z.object({
+  types: z.string().optional(),
+  import: z.string().optional(),
+  require: z.string().optional(),
+  default: z.string(),
+});
+
+/**
  * Package.json structure validation
  */
 export const PackageJsonSchema = z
   .object({
     name: z.string().min(1),
     version: z.string().min(1),
-    exports: z.record(z.string(), z.string()).optional(),
+    exports: z
+      .record(z.string(), z.union([z.string(), ExportConditionSchema]))
+      .optional(),
     typesVersions: z
       .record(z.string(), z.record(z.string(), z.array(z.string())))
       .optional(),

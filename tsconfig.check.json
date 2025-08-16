@@ -10,6 +10,7 @@
     "dist/**/*",
     "**/*.d.ts",
     "src/schemas/**/*.json",
-    "scripts/validate-build.ts"
+    "scripts/validate-build.ts",
+    "tests/e2e/**/*"
   ]
 }
