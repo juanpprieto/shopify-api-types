@@ -4,14 +4,6 @@ export default {
   // Production entry points
   entry: [
     'src/**/*.ts!', // All source files are entry points for a library
-    // Scripts executed via npm scripts
-    'scripts/fetch-schemas.ts',
-    'scripts/ci/validate-*.ts',
-    'scripts/generate-*.ts',
-    'scripts/copy-schemas.ts',
-    'scripts/count-types.ts',
-    'scripts/codegen.ts',
-    'scripts/changeset-changelog.js',
   ],
 
   // Project files (production marked with !)

@@ -7,14 +7,13 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": ["src/**/*"],
+  "include": ["src/index.ts", "src/*/index.ts", "src/*/*/index.ts"],
   "exclude": [
     "**/*.test.ts",
     "**/*.spec.ts",
     "scripts",
     "tests",
-    "src/schemas/**/*.json",
-    "src/lib",
-    "src/**/types.ts"
+    "node_modules",
+    "dist"
   ]
 }

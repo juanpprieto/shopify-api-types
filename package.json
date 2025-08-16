@@ -321,11 +321,12 @@
   },
   "homepage": "https://github.com/juanpprieto/shopify-api-types#readme",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.60.0",
+    "@graphql-inspector/core": "^6.2.1",
     "ts-pattern": "5.8.0",
     "zod": "4.0.17"
   },
   "devDependencies": {
-    "@anthropic-ai/sdk": "^0.60.0",
     "@changesets/cli": "^2.29.5",
     "@changesets/get-github-info": "^0.6.0",
     "@eslint/js": "9.33.0",
@@ -333,7 +334,6 @@
     "@graphql-codegen/introspection": "4.0.3",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-operations": "4.6.1",
-    "@graphql-inspector/core": "^6.2.1",
     "dotenv": "^17.2.1",
     "eslint": "9.33.0",
     "eslint-config-prettier": "10.1.8",
@@ -363,6 +363,7 @@
     "test:coverage": "vitest run --coverage",
     "prebuild": "npm run clean && npm run generate:exports",
     "build": "npm run build:declarations && npm run postbuild",
+    "build:ci": "NODE_OPTIONS='--max-old-space-size=4096' npm run build:declarations && npm run postbuild",
     "build:declarations": "tsc --emitDeclarationOnly --project tsconfig.build.json",
     "postbuild": "npm run fix-js-extensions && npm run copy-schemas && npm run generate:comparisons && npm run ci:validate-system",
     "fix-js-extensions": "tsx scripts/fix-js-extensions.ts",
