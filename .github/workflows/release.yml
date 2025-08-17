@@ -68,7 +68,7 @@ jobs:
           current_version=$(node -p "require('./package.json').version")
 
           # Build and run version utilities to detect API updates
-          npm run build
+          npm run build:ci
           npm run count-types > /dev/null 2>&1 || echo "Schema counting failed"
 
           # Check if schemas are available for all version sets
@@ -128,16 +128,16 @@ jobs:
         run: npm test
 
       - name: Build
-        run: npm run build
+        run: npm run build:ci
 
       - name: Generate schema comparisons
         run: npm run generate:comparisons
 
       - name: Validate build
-        run: npm run validate-build
+        run: npm run ci:validate-build
 
       - name: Validate types
-        run: npm run validate-types
+        run: npm run ci:validate-types
 
       - name: Validate version set
         run: |

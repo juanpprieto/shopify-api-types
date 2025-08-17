@@ -44,7 +44,7 @@ jobs:
         id: version-check
         run: |
           # Build project first to ensure utilities are available
-          npm run build
+          npm run build:ci
 
           # Get current version set from our utilities
           npm run ci:validate-version-model
@@ -145,7 +145,7 @@ jobs:
           echo "🔄 Attempting to fetch schemas for API version $new_version"
 
           # Build first to ensure utilities are available
-          npm run build
+          npm run build:ci
 
           # Test fetch for the new version across all APIs
           echo "Testing schema availability for version $new_version..."
@@ -188,7 +188,7 @@ jobs:
           echo "🔄 Generating types and comparisons..."
 
           # Rebuild with any new schemas
-          npm run build
+          npm run build:ci
 
           # Generate schema comparisons if schemas are available
           if npm run generate:comparisons; then
