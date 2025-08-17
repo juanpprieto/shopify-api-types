@@ -1,0 +1,16 @@
+{
+  "name": "shopify-api-types-test-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "E2E test application for @juanpprieto/shopify-api-types",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4",
+    "@types/node": "^20.0.0"
+  }
+}
