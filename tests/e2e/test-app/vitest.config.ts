@@ -6,4 +6,10 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/**/*.test.ts'],
   },
+  resolve: {
+    // Handle .js extensions in declaration files for NodeNext packages
+    extensionAlias: {
+      '.js': ['.js', '.ts', '.d.ts'],
+    },
+  },
 });
