@@ -1,78 +1,52 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
-import { getLastFourVersions } from './version-utils.js';
+import { getSupportedVersions } from './version-utils.js';
+import { SUPPORTED_APIS, SHOPIFY_SCALARS } from '../src/lib/zod.js';
 
-const versions = getLastFourVersions();
+/**
+ * Create CodeGen configuration for all APIs and versions
+ */
+function createCodegenConfig(): CodegenConfig {
+  const versions = getSupportedVersions();
+  const generates: CodegenConfig['generates'] = {};
 
-// Shopify scalar type mappings (from hydrogen-react)
-const scalarMappings = {
-  DateTime: 'string',
-  Decimal: 'string',
-  HTML: 'string',
-  URL: 'string',
-  JSON: 'unknown',
-  Color: 'string',
-  UnsignedInt64: 'string',
-  Money: 'string',
-  ISO8601DateTime: 'string',
-};
+  // Generate configuration for each API and version
+  SUPPORTED_APIS.forEach((api) => {
+    versions.forEach((version) => {
+      const schemaPath = `./src/graphql-schemas/${api}/${version}.json`;
+      const outputPath = `./src/${api}/${version}/types.ts`;
 
-const config: CodegenConfig = {
-  overwrite: true,
-  generates: {},
-};
+      generates[outputPath] = {
+        schema: schemaPath,
+        documents: [],
+        plugins: ['typescript'],
+        config: {
+          skipTypename: true,
+          enumsAsTypes: true,
+          scalars: SHOPIFY_SCALARS,
+          avoidOptionals: api === 'customer-account', // Customer Account API has more optional fields
+          maybeValue: 'T | null | undefined',
+          namingConvention: {
+            typeNames: 'pascal-case#pascalCase',
+            enumValues: 'upper-case#upperCase',
+          },
+        },
+      };
+    });
+  });
 
-// Generate configuration for each API and version
-versions.forEach((version) => {
-  // Storefront API
-  config.generates[`./src/storefront/${version}/types.ts`] = {
-    schema: `./src/schemas/storefront/${version}.json`,
-    plugins: ['typescript'],
-    config: {
-      skipTypename: true,
-      enumsAsTypes: true,
-      scalars: scalarMappings,
-      avoidOptionals: false,
-      maybeValue: 'T | null | undefined',
-      namingConvention: {
-        typeNames: 'pascal-case#pascalCase',
-        enumValues: 'upper-case#upperCase',
-      },
+  console.log(`📊 CodeGen Configuration:`);
+  console.log(`   Total outputs: ${Object.keys(generates).length}`);
+  console.log(`   APIs: ${SUPPORTED_APIS.join(', ')}`);
+  console.log(`   Versions: ${versions.join(', ')}`);
+
+  return {
+    overwrite: true,
+    generates,
+    hooks: {
+      afterOneFileWrite: ['prettier --write'],
     },
   };
+}
 
-  // Customer Account API
-  config.generates[`./src/customer-account/${version}/types.ts`] = {
-    schema: `./src/schemas/customer-account/${version}.json`,
-    plugins: ['typescript'],
-    config: {
-      skipTypename: true,
-      enumsAsTypes: true,
-      scalars: scalarMappings,
-      avoidOptionals: false,
-      maybeValue: 'T | null | undefined',
-      namingConvention: {
-        typeNames: 'pascal-case#pascalCase',
-        enumValues: 'upper-case#upperCase',
-      },
-    },
-  };
-
-  // Admin API
-  config.generates[`./src/admin/${version}/types.ts`] = {
-    schema: `./src/schemas/admin/${version}.json`,
-    plugins: ['typescript'],
-    config: {
-      skipTypename: true,
-      enumsAsTypes: true,
-      scalars: scalarMappings,
-      avoidOptionals: false,
-      maybeValue: 'T | null | undefined',
-      namingConvention: {
-        typeNames: 'pascal-case#pascalCase',
-        enumValues: 'upper-case#upperCase',
-      },
-    },
-  };
-});
-
+const config = createCodegenConfig();
 export default config;

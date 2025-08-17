@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src/**/*", "tests/**/*", "scripts/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist/**/*",
+    "**/*.d.ts",
+    "src/schemas/**/*.json",
+    "scripts/validate-build.ts",
+    "tests/e2e/**/*",
+    "src/**/types.ts"
+  ]
+}

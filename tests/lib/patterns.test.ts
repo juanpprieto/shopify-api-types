@@ -49,36 +49,25 @@ describe('patterns', () => {
   });
 
   describe('validateEnvironment', () => {
-    it('should detect available APIs', () => {
+    it('should validate required token is present', () => {
       const validEnv = {
-        SHOPIFY_STOREFRONT_ACCESS_TOKEN: 'valid-storefront-token-123',
-        SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN: 'valid-customer-token-456',
-        SHOPIFY_ADMIN_ACCESS_TOKEN: 'valid-admin-token-789',
-        SHOPIFY_STORE_DOMAIN: 'mystore',
+        SHOPIFY_STOREFRONT_TOKEN: 'valid-storefront-token-123',
       };
 
       const result = validateEnvironment(validEnv);
 
-      expect(result.hasValidTokens).toBe(true);
-      expect(result.availableApis).toEqual([
-        'storefront',
-        'customer-account',
-        'admin',
-      ]);
-      expect(result.warnings).toEqual([]);
+      expect(result.success).toBe(true);
+      expect(result.error).toBeUndefined();
     });
 
-    it('should reject invalid tokens', () => {
-      const invalidEnv = {
-        SHOPIFY_STOREFRONT_ACCESS_TOKEN: 'your_token_here',
-        SHOPIFY_ADMIN_ACCESS_TOKEN: 'short',
-      };
+    it('should fail when required token is missing', () => {
+      const invalidEnv = {};
 
       const result = validateEnvironment(invalidEnv);
 
-      expect(result.hasValidTokens).toBe(false);
-      expect(result.availableApis).toEqual([]);
-      expect(result.warnings).toHaveLength(3);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Missing required environment variables');
+      expect(result.error).toContain('SHOPIFY_STOREFRONT_TOKEN');
     });
   });
 });

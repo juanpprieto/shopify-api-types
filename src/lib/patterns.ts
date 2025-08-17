@@ -1,13 +1,12 @@
 import { match, P } from 'ts-pattern';
 import type {
   ApiType,
-  ApiVersion,
+  ExtendedApiVersion,
   OperationResult,
-  SchemaFetchResult,
-  ValidationResult,
   BatchValidationResult,
-  GraphQLSchema,
-} from './schemas.js';
+  FileOperationResult,
+} from './zod.js';
+import { FilePathSchema } from './zod.js';
 
 // =============================================================================
 // API Type Patterns
@@ -18,7 +17,7 @@ import type {
  */
 export function matchApiEndpoint(
   apiType: ApiType,
-  version: ApiVersion,
+  version: ExtendedApiVersion,
   storeDomain?: string,
 ): string {
   return match(apiType)
@@ -87,87 +86,35 @@ export function handleOperationResult<T, R>(
     .exhaustive();
 }
 
-/**
- * Handle schema fetch results with specific error handling
- */
-export function handleSchemaFetchResult<R>(
-  result: SchemaFetchResult,
-  handlers: {
-    onSuccess: (data: {
-      apiType: ApiType;
-      version: ApiVersion;
-      schema: GraphQLSchema;
-      filePath: string;
-    }) => R;
-    onAuthError: (apiType: ApiType, version: ApiVersion) => R;
-    onNotFoundError: (apiType: ApiType, version: ApiVersion) => R;
-    onValidationError: (
-      apiType: ApiType,
-      version: ApiVersion,
-      error: string,
-    ) => R;
-    onGenericError: (apiType: ApiType, version: ApiVersion, error: string) => R;
-  },
-): R {
-  return match(result)
-    .with({ success: true }, (res) => handlers.onSuccess(res.data))
-    .with({ success: false, code: '401' }, (res) =>
-      handlers.onAuthError(res.apiType, res.version),
-    )
-    .with({ success: false, code: '404' }, (res) =>
-      handlers.onNotFoundError(res.apiType, res.version),
-    )
-    .with({ success: false, code: 'VALIDATION_ERROR' }, (res) =>
-      handlers.onValidationError(res.apiType, res.version, res.error),
-    )
-    .with({ success: false }, (res) =>
-      handlers.onGenericError(res.apiType, res.version, res.error),
-    )
-    .exhaustive();
-}
-
 // =============================================================================
 // Validation Patterns
 // =============================================================================
 
 /**
- * Process validation results with pattern matching
+ * Process validation results and log appropriate messages
  */
 export function processValidationResults(
-  results: ValidationResult[],
-): BatchValidationResult {
-  const validCount = results.filter((r) => r.isValid).length;
-  const totalCount = results.length;
-  const allValid = validCount === totalCount;
+  results: BatchValidationResult,
+): boolean {
+  const totalChecks = results.results.length;
+  const failures = results.results.filter((v) => !v.isValid);
 
-  // Log results with pattern matching
-  results.forEach((result) => {
-    match(result)
-      .with({ isValid: true }, (res) => {
-        // eslint-disable-next-line no-console -- CLI output for validation success
-        console.log(`✓ Valid schema: ${res.apiType}/${res.version}.json`);
-      })
-      .with({ isValid: false }, (res) => {
-        const errorType = match(res.error)
-          .with(P.string.includes('ENOENT'), () => 'Missing schema')
-          .with(P.string.includes('JSON'), () => 'Invalid JSON')
-          .with(P.string.includes('__schema'), () => 'Invalid schema structure')
-          .otherwise(() => 'Validation error');
+  if (results.allValid) {
+    // Silent success - no console output needed
+    return true;
+  }
 
-        console.error(`✗ ${errorType}: ${res.filePath}`);
-        if (res.error && !res.error.includes('ENOENT')) {
-          console.error(`  Error: ${res.error}`);
-        }
-      })
-      .exhaustive();
+  console.error(
+    `\n❌ Validation failed: ${failures.length}/${totalChecks} checks failed\n`,
+  );
+
+  failures.forEach((validation) => {
+    console.error(
+      `  ❌ ${validation.apiType}/${validation.version}: ${validation.error || 'Invalid'}`,
+    );
   });
 
-  return {
-    results,
-    allValid,
-    validCount,
-    totalCount,
-  };
+  return false;
 }
 
 // =============================================================================
@@ -175,111 +122,291 @@ export function processValidationResults(
 // =============================================================================
 
 /**
- * Classify HTTP errors for better handling
+ * TypeScript error categorizer for better error handling
  */
-export function classifyHttpError(status: number): {
-  category: 'auth' | 'not-found' | 'client' | 'server' | 'network';
-  code: string;
-  retry: boolean;
+export function classifyTypeScriptError(output: string): {
+  category: 'syntax' | 'type' | 'module' | 'config' | 'unknown';
+  errorCount: number;
+  warnings: number;
 } {
-  return match(status)
-    .with(401, () => ({
-      category: 'auth' as const,
-      code: '401',
-      retry: false,
+  const errorCount = (output.match(/error TS\d+:/g) || []).length;
+  const warnings = (output.match(/warning/gi) || []).length;
+
+  const category = match(output)
+    .when(
+      (text) =>
+        /Cannot find module|Could not find a declaration file/i.test(text),
+      () => 'module' as const,
+    )
+    .when(
+      (text) =>
+        /Type '.*' is not assignable to type|Property '.*' does not exist/i.test(
+          text,
+        ),
+      () => 'type' as const,
+    )
+    .when(
+      (text) => /Unexpected token|Expected/i.test(text),
+      () => 'syntax' as const,
+    )
+    .when(
+      (text) => /tsconfig\.json|compilerOptions/i.test(text),
+      () => 'config' as const,
+    )
+    .otherwise(() => 'unknown' as const);
+
+  return { category, errorCount, warnings };
+}
+
+/**
+ * File system error categorizer
+ */
+export function classifyFileSystemError(error: unknown): {
+  category: 'not_found' | 'permission' | 'disk_space' | 'network' | 'unknown';
+  userActionRequired: boolean;
+  suggestion?: string;
+} {
+  return match(error)
+    .with({ code: 'ENOENT' }, () => ({
+      category: 'not_found' as const,
+      userActionRequired: true,
+      suggestion: 'Check if the file path is correct',
     }))
-    .with(403, () => ({
-      category: 'auth' as const,
-      code: '403',
-      retry: false,
+    .with({ code: 'EACCES' }, () => ({
+      category: 'permission' as const,
+      userActionRequired: true,
+      suggestion: 'Check file permissions or run with appropriate access',
     }))
-    .with(404, () => ({
-      category: 'not-found' as const,
-      code: '404',
-      retry: false,
+    .with({ code: 'ENOSPC' }, () => ({
+      category: 'disk_space' as const,
+      userActionRequired: true,
+      suggestion: 'Free up disk space',
     }))
-    .with(P.number.between(400, 499), () => ({
-      category: 'client' as const,
-      code: status.toString(),
-      retry: false,
-    }))
-    .with(P.number.between(500, 599), () => ({
-      category: 'server' as const,
-      code: status.toString(),
-      retry: true,
-    }))
-    .with(0, () => ({
+    .with({ code: P.string.includes('ENETWORK') }, () => ({
       category: 'network' as const,
-      code: 'NETWORK_ERROR',
-      retry: true,
+      userActionRequired: true,
+      suggestion: 'Check network connection',
     }))
     .otherwise(() => ({
-      category: 'client' as const,
-      code: status.toString(),
-      retry: false,
+      category: 'unknown' as const,
+      userActionRequired: false,
+    }));
+}
+
+/**
+ * Build error classifier
+ */
+export function classifyBuildError(error: unknown): {
+  category: 'typescript' | 'missing_file' | 'permission' | 'config' | 'unknown';
+  recoverable: boolean;
+} {
+  return match(error)
+    .when(
+      (e) => String(e).includes('tsc') || String(e).includes('TS'),
+      () => ({
+        category: 'typescript' as const,
+        recoverable: false,
+      }),
+    )
+    .when(
+      (e) => String(e).includes('ENOENT'),
+      () => ({
+        category: 'missing_file' as const,
+        recoverable: true,
+      }),
+    )
+    .when(
+      (e) => String(e).includes('EACCES'),
+      () => ({
+        category: 'permission' as const,
+        recoverable: false,
+      }),
+    )
+    .when(
+      (e) =>
+        String(e).includes('tsconfig') || String(e).includes('package.json'),
+      () => ({
+        category: 'config' as const,
+        recoverable: false,
+      }),
+    )
+    .otherwise(() => ({
+      category: 'unknown' as const,
+      recoverable: false,
     }));
 }
 
 // =============================================================================
-// Environment Validation Patterns
+// Environment Validation
 // =============================================================================
 
 /**
- * Validate environment configuration with pattern matching
+ * Validate environment variables
  */
-export function validateEnvironment(env: Record<string, string | undefined>): {
-  hasValidTokens: boolean;
-  availableApis: ApiType[];
-  warnings: string[];
+export function validateEnvironment(env: NodeJS.ProcessEnv): {
+  success: boolean;
+  error?: string;
 } {
-  const availableApis: ApiType[] = [];
-  const warnings: string[] = [];
+  const requiredVars = ['SHOPIFY_STOREFRONT_TOKEN'];
+  const missing = requiredVars.filter((v) => !env[v]);
 
-  // Check each API token with pattern matching
-  const storefrontValid = match(env['SHOPIFY_STOREFRONT_ACCESS_TOKEN'])
-    .with(
-      P.string.minLength(10),
-      (token) => !token.includes('your_') && !token.includes('_here'),
-    )
-    .otherwise(() => false);
-
-  const customerAccountValid = match(
-    env['SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN'],
-  )
-    .with(
-      P.string.minLength(10),
-      (token) => !token.includes('your_') && !token.includes('_here'),
-    )
-    .otherwise(() => false);
-
-  const adminValid = match({
-    token: env['SHOPIFY_ADMIN_ACCESS_TOKEN'],
-    domain: env['SHOPIFY_STORE_DOMAIN'],
-  })
-    .with(
-      {
-        token: P.string.minLength(10),
-        domain: P.string.minLength(1),
-      },
-      ({ token, domain }) =>
-        !token.includes('your_') &&
-        !token.includes('_here') &&
-        !domain.includes('your_'),
-    )
-    .otherwise(() => false);
-
-  if (storefrontValid) availableApis.push('storefront');
-  else warnings.push('Storefront API token not configured');
-
-  if (customerAccountValid) availableApis.push('customer-account');
-  else warnings.push('Customer Account API token not configured');
-
-  if (adminValid) availableApis.push('admin');
-  else warnings.push('Admin API token or store domain not configured');
+  if (missing.length > 0) {
+    return {
+      success: false,
+      error: `Missing required environment variables: ${missing.join(', ')}`,
+    };
+  }
 
   return {
-    hasValidTokens: availableApis.length > 0,
-    availableApis,
-    warnings,
+    success: true,
   };
+}
+
+// =============================================================================
+// File Operation Patterns
+// =============================================================================
+
+/**
+ * File path resolver with validation
+ */
+export function createFilePathResolver(basePath: string): {
+  resolve: (...segments: string[]) => string;
+  relative: (from: string, to: string) => string;
+} {
+  // Validate base path
+  const validatedBase = FilePathSchema.parse(basePath);
+
+  return {
+    resolve: (...segments: string[]): string => {
+      const fullPath = [validatedBase, ...segments]
+        .join('/')
+        .replace(/\/+/g, '/');
+      return FilePathSchema.parse(fullPath);
+    },
+    relative: (from: string, to: string): string => {
+      const fromParts = from.split('/').filter(Boolean);
+      const toParts = to.split('/').filter(Boolean);
+
+      let common = 0;
+      while (
+        common < fromParts.length &&
+        common < toParts.length &&
+        fromParts[common] === toParts[common]
+      ) {
+        common++;
+      }
+
+      const up = fromParts.length - common - 1;
+      const down = toParts.slice(common);
+
+      return [...Array(up).fill('..'), ...down].join('/') || '.';
+    },
+  };
+}
+
+/**
+ * Simple helper for API-level index paths (e.g., src/storefront/index.ts)
+ */
+export function createApiIndexPath(
+  basePath: string,
+  api: ApiType,
+  variant: 'source' | 'dist' = 'source',
+): string {
+  const extension = variant === 'source' ? 'ts' : 'd.ts';
+  return `${basePath}/${variant === 'source' ? 'src' : 'dist'}/${api}/index.${extension}`;
+}
+
+/**
+ * Enhanced file operation handler with comprehensive error categorization
+ */
+export function createFileOperationHandler() {
+  type FileOperationContext = {
+    operation: 'copy' | 'write' | 'read' | 'delete' | 'check';
+    source?: string;
+    target: string;
+    metadata?: Record<string, unknown>;
+  };
+
+  return async function handleFileOperation<T>(
+    context: FileOperationContext,
+    operation: () => Promise<T>,
+  ): Promise<
+    OperationResult<
+      T & { context: FileOperationContext; executionTime: number }
+    >
+  > {
+    const startTime = Date.now();
+
+    try {
+      const result = await operation();
+      const executionTime = Date.now() - startTime;
+
+      return {
+        success: true as const,
+        data: { ...result, context, executionTime },
+      };
+    } catch (error) {
+      const executionTime = Date.now() - startTime;
+
+      return match(error)
+        .with({ code: 'ENOENT' }, () => ({
+          success: false as const,
+          error: `File not found: ${context.source || context.target}`,
+          code: 'FILE_NOT_FOUND',
+          context: { ...context, executionTime },
+        }))
+        .with({ code: 'EACCES' }, () => ({
+          success: false as const,
+          error: `Permission denied: ${context.target}`,
+          code: 'PERMISSION_DENIED',
+          context: { ...context, executionTime },
+        }))
+        .with({ code: 'ENOSPC' }, () => ({
+          success: false as const,
+          error: `No space left on device: ${context.target}`,
+          code: 'DISK_FULL',
+          context: { ...context, executionTime },
+        }))
+        .when(
+          (e): e is Error => e instanceof Error,
+          (err) => ({
+            success: false as const,
+            error: err.message,
+            code: 'FILE_OPERATION_ERROR',
+            context: { ...context, executionTime },
+          }),
+        )
+        .otherwise(() => ({
+          success: false as const,
+          error: 'Unknown file operation error',
+          code: 'UNKNOWN_ERROR',
+          context: { ...context, executionTime },
+        }));
+    }
+  };
+}
+
+/**
+ * Analyze file operation results for summary reporting
+ */
+export function analyzeFileOperations(results: FileOperationResult[]): {
+  total: number;
+  successful: number;
+  failed: number;
+  errors: Array<{ path: string; error: string; code?: string }>;
+  executionTime: number;
+} {
+  const total = results.length;
+  const successful = results.filter((r) => r.success).length;
+  const failed = total - successful;
+  const errors = results
+    .filter((r): r is FileOperationResult & { success: false } => !r.success)
+    .map((r) => ({
+      path: r.filePath || 'unknown',
+      error: r.error || 'Unknown error',
+    }));
+
+  const executionTime = 0; // Not available in FileOperationResult
+
+  return { total, successful, failed, errors, executionTime };
 }
