@@ -28,6 +28,17 @@ async function fixJsExtensions(dir: string): Promise<void> {
       content = content.replace(/(from\s+['"]\..*?)\.js(['"])/g, '$1$2');
       content = content.replace(/(import\s+['"]\..*?)\.js(['"])/g, '$1$2');
 
+      // Add .d.ts extension to relative imports without extensions
+      // This handles cases like: from './types' -> from './types.d.ts'
+      content = content.replace(
+        /(from\s+['"])(\.\/[^'"]+)(?<!\.d\.ts)(?<!\.json)(['"])/g,
+        '$1$2.d.ts$3',
+      );
+      content = content.replace(
+        /(import\s+['"])(\.\/[^'"]+)(?<!\.d\.ts)(?<!\.json)(['"])/g,
+        '$1$2.d.ts$3',
+      );
+
       // Fix schema paths (graphql-schemas -> schemas)
       content = content.replace(
         /\.\.\/\.\.\/graphql-schemas\//g,

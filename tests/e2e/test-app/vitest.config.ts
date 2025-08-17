@@ -5,11 +5,24 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['tests/**/*.test.ts'],
+    // Try adding server configuration for better module resolution
+    server: {
+      deps: {
+        inline: ['@juanpprieto/shopify-api-types'],
+      },
+    },
   },
   resolve: {
-    // Handle .js extensions in declaration files for NodeNext packages
-    extensionAlias: {
-      '.js': ['.js', '.ts', '.d.ts'],
-    },
+    // Configure Vite to handle .js extensions by stripping them
+    alias: [
+      {
+        find: /^(.*)\.js$/,
+        replacement: '$1',
+      },
+    ],
+  },
+  // Enable optimizeDeps to pre-bundle dependencies
+  optimizeDeps: {
+    include: ['@juanpprieto/shopify-api-types'],
   },
 });
