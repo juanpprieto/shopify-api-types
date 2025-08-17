@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { getLastFourVersions } from './version-utils.js';
+import { getSupportedVersions } from './version-utils.js';
 import {
   ApiTypeSchema,
-  ApiVersionSchema,
+  ExtendedApiVersionSchema,
   IndexFileContentSchema,
   type FileOperationResult,
   SUPPORTED_APIS,
@@ -14,7 +14,7 @@ import {
 } from '../src/lib/patterns.js';
 
 async function convertToTypesOnly(): Promise<void> {
-  const versions = getLastFourVersions();
+  const versions = getSupportedVersions();
   const apis = SUPPORTED_APIS;
   const results: FileOperationResult[] = [];
 
@@ -29,7 +29,7 @@ async function convertToTypesOnly(): Promise<void> {
   }
 
   for (const version of versions) {
-    const versionValidation = ApiVersionSchema.safeParse(version);
+    const versionValidation = ExtendedApiVersionSchema.safeParse(version);
     if (!versionValidation.success) {
       throw new Error(`Invalid version: ${version}`);
     }

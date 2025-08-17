@@ -1,10 +1,10 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { match } from 'ts-pattern';
-import { getLastFourVersions } from '../version-utils.js';
+import { getSupportedVersions } from '../version-utils.js';
 import {
   ApiTypeSchema,
-  ApiVersionSchema,
+  ExtendedApiVersionSchema,
   BuildValidationResultSchema,
   type BuildValidationResult,
   SUPPORTED_APIS,
@@ -19,7 +19,7 @@ interface FileCheckResult {
 
 async function validateBuild(): Promise<BuildValidationResult> {
   const errors: string[] = [];
-  const versions = getLastFourVersions();
+  const versions = getSupportedVersions();
   const apis = SUPPORTED_APIS;
   const fileChecks: FileCheckResult[] = [];
 
@@ -34,7 +34,7 @@ async function validateBuild(): Promise<BuildValidationResult> {
   }
 
   for (const version of versions) {
-    const versionValidation = ApiVersionSchema.safeParse(version);
+    const versionValidation = ExtendedApiVersionSchema.safeParse(version);
     if (!versionValidation.success) {
       throw new Error(`Invalid version: ${version}`);
     }

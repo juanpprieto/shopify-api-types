@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import { match } from 'ts-pattern';
-import { getLastFourVersions } from './version-utils.js';
+import { getSupportedVersions } from './version-utils.js';
 import {
   ApiTypeSchema,
-  ApiVersionSchema,
+  ExtendedApiVersionSchema,
   GraphQLSchemaSchema,
   type ApiType,
   type ApiVersion,
@@ -113,7 +113,7 @@ function countTypesInSchema(
 async function countTypes(): Promise<TypeAnalysis> {
   console.log('Counting types across all API versions...\n');
 
-  const versions = getLastFourVersions();
+  const versions = getSupportedVersions();
   const pathResolver = createFilePathResolver(process.cwd());
   const fileHandler = createFileOperationHandler();
   const totalCounts: TypeCount[] = [];
@@ -127,7 +127,7 @@ async function countTypes(): Promise<TypeAnalysis> {
   }
 
   for (const version of versions) {
-    const versionValidation = ApiVersionSchema.safeParse(version);
+    const versionValidation = ExtendedApiVersionSchema.safeParse(version);
     if (!versionValidation.success) {
       throw new Error(`Invalid version: ${version}`);
     }

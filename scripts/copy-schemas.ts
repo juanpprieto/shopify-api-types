@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { getLastFourVersions } from './version-utils.js';
+import { getSupportedVersions } from './version-utils.js';
 import { type FileOperationResult, SUPPORTED_APIS } from '../src/lib/zod.js';
 import {
   createFileOperationHandler,
@@ -43,7 +43,7 @@ async function copySchemaFile(
 }
 
 async function copySchemas(): Promise<void> {
-  const versions = getLastFourVersions();
+  const versions = getSupportedVersions();
   const apis = SUPPORTED_APIS;
   const allResults: FileOperationResult[] = [];
 

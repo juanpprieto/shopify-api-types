@@ -10,11 +10,11 @@ import {
 
 // Mock the version-utils module
 vi.mock('../../scripts/version-utils.js', () => ({
-  getLastFourVersions: vi.fn(() => [
+  getSupportedVersions: vi.fn(() => [
     '2025-07',
     '2025-04',
-    '2025-01',
-    '2024-10',
+    '2025-10',
+    'unstable',
   ]),
 }));
 
@@ -53,7 +53,7 @@ describe('validate-build', () => {
 
       // Add all API files
       const apis = ['storefront', 'customer-account', 'admin'];
-      const versions = ['2025-07', '2025-04', '2025-01', '2024-10'];
+      const versions = ['2025-07', '2025-04', '2025-10', 'unstable'];
 
       for (const api of apis) {
         buildFiles[`dist/${api}/index.d.ts`] =
@@ -200,7 +200,7 @@ describe('validate-build', () => {
 
       // Add version files
       const apis = ['storefront', 'customer-account', 'admin'];
-      const versions = ['2025-07', '2025-04', '2025-01', '2024-10'];
+      const versions = ['2025-07', '2025-04', '2025-10', 'unstable'];
 
       for (const api of apis) {
         for (const version of versions) {
@@ -271,7 +271,7 @@ describe('validate-build', () => {
       };
 
       const validApis = ['storefront', 'customer-account', 'admin'];
-      const validVersions = ['2025-07', '2025-04', '2025-01', '2024-10'];
+      const validVersions = ['2025-07', '2025-04', '2025-10', 'unstable'];
 
       for (const api of validApis) {
         buildFiles[`dist/${api}/index.d.ts`] =

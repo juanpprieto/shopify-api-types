@@ -3,7 +3,7 @@ import path from 'path';
 import { match, P } from 'ts-pattern';
 import { getSupportedVersions, getCurrentVersionSet } from './version-utils.js';
 import {
-  ApiVersionSchema,
+  ExtendedApiVersionSchema,
   DistPathSchema,
   PackageJsonSchema,
   type ApiType,
@@ -76,7 +76,7 @@ async function generatePackageExports(): Promise<void> {
   for (const version of versions) {
     // Skip validation for 'unstable' as it's not a date format
     if (version !== 'unstable') {
-      const versionValidation = ApiVersionSchema.safeParse(version);
+      const versionValidation = ExtendedApiVersionSchema.safeParse(version);
       if (!versionValidation.success) {
         throw new Error(`Invalid version: ${version}`);
       }

@@ -13,11 +13,11 @@ import {
 
 // Mock the version-utils module
 vi.mock('../../scripts/version-utils.js', () => ({
-  getLastFourVersions: vi.fn(() => [
+  getSupportedVersions: vi.fn(() => [
     '2025-07',
     '2025-04',
-    '2025-01',
-    '2024-10',
+    '2025-10',
+    'unstable',
   ]),
 }));
 
@@ -48,7 +48,7 @@ describe('convert-to-types-only', () => {
   describe('convertToTypesOnly', () => {
     it('should convert all API version index files to types-only', async () => {
       const apis = ['storefront', 'customer-account', 'admin'];
-      const versions = ['2025-07', '2025-04', '2025-01', '2024-10'];
+      const versions = ['2025-07', '2025-04', '2025-10', 'unstable'];
 
       // Create original index files with JSON imports
       const originalFiles: Record<string, string> = {};
@@ -203,8 +203,8 @@ export default schema;`,
         },
       ];
 
-      // Use valid API versions from getLastFourVersions
-      const validVersions = ['2025-07', '2025-04', '2025-01', '2024-10'];
+      // Use valid API versions from getSupportedVersions
+      const validVersions = ['2025-07', '2025-04', '2025-10', 'unstable'];
       const testFiles: Record<string, string> = {};
       testCases.forEach((testCase, index) => {
         if (index < validVersions.length) {
@@ -233,10 +233,13 @@ export default schema;`,
 
     it('should validate API and version patterns using Zod', async () => {
       const ApiSchema = z.enum(['storefront', 'customer-account', 'admin']);
-      const VersionSchema = z.string().regex(/^\d{4}-(01|04|07|10)$/);
+      const VersionSchema = z.union([
+        z.string().regex(/^\d{4}-(01|04|07|10)$/),
+        z.literal('unstable'),
+      ]);
 
       const apis = ['storefront', 'customer-account', 'admin'];
-      const versions = ['2025-07', '2025-04', '2025-01', '2024-10'];
+      const versions = ['2025-07', '2025-04', '2025-10', 'unstable'];
 
       // Validate that our test data matches expected schemas
       apis.forEach((api) => {
@@ -313,7 +316,7 @@ export * from './types.js';`,
           needsConversion: false,
         },
         {
-          path: 'src/storefront/2025-01/index.ts',
+          path: 'src/storefront/2025-10/index.ts',
           content: `export * from './types.js';
 // No imports`,
           needsConversion: true, // Will be converted to standard format

@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import { getLastFourVersions } from './scripts/version-utils.js';
+import { getSupportedVersions } from './scripts/version-utils.js';
 
 // Get all versions
-const versions = getLastFourVersions();
+const versions = getSupportedVersions();
 
 // Build entry points for all API versions
 const entry: Record<string, string> = {

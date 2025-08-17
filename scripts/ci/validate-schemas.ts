@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { match } from 'ts-pattern';
-import { getLastFourVersions } from '../version-utils.js';
+import { getSupportedVersions } from '../version-utils.js';
 import {
   type ApiType,
   type ValidationResult,
@@ -64,7 +64,7 @@ async function validateSingleSchema(
 async function validateSchemas(): Promise<void> {
   console.log('Validating GraphQL schemas...\n');
 
-  const versions = getLastFourVersions();
+  const versions = getSupportedVersions();
   const validationPromises: Promise<ValidationResult>[] = [];
 
   for (const api of APIS) {

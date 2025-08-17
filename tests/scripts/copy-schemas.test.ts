@@ -11,11 +11,11 @@ import {
 
 // Mock the version-utils module
 vi.mock('../../scripts/version-utils.js', () => ({
-  getLastFourVersions: vi.fn(() => [
+  getSupportedVersions: vi.fn(() => [
     '2025-07',
     '2025-04',
-    '2025-01',
-    '2024-10',
+    '2025-10',
+    'unstable',
   ]),
 }));
 
@@ -43,22 +43,22 @@ describe('copy-schemas', () => {
           '{"storefront": "2025-07"}',
         'src/graphql-schemas/storefront/2025-04.json':
           '{"storefront": "2025-04"}',
-        'src/graphql-schemas/storefront/2025-01.json':
-          '{"storefront": "2025-01"}',
-        'src/graphql-schemas/storefront/2024-10.json':
-          '{"storefront": "2024-10"}',
+        'src/graphql-schemas/storefront/2025-10.json':
+          '{"storefront": "2025-10"}',
+        'src/graphql-schemas/storefront/unstable.json':
+          '{"storefront": "unstable"}',
         'src/graphql-schemas/customer-account/2025-07.json':
           '{"customer-account": "2025-07"}',
         'src/graphql-schemas/customer-account/2025-04.json':
           '{"customer-account": "2025-04"}',
-        'src/graphql-schemas/customer-account/2025-01.json':
-          '{"customer-account": "2025-01"}',
-        'src/graphql-schemas/customer-account/2024-10.json':
-          '{"customer-account": "2024-10"}',
+        'src/graphql-schemas/customer-account/2025-10.json':
+          '{"customer-account": "2025-10"}',
+        'src/graphql-schemas/customer-account/unstable.json':
+          '{"customer-account": "unstable"}',
         'src/graphql-schemas/admin/2025-07.json': '{"admin": "2025-07"}',
         'src/graphql-schemas/admin/2025-04.json': '{"admin": "2025-04"}',
-        'src/graphql-schemas/admin/2025-01.json': '{"admin": "2025-01"}',
-        'src/graphql-schemas/admin/2024-10.json': '{"admin": "2024-10"}',
+        'src/graphql-schemas/admin/2025-10.json': '{"admin": "2025-10"}',
+        'src/graphql-schemas/admin/unstable.json': '{"admin": "unstable"}',
       });
 
       await copySchemas();
@@ -67,16 +67,16 @@ describe('copy-schemas', () => {
       const expectedFiles = [
         'dist/schemas/storefront/2025-07.json',
         'dist/schemas/storefront/2025-04.json',
-        'dist/schemas/storefront/2025-01.json',
-        'dist/schemas/storefront/2024-10.json',
+        'dist/schemas/storefront/2025-10.json',
+        'dist/schemas/storefront/unstable.json',
         'dist/schemas/customer-account/2025-07.json',
         'dist/schemas/customer-account/2025-04.json',
-        'dist/schemas/customer-account/2025-01.json',
-        'dist/schemas/customer-account/2024-10.json',
+        'dist/schemas/customer-account/2025-10.json',
+        'dist/schemas/customer-account/unstable.json',
         'dist/schemas/admin/2025-07.json',
         'dist/schemas/admin/2025-04.json',
-        'dist/schemas/admin/2025-01.json',
-        'dist/schemas/admin/2024-10.json',
+        'dist/schemas/admin/2025-10.json',
+        'dist/schemas/admin/unstable.json',
       ];
 
       for (const filePath of expectedFiles) {
@@ -184,9 +184,9 @@ describe('copy-schemas', () => {
       expect(content).toEqual({ original: 'content' });
     });
 
-    it('should copy all APIs and all versions from getLastFourVersions', async () => {
+    it('should copy all APIs and all versions from getSupportedVersions', async () => {
       const apis = ['storefront', 'customer-account', 'admin'];
-      const versions = ['2025-07', '2025-04', '2025-01', '2024-10'];
+      const versions = ['2025-07', '2025-04', '2025-10', 'unstable'];
 
       // Create all schema files
       const mockFiles: Record<string, string> = {};
