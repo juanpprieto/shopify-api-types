@@ -142,8 +142,8 @@ jobs:
       - name: Validate version set
         run: |
           # Validate new version model works correctly
-          node -e "
-            const { getCurrentVersionSet, getVersionMetadata } = require('./dist/scripts/version-utils.js');
+          tsx -e "
+            import { getCurrentVersionSet, getVersionMetadata } from './dist/scripts/version-utils.js';
             const versionSet = getCurrentVersionSet();
             console.log('Release version set:', versionSet);
             
