@@ -72,8 +72,8 @@ jobs:
           npm run count-types > /dev/null 2>&1 || echo "Schema counting failed"
 
           # Check if schemas are available for all version sets
-          node -e "
-            const { getCurrentVersionSet } = require('./dist/scripts/version-utils.js');
+          npx tsx -e "
+            const { getCurrentVersionSet } = require('./scripts/version-utils.ts');
             const versionSet = getCurrentVersionSet();
             console.log('Checking API availability for:', versionSet);
             
