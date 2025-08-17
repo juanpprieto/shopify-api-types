@@ -142,7 +142,7 @@ jobs:
       - name: Validate version set
         run: |
           # Validate new version model works correctly
-          tsx -e "
+          npx tsx -e "
             import { getCurrentVersionSet, getVersionMetadata } from './dist/scripts/version-utils.js';
             const versionSet = getCurrentVersionSet();
             console.log('Release version set:', versionSet);
