@@ -61,7 +61,10 @@ console.log('✓ All type imports working correctly');
     try {
       const output = execSync(
         'npx tsc --noEmit temp/type-test.ts --module esnext --moduleResolution bundler --resolveJsonModule --esModuleInterop --allowImportingTsExtensions',
-        { encoding: 'utf-8' },
+        {
+          encoding: 'utf-8',
+          env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=4096' },
+        },
       );
 
       typecheckResult = { success: true, output, errorType: 'unknown' };

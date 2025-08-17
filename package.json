@@ -356,7 +356,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\" --ignore-path .prettierignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\" --ignore-path .prettierignore",
-    "type-check": "tsc --noEmit --project tsconfig.check.json",
+    "type-check": "NODE_OPTIONS='--max-old-space-size=4096' tsc --noEmit --project tsconfig.check.json",
     "type-check:watch": "tsc --noEmit --watch",
     "lint:check": "eslint . --ext .ts,.tsx,.js,.mjs",
     "check": "npm run type-check && npm run lint:check",
