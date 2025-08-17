@@ -141,20 +141,8 @@ jobs:
 
       - name: Validate version set
         run: |
-          # Validate new version model works correctly
-          npx tsx -e "
-            import { getCurrentVersionSet, getVersionMetadata } from './src/scripts/version-utils.ts';
-            const versionSet = getCurrentVersionSet();
-            console.log('Release version set:', versionSet);
-            
-            // Validate each version has metadata
-            for (const [type, version] of Object.entries(versionSet)) {
-              const metadata = getVersionMetadata(version);
-              console.log(\`✅ \${type}: \${version} (\${metadata.description})\`);
-            }
-            
-            console.log('✅ Version set validation passed for release');
-          "
+          # Just run the validation script directly
+          npm run ci:validate-version-model
 
   release:
     name: Release
