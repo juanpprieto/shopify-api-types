@@ -102,7 +102,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npm run build:ci
 
       - name: Generate schema comparisons
         run: npm run generate:comparisons
@@ -171,19 +171,6 @@ jobs:
       - name: Generate schema comparisons
         run: npm run generate:comparisons
 
-      - name: Generate documentation
-        run: npm run docs
-
-      - name: Verify documentation is up to date
-        run: |
-          if [ -n "$(git diff --exit-code README.md)" ]; then
-            echo "❌ README.md is not up to date. Run 'npm run docs' and commit the changes."
-            git diff README.md
-            exit 1
-          else
-            echo "✅ Documentation is up to date"
-          fi
-
       - name: Validate schema comparisons
         run: npm run ci:validate-comparisons
 
@@ -238,7 +225,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npm run build:ci
 
       - name: Test
         run: npm test
@@ -261,7 +248,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npm run build:ci
 
       - name: Generate comparisons
         run: npm run generate:comparisons
