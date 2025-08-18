@@ -5,6 +5,34 @@ export type ClaudeResult<T> =
   | { success: true; data: T }
   | { success: false; error: { message: string } };
 
+// Model configuration with fallback hierarchy
+const CLAUDE_MODELS = {
+  // Primary: Use environment variable if set
+  fromEnv: process.env['ANTHROPIC_MODEL'],
+  // Secondary: Use latest production alias (automatically updated by Anthropic)
+  latest: 'claude-sonnet-4-0',
+  // Tertiary: Fallback to specific version if alias fails
+  fallback: 'claude-sonnet-4-20250514',
+} as const;
+
+/**
+ * Get the Claude model to use, with automatic fallback
+ */
+function getClaudeModel(): string {
+  // 1. Check environment variable first (for explicit control)
+  if (CLAUDE_MODELS.fromEnv) {
+    return CLAUDE_MODELS.fromEnv;
+  }
+
+  // 2. Use latest alias for automatic updates (development/staging)
+  if (process.env['NODE_ENV'] !== 'production') {
+    return CLAUDE_MODELS.latest;
+  }
+
+  // 3. Use specific version in production for stability
+  return CLAUDE_MODELS.fallback;
+}
+
 /**
  * Call Claude using the SDK with a prompt and input data
  */
@@ -22,8 +50,10 @@ export async function callClaude(
 
   try {
     const client = new Anthropic({ apiKey });
+    const model = getClaudeModel();
+
     const response = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model,
       max_tokens: 8192,
       messages: [
         {
