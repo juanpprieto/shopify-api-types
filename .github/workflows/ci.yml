@@ -109,10 +109,11 @@ jobs:
       - name: Test package installation
         run: |
           npm pack
+          TARBALL=$(ls juanpprieto-shopify-api-types-*.tgz)
           mkdir test-install
           cd test-install
           npm init -y
-          npm install ../@juanpprieto-shopify-api-types-*.tgz
+          npm install "../$TARBALL"
           node -e "console.log('✅ Package installation test passed')"
 
   # Schema and type analysis
@@ -144,7 +145,7 @@ jobs:
       - name: Validate CalVer format
         run: |
           version=$(node -p "require('./package.json').version")
-          npm run version validate "$version"
+          npm run version:test validate "$version"
 
   # Security scanning
   security:
@@ -207,6 +208,13 @@ jobs:
 
       - name: Check for changesets
         run: |
+          # Check if this is a major first release PR
+          if [[ "${{ github.head_ref }}" == "first-release" ]] || [[ "${{ github.ref_name }}" == "first-release" ]]; then
+            echo "✅ First release PR - changesets not required"
+            exit 0
+          fi
+
+          # For regular PRs, require changesets
           if [ -n "$(ls .changeset/*.md 2>/dev/null | grep -v README.md | grep -v example-)" ]; then
             echo "✅ Changeset found"
           else
