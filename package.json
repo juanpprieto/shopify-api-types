@@ -322,7 +322,6 @@
   "homepage": "https://github.com/juanpprieto/shopify-api-types#readme",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.60.0",
-    "@changesets/get-github-info": "^0.6.0",
     "@graphql-inspector/core": "^6.2.1",
     "graphql": "^16.11.0",
     "ts-pattern": "5.8.0",
