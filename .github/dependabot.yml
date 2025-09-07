@@ -1,0 +1,49 @@
+version: 2
+updates:
+  # NPM dependencies
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+    open-pull-requests-limit: 10
+    assignees:
+      - 'juanpprieto'
+    commit-message:
+      prefix: 'deps'
+      include: 'scope'
+    groups:
+      production:
+        patterns:
+          - '@anthropic-ai/sdk'
+          - '@changesets/get-github-info'
+          - '@graphql-inspector/core'
+          - 'graphql'
+          - 'ts-pattern'
+          - 'zod'
+      development:
+        patterns:
+          - '@types/*'
+          - '@eslint/*'
+          - '@changesets/*'
+          - '@vitest/*'
+          - '@graphql-codegen/*'
+          - 'eslint*'
+          - 'prettier'
+          - 'vitest'
+          - 'typescript*'
+          - 'tsx'
+          - 'vite'
+          - 'knip'
+
+  # GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+    open-pull-requests-limit: 5
+    assignees:
+      - 'juanpprieto'

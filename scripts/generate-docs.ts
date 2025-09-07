@@ -345,79 +345,6 @@ async function prepareInputData(): Promise<ReadmeInput> {
 }
 
 /**
- * Generate fallback README content
- */
-function generateFallbackReadme(input: ReadmeInput): string {
-  const { packageMetadata, versionSet, apiStats } = input;
-
-  let content = `# ${packageMetadata.name}
-
-TypeScript types and JSON schemas for Shopify's GraphQL APIs.
-
-## Installation
-
-\`\`\`bash
-npm install ${packageMetadata.name}
-\`\`\`
-
-## Usage
-
-### Import Types
-
-\`\`\`typescript
-${apiStats.storefront.examples[0] || '// Import storefront types'}
-${apiStats.admin.examples[0] || '// Import admin types'}
-${apiStats['customer-account'].examples[0] || '// Import customer account types'}
-\`\`\`
-
-### Version Support
-
-- **Current**: ${versionSet.current} (Stable)
-- **Previous**: ${versionSet.previous} (Maintenance)
-- **Release Candidate**: ${versionSet.releaseCandidate} (Preview)
-- **Unstable**: ${versionSet.unstable} (Experimental)
-
-### Available APIs
-
-- **Storefront API**: ${apiStats.storefront.description} (${apiStats.storefront.typeCount}+ types)
-- **Admin API**: ${apiStats.admin.description} (${apiStats.admin.typeCount}+ types)
-- **Customer Account API**: ${apiStats['customer-account'].description} (${apiStats['customer-account'].typeCount}+ types)
-
-### Version-Specific Imports
-
-All APIs support version-specific imports:
-
-\`\`\`typescript
-// Import specific version
-import { Product } from '${packageMetadata.name}/sfapi/${versionSet.current}';
-
-// Import with version aliases
-import { Shop } from '${packageMetadata.name}/admin/current';
-import { Customer } from '${packageMetadata.name}/caapi/previous';
-\`\`\`
-
-### GraphQL Schemas
-
-Raw GraphQL schemas are also available:
-
-\`\`\`typescript
-import storefrontSchema from '${packageMetadata.name}/schemas/sfapi/${versionSet.current}';
-import adminSchema from '${packageMetadata.name}/schemas/admin/${versionSet.current}';
-\`\`\`
-
-## License
-
-MIT
-
----
-
-Generated on ${new Date().toISOString().split('T')[0]}
-`;
-
-  return content;
-}
-
-/**
  * Generate README using AI or fallback
  */
 async function generateDocs(): Promise<void> {
@@ -448,30 +375,20 @@ async function generateDocs(): Promise<void> {
     // Check if Claude is available
     const claudeAvailable = await isClaudeAvailable();
     if (!claudeAvailable) {
-      console.log(
-        '   ⚠️  Claude API not available, using fallback generation...',
+      throw new Error(
+        'Claude API not available. Please set ANTHROPIC_API_KEY environment variable.',
       );
     }
 
-    let readmeContent: string;
+    // Use Claude to generate README
+    const claudeResult = await callClaude('generate-readme', inputData);
 
-    if (claudeAvailable) {
-      // Use Claude to generate README
-      const claudeResult = await callClaude('generate-readme', inputData);
-
-      if (claudeResult.success) {
-        console.log('   ✓ README generated successfully with AI\n');
-        readmeContent = claudeResult.data;
-      } else {
-        console.log(
-          `   ⚠️  AI generation failed: ${claudeResult.error.message}`,
-        );
-        console.log('   ⚠️  Using fallback generation...\n');
-        readmeContent = generateFallbackReadme(inputData);
-      }
-    } else {
-      readmeContent = generateFallbackReadme(inputData);
+    if (!claudeResult.success) {
+      throw new Error(`AI generation failed: ${claudeResult.error.message}`);
     }
+
+    console.log('   ✓ README generated successfully with AI\n');
+    const readmeContent = claudeResult.data;
 
     // Step 3: Write README file
     console.log('📝 Writing README.md...');
