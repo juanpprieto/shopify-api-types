@@ -53,6 +53,8 @@ jobs:
 
       - name: Generate documentation
         run: npm run docs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Create Release Pull Request or Publish
         id: changesets
