@@ -2,45 +2,25 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, first-release]
   pull_request:
-    branches: [main]
+    branches: [main, first-release]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CI: true
+  NODE_ENV: test
+
 jobs:
-  lint-and-format:
-    name: Lint & Format
+  # Code quality checks
+  quality:
+    name: Code Quality
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check formatting
-        run: npm run format:check
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Check for unused exports
-        run: npm run deadcode
-
-  type-check:
-    name: Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -55,19 +35,51 @@ jobs:
       - name: Type check
         run: npm run type-check
 
-      - name: Validate CalVer format
-        run: |
-          version=$(node -p "require('./package.json').version")
-          npm run version validate "$version"
+      - name: Lint
+        run: npm run lint
 
-      - name: Validate version set consistency
-        run: npm run ci:validate-version-model
+      - name: Format check
+        run: npm run format:check
 
+      - name: Check for unused exports
+        run: npm run deadcode
+
+  # Tests across Node.js versions and platforms
   test:
-    name: Test
+    name: Test (Node ${{ matrix.node }} on ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '20', '22']
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Generate coverage report
+        if: matrix.node == '20' && matrix.os == 'ubuntu-latest'
+        run: npm run test:coverage
+
+  # Build and validation
+  build:
+    name: Build & Validate
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -79,17 +91,36 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test
+      - name: Build package
+        run: npm run build:ci
 
-      - name: Run test coverage
-        run: npm run test:coverage
+      - name: Validate build output
+        run: npm run ci:validate-build
 
-  build-and-validate:
-    name: Build & Validate
+      - name: Validate generated types
+        run: npm run ci:validate-types
+
+      - name: Generate schema comparisons
+        run: npm run generate:comparisons
+
+      - name: Validate schema comparisons
+        run: npm run ci:validate-comparisons
+
+      - name: Test package installation
+        run: |
+          npm pack
+          mkdir test-install
+          cd test-install
+          npm init -y
+          npm install ../@juanpprieto-shopify-api-types-*.tgz
+          node -e "console.log('✅ Package installation test passed')"
+
+  # Schema and type analysis
+  schema-analysis:
+    name: Schema Analysis
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -104,24 +135,63 @@ jobs:
       - name: Build
         run: npm run build:ci
 
-      - name: Generate schema comparisons
-        run: npm run generate:comparisons
+      - name: Analyze schema types
+        run: npm run count-types
 
-      - name: Validate build output
-        run: npm run ci:validate-build
+      - name: Validate version model
+        run: npm run ci:validate-version-model
 
-      - name: Validate generated types
-        run: npm run ci:validate-types
+      - name: Validate CalVer format
+        run: |
+          version=$(node -p "require('./package.json').version")
+          npm run version validate "$version"
 
-      - name: Check package integrity
-        run: npm pack --dry-run
+  # Security scanning
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+
+      - name: Check for high-severity vulnerabilities
+        run: |
+          if npm audit --audit-level=high 2>/dev/null; then
+            echo "No high-severity vulnerabilities found"
+          else
+            echo "High-severity vulnerabilities detected"
+            npm audit --audit-level=high
+            exit 1
+          fi
+
+      - name: Check for sensitive files
+        run: |
+          if grep -r -E "SHOPIFY.*ACCESS.*TOKEN.*=.*['\"]?[A-Za-z0-9+/_-]{20,}" . --exclude-dir=node_modules --exclude=".env*" --exclude="*.md" --exclude=".env"; then
+            echo "❌ Potential sensitive information detected"
+            exit 1
+          else
+            echo "✅ No sensitive information detected"
+          fi
+
+  # Changeset validation for PRs
   changeset-validation:
     name: Changeset Validation
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -145,184 +215,4 @@ jobs:
           fi
 
       - name: Validate changeset format
-        run: |
-          # Preview what the release would look like
-          npm run release:dry
-
-  schema-analysis:
-    name: Schema Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Analyze schema types
-        run: npm run count-types
-
-      - name: Generate schema comparisons
-        run: npm run generate:comparisons
-
-      - name: Validate schema comparisons
-        run: npm run ci:validate-comparisons
-
-  security:
-    name: Security Audit
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Security audit
-        run: npm audit --audit-level high
-
-      - name: Check for sensitive files
-        run: |
-          # Check for accidentally committed sensitive files
-          # Look for actual token values (not just variable names)
-          # Pattern looks for SHOPIFY_*_ACCESS_TOKEN followed by = and a quoted string with 20+ chars
-          if grep -r -E "SHOPIFY.*ACCESS.*TOKEN.*=.*['\"]?[A-Za-z0-9+/_-]{20,}" . --exclude-dir=node_modules --exclude=".env*" --exclude="*.md" --exclude=".env"; then
-            echo "❌ Potential sensitive information detected"
-            exit 1
-          else
-            echo "✅ No sensitive information detected"
-          fi
-
-  matrix-test:
-    name: Node.js Matrix Test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: ['18', '20', '22']
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build:ci
-
-      - name: Test
-        run: npm test
-
-  comparison-validation:
-    name: Schema Comparison Validation
-    runs-on: ubuntu-latest
-    needs: [build-and-validate]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build:ci
-
-      - name: Generate comparisons
-        run: npm run generate:comparisons
-
-      - name: Test AI agent command
-        run: |
-          # Test that the AI agent command can process comparison data
-          echo "🔍 Testing AI agent system integration..."
-          npm run ci:validate-comparisons
-
-      - name: Validate AI agent prompt
-        run: |
-          # TODO: Re-enable this validation once .claude/commands/document-changes.md is created
-          echo "⚠️ AI agent command validation temporarily disabled - file not yet created"
-          # # Validate that the AI agent command file exists and is properly formatted
-          # if [ -f ".claude/commands/document-changes.md" ]; then
-          #   echo "✅ AI agent command file exists"
-          #   
-          #   # Basic validation of the command structure
-          #   if grep -q "# Document Schema Changes" .claude/commands/document-changes.md; then
-          #     echo "✅ AI agent command has proper header"
-          #   else
-          #     echo "❌ AI agent command missing proper header"
-          #     exit 1
-          #   fi
-          #   
-          #   if grep -q "dist/comparisons" .claude/commands/document-changes.md; then
-          #     echo "✅ AI agent command references comparison directory"
-          #   else
-          #     echo "❌ AI agent command doesn't reference comparison directory"
-          #     exit 1
-          #   fi
-          # else
-          #   echo "❌ AI agent command file not found"
-          #   exit 1
-          # fi
-
-  summary:
-    name: CI Summary
-    runs-on: ubuntu-latest
-    needs:
-      [
-        lint-and-format,
-        type-check,
-        test,
-        build-and-validate,
-        schema-analysis,
-        security,
-        matrix-test,
-        comparison-validation,
-      ]
-    if: always()
-    steps:
-      - name: Check all jobs
-        run: |
-          if [[ "${{ needs.lint-and-format.result }}" == "success" && \
-                "${{ needs.type-check.result }}" == "success" && \
-                "${{ needs.test.result }}" == "success" && \
-                "${{ needs.build-and-validate.result }}" == "success" && \
-                "${{ needs.schema-analysis.result }}" == "success" && \
-                "${{ needs.security.result }}" == "success" && \
-                "${{ needs.matrix-test.result }}" == "success" && \
-                "${{ needs.comparison-validation.result }}" == "success" ]]; then
-            echo "✅ All CI checks passed!"
-          else
-            echo "❌ Some CI checks failed"
-            echo "Results:"
-            echo "  Lint & Format: ${{ needs.lint-and-format.result }}"
-            echo "  Type Check: ${{ needs.type-check.result }}"
-            echo "  Test: ${{ needs.test.result }}"
-            echo "  Build & Validate: ${{ needs.build-and-validate.result }}"
-            echo "  Schema Analysis: ${{ needs.schema-analysis.result }}"
-            echo "  Security: ${{ needs.security.result }}"
-            echo "  Matrix Test: ${{ needs.matrix-test.result }}"
-            echo "  Comparison Validation: ${{ needs.comparison-validation.result }}"
-            exit 1
-          fi
+        run: npm run release:dry

@@ -174,18 +174,32 @@ export function getVersionInfo(currentVersion: string): {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const command = process.argv[2];
   const currentVersion = process.argv[3];
+  const manualChangeType = process.argv[4]; // Optional override
 
   match(command)
     .with('next', () => {
       if (!currentVersion) {
         console.error(
-          'Usage: tsx scripts/calver-version.ts next <current-version>',
+          'Usage: tsx scripts/calver-version.ts next <current-version> [change-type]',
         );
         process.exit(1);
       }
 
-      const { hasMajor, hasPatches } = detectChangesetTypes();
-      const changeType = hasMajor ? 'major' : hasPatches ? 'patch' : 'patch';
+      let changeType: 'major' | 'patch' | 'minor';
+
+      if (
+        manualChangeType &&
+        ['major', 'minor', 'patch'].includes(manualChangeType)
+      ) {
+        changeType = manualChangeType as 'major' | 'patch' | 'minor';
+        console.log(`🔧 Using manual change type: ${changeType}`);
+      } else {
+        const { hasMajor, hasPatches } = detectChangesetTypes();
+        changeType = hasMajor ? 'major' : hasPatches ? 'patch' : 'patch';
+        console.log(
+          `🔍 Detected change type: ${changeType} (hasMajor: ${hasMajor}, hasPatches: ${hasPatches})`,
+        );
+      }
 
       const versionInfo = calculateNextVersion(currentVersion, changeType);
       console.log(JSON.stringify(versionInfo, null, 2));

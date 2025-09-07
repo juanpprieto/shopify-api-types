@@ -3,162 +3,24 @@ name: Release
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
-  schedule:
-    # Check for new Shopify API versions monthly (1st day of each month at 9 AM UTC)
-    - cron: '0 9 1 * *'
-  workflow_dispatch:
-    inputs:
-      release_type:
-        description: 'Type of release'
-        required: true
-        default: 'auto'
-        type: choice
-        options:
-          - auto
-          - major
-          - patch
-      skip_tests:
-        description: 'Skip tests'
-        required: false
-        default: false
-        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  detect-changes:
-    name: Detect Changes
-    runs-on: ubuntu-latest
-    outputs:
-      has-changesets: ${{ steps.changesets.outputs.hasChangesets }}
-      has-api-update: ${{ steps.api-check.outputs.hasApiUpdate }}
-      should-release: ${{ steps.decision.outputs.shouldRelease }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check for changesets
-        id: changesets
-        run: |
-          if [ -n "$(ls .changeset/*.md 2>/dev/null | grep -v README.md)" ]; then
-            echo "hasChangesets=true" >> $GITHUB_OUTPUT
-          else
-            echo "hasChangesets=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Check for new Shopify API versions
-        id: api-check
-        run: |
-          # Get current package version and supported API versions
-          current_version=$(node -p "require('./package.json').version")
-
-          # Build and run version utilities to detect API updates
-          npm run build:ci
-          npm run count-types > /dev/null 2>&1 || echo "Schema counting failed"
-
-          # Check if schemas are available for all version sets
-          npx tsx -e "
-            const { getCurrentVersionSet } = require('./scripts/version-utils.ts');
-            const versionSet = getCurrentVersionSet();
-            console.log('Checking API availability for:', versionSet);
-            
-            // This would typically check Shopify's API for schema availability
-            // For now, assume no updates unless manually triggered
-            console.log('API check completed');
-          "
-
-          # For now, this would integrate with Shopify's API to detect new versions
-          # This is a placeholder - would need actual Shopify API integration
-          echo "hasApiUpdate=false" >> $GITHUB_OUTPUT
-
-      - name: Decide if release is needed
-        id: decision
-        run: |
-          has_changesets="${{ steps.changesets.outputs.hasChangesets }}"
-          has_api_update="${{ steps.api-check.outputs.hasApiUpdate }}"
-          is_manual="${{ github.event_name == 'workflow_dispatch' }}"
-
-          if [[ "$has_changesets" == "true" || "$has_api_update" == "true" || "$is_manual" == "true" ]]; then
-            echo "shouldRelease=true" >> $GITHUB_OUTPUT
-          else
-            echo "shouldRelease=false" >> $GITHUB_OUTPUT
-          fi
-
-  test:
-    name: Test & Build
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.should-release == 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Type check
-        run: npm run type-check
-
-      - name: Test
-        if: github.event.inputs.skip_tests != 'true'
-        run: npm test
-
-      - name: Build
-        run: npm run build:ci
-
-      - name: Generate schema comparisons
-        run: npm run generate:comparisons
-
-      - name: Validate build
-        run: npm run ci:validate-build
-
-      - name: Validate types
-        run: npm run ci:validate-types
-
-      - name: Validate version set
-        run: |
-          # Just run the validation script directly
-          npm run ci:validate-version-model
-
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [detect-changes, test]
-    if:
-      needs.detect-changes.outputs.should-release == 'true' && github.ref ==
-      'refs/heads/main'
     permissions:
       contents: write
+      issues: write
+      pull-requests: write
       id-token: write
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -171,97 +33,118 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Configure Git
+      - name: Run quality checks
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          npm run type-check
+          npm run lint
+          npm run format:check
 
-      - name: Determine release type
-        id: release-type
+      - name: Build package
+        run: npm run build:ci
+
+      - name: Validate build output
         run: |
-          if [[ "${{ github.event.inputs.release_type }}" == "major" ]]; then
-            echo "type=major" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.inputs.release_type }}" == "patch" ]]; then
-            echo "type=patch" >> $GITHUB_OUTPUT
-          elif [[ "${{ needs.detect-changes.outputs.has-api-update }}" == "true" ]]; then
-            echo "type=major" >> $GITHUB_OUTPUT
-          else
-            echo "type=auto" >> $GITHUB_OUTPUT
-          fi
+          npm run ci:validate-build
+          npm run ci:validate-types
+          npm run ci:validate-version-model
 
-      - name: Preview release
-        run: |
-          echo "🔍 Preview release changes:"
-          npm run release:dry
+      - name: Run tests
+        run: npm test
 
-      - name: Create Release
+      - name: Generate documentation
+        run: npm run docs
+
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: npm run changeset:version
+          publish: npm run changeset:publish
+          title: 'chore: release package'
+          commit: 'chore: release package'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Generate documentation with comparisons before release
-          npm run docs
-
-          # Run the release process
-          npm run release
-
-          # Get the new version
-          new_version=$(node -p "require('./package.json').version")
-
-          # Add generated documentation to the release
-          git add README.md
-          if [ -n "$(git diff --cached)" ]; then
-            git commit -m "docs: update documentation for release v$new_version"
-          fi
-
-          # Push changes and tags
-          git push origin main --tags
-
-          echo "✅ Released version $new_version"
-
-      - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          # Verify package before publishing
-          npm pack --dry-run
-
-          # Publish to npm
-          npm publish --provenance
-
-          echo "📦 Published to npm"
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
 
       - name: Create GitHub Release
+        if: steps.changesets.outputs.published == 'true'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.version.outputs.new_version }}
-          release_name: v${{ steps.version.outputs.new_version }}
+          tag_name:
+            v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version
+            }}
+          release_name:
+            Release v${{
+            fromJson(steps.changesets.outputs.publishedPackages)[0].version }}
           body: |
-            ## 🚀 CalVer Release v${{ steps.version.outputs.new_version }}
+            ## 🚀 What's Changed
 
-            This release follows Calendar Versioning aligned with Shopify's API quarterly releases.
-
-            ### 📊 API Versions Supported
-            - See [README](https://github.com/juanpprieto/shopify-api-types#supported-api-versions) for detailed version matrix
+            This release provides TypeScript definitions for Shopify's GraphQL APIs with comprehensive type safety and validation.
 
             ### 📦 Installation
+
             ```bash
-            npm install @juanpprieto/shopify-api-types@${{ steps.version.outputs.new_version }}
+            npm install @juanpprieto/shopify-api-types@${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}
             ```
 
-            ### 📝 Changes
+            ### 🔧 Usage
+
+            ```typescript
+            // Use the current stable API version
+            import type { Product, Shop } from '@juanpprieto/shopify-api-types/admin/current'
+            import type { Cart } from '@juanpprieto/shopify-api-types/sfapi/current'
+
+            // Or specify a version explicitly
+            import type { Product } from '@juanpprieto/shopify-api-types/admin/2025-07'
+            ```
+
+            ### 📊 Type Coverage
+
+            - **Admin API**: 1,758+ types for store management, webhooks, analytics
+            - **Storefront API**: 261+ types for product catalog, cart, checkout
+            - **Customer Account API**: 296+ types for customer profiles, orders
+
+            ### 📝 Changelog
+
             See [CHANGELOG.md](https://github.com/juanpprieto/shopify-api-types/blob/main/CHANGELOG.md) for detailed changes.
+
+            ### 🔗 Links
+
+            - [NPM Package](https://www.npmjs.com/package/@juanpprieto/shopify-api-types)
+            - [Documentation](https://github.com/juanpprieto/shopify-api-types#readme)
+            - [Shopify API Docs](https://shopify.dev/docs/api)
           draft: false
           prerelease: false
 
-  notify:
-    name: Notify
+  security-check:
+    name: Security Check
     runs-on: ubuntu-latest
-    needs: [release]
-    if: always() && needs.release.result == 'success'
+    if: github.event_name == 'push'
     steps:
-      - name: Success notification
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: npm audit --audit-level=high
+
+      - name: Check for known vulnerabilities
         run: |
-          echo "🎉 Release completed successfully!"
-          echo "Package published to npm: https://www.npmjs.com/package/@juanpprieto/shopify-api-types"
+          if npm audit --audit-level=critical 2>/dev/null; then
+            echo "No critical vulnerabilities found"
+          else
+            echo "Critical vulnerabilities detected - blocking release"
+            npm audit --audit-level=critical
+            exit 1
+          fi
