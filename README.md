@@ -76,8 +76,8 @@ import {
 
 | Version     | Status               | Description                                        |
 | ----------- | -------------------- | -------------------------------------------------- |
-| **2025-07** | ✅ **Current**       | Current stable release with full support           |
 | 2025-04     | 🔒 Previous          | Previous stable release with security patches only |
+| **2025-07** | ✅ **Current**       | Current stable release with full support           |
 | 2025-10     | 🧪 Release Candidate | Release candidate for next API version             |
 | unstable    | ⚠️ Experimental      | Unstable development version - APIs may change     |
 
