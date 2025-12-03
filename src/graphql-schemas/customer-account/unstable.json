@@ -11,6 +11,49 @@
       "types": [
         {
           "kind": "OBJECT",
+          "name": "AchPaymentDetails",
+          "description": "The bank account payment details related to a transaction.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "bankName",
+              "description": "The name of the bank used.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "last4",
+              "description": "The last four digits of the bank account used.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "AdditionalFeeSale",
           "description": "A sale that includes an additional fee charge.",
           "fields": [
@@ -1304,6 +1347,203 @@
           "possibleTypes": null
         },
         {
+          "kind": "ENUM",
+          "name": "BankAccountHolderType",
+          "description": "The type of bank account holder.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "COMPANY",
+              "description": "A company account holder.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "INDIVIDUAL",
+              "description": "An individual account holder.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "BankAccountType",
+          "description": "The type of bank account.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "CHECKING",
+              "description": "A checking account.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "SAVINGS",
+              "description": "A savings account.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "BankPaymentInstrument",
+          "description": "Represents a bank account payment instrument.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "accountHolderType",
+              "description": "The type of account holder.",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "BankAccountHolderType",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "accountType",
+              "description": "The type of bank account.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "BankAccountType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "bankName",
+              "description": "The name of the bank.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "billingAddress",
+              "description": "The billing address associated with the bank account.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "PaymentInstrumentBillingAddress",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "id",
+              "description": "The globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "lastDigits",
+              "description": "The last four digits of the account number.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Node",
+              "ofType": null
+            },
+            {
+              "kind": "INTERFACE",
+              "name": "PaymentInstrument",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "BankPaymentMethod",
+          "description": "A bank payment method that can be used for recurring and future payments.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "paymentProviderClientCredentials",
+              "description": "The payment provider client credentials.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PaymentProviderClientCredentials",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "SCALAR",
           "name": "Boolean",
           "description": "Represents `true` or `false` values.",
@@ -2087,6 +2327,24 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "subtotalBeforeTargetAllDiscountsSet",
+              "description": "The subtotal of the return line item without target all discounts.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
                   "ofType": null
                 }
               },
@@ -5187,6 +5445,32 @@
           "description": "Represents a company's business location.",
           "fields": [
             {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "availablePaymentMethods",
+              "description": "The list of all available payment methods that can be used for recurring and future payments.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "UNION",
+                      "name": "PaymentMethod",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "billingAddress",
@@ -5729,6 +6013,104 @@
                 "ofType": {
                   "kind": "OBJECT",
                   "name": "OrderConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "paymentInstrument",
+              "description": "The payment instrument corresponding to the provided ID.",
+              "args": [
+                {
+                  "name": "id",
+                  "description": "The ID of the payment instrument to return.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "INTERFACE",
+                "name": "PaymentInstrument",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "paymentInstruments",
+              "description": "The list of stored payment instruments.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PaymentInstrumentConnection",
                   "ofType": null
                 }
               },
@@ -9194,6 +9576,32 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "availablePaymentMethods",
+              "description": "The list of all available payment methods that can be used for recurring and future payments.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "UNION",
+                      "name": "PaymentMethod",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "availableWalletPaymentConfigs",
               "description": "The list of wallet payment configs for providers that the payment method accepts.",
               "args": [],
@@ -9213,6 +9621,20 @@
                     }
                   }
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "cardsinkCallerIdentificationToken",
+              "description": "The Cardsink caller identification token for card deposits.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -9571,6 +9993,24 @@
             },
             {
               "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "emailEditable",
+              "description": "Whether the customer allows email editing.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
               "isProtected": true,
               "name": "firstName",
               "description": "The first name of the customer.",
@@ -9827,6 +10267,114 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "paymentInstrument",
+              "description": "The payment instrument corresponding to the provided ID.",
+              "args": [
+                {
+                  "name": "id",
+                  "description": "The ID of the payment instrument to return.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "includeRevoked",
+                  "description": "Whether to include revoked payment instruments.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "INTERFACE",
+                "name": "PaymentInstrument",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "paymentInstruments",
+              "description": "The list of stored payment instruments.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PaymentInstrumentConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "paypalBillingAgreement",
               "description": "A PayPal Billing Agreement resource.",
               "args": [],
@@ -9954,7 +10502,7 @@
               "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "subscriptionContract",
-              "description": "A Subscription Contract resource identified by ID.",
+              "description": "Returns a `SubscriptionContract` resource by ID.",
               "args": [
                 {
                   "name": "id",
@@ -11499,6 +12047,43 @@
         },
         {
           "kind": "OBJECT",
+          "name": "CustomerEmailAddressChangeConfirmPayload",
+          "description": "Return type for `customerEmailAddressChangeConfirm` mutation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "userErrors",
+              "description": "The list of errors that occurred from executing the mutation.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "UserErrorsCustomerEmailAddressChangeErrors",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "CustomerEmailAddressChangeRequestPayload",
           "description": "Return type for `customerEmailAddressChangeRequest` mutation.",
           "fields": [
@@ -11533,7 +12118,58 @@
                     "name": null,
                     "ofType": {
                       "kind": "OBJECT",
-                      "name": "UserErrorsCustomerUserErrors",
+                      "name": "UserError",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "CustomerEmailAddressChangeRequestResendPayload",
+          "description": "Return type for `customerEmailAddressChangeRequestResend` mutation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "emailAddressAddRequest",
+              "description": "The email address change request that was resend the OTP.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "CustomerEmailAddressAddRequest",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "userErrors",
+              "description": "The list of errors that occurred from executing the mutation.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "UserError",
                       "ofType": null
                     }
                   }
@@ -13533,6 +14169,11 @@
             },
             {
               "kind": "OBJECT",
+              "name": "UserError",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
               "name": "UserErrorsBusinessContactUserErrors",
               "ofType": null
             },
@@ -13544,6 +14185,11 @@
             {
               "kind": "OBJECT",
               "name": "UserErrorsCustomerAddressUserErrors",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "UserErrorsCustomerEmailAddressChangeErrors",
               "ofType": null
             },
             {
@@ -13584,6 +14230,11 @@
             {
               "kind": "OBJECT",
               "name": "UserErrorsStorefrontCustomerAccessTokenCreateUserErrors",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "UserErrorsStripeFinancialConnectionsSessionUserErrors",
               "ofType": null
             }
           ]
@@ -16177,6 +16828,45 @@
           "possibleTypes": null
         },
         {
+          "kind": "INPUT_OBJECT",
+          "name": "ExtensionHandleInput",
+          "description": "The input fields used to retrieve an extension by handle.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "handle",
+              "description": "The handle of the extension.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "apiKey",
+              "description": "The API key of the app.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "OBJECT",
           "name": "ExtensionStorefrontApiToken",
           "description": "Ephemeral token used by ui extensions to query the storefront API.",
@@ -17496,6 +18186,129 @@
               "deprecationReason": null
             }
           ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "GenericFile",
+          "description": "The generic file resource lets you manage files in a merchant's store. Generic files include any file that doesn't fit into a designated type such as image or video. Example: PDF, JSON.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to indicate the contents of a file.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mimeType",
+              "description": "The MIME type of the file.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "originalFileSize",
+              "description": "The size of the original file in bytes.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "url",
+              "description": "The URL of the file.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "URL",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Media",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
           "possibleTypes": null
         },
         {
@@ -20264,6 +21077,81 @@
             {
               "isPreAuthAccessible": true,
               "isProtected": false,
+              "name": "suggestedReturnReasonDefinitions",
+              "description": "The suggested return reasons for this line item based on its product category and shop customizations.",
+              "args": [
+                {
+                  "name": "includeExtendedReasons",
+                  "description": "Whether to include extended return reasons.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                },
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ReturnReasonDefinitionConnection",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
               "name": "supportedReturnReasons",
               "description": "The reasons that the customer can return this line item.",
               "args": [],
@@ -20284,8 +21172,8 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `suggestedReturnReasonDefinitions` instead."
             },
             {
               "isPreAuthAccessible": true,
@@ -20997,6 +21885,20 @@
             {
               "isPreAuthAccessible": true,
               "isProtected": false,
+              "name": "parentVariantTitle",
+              "description": "The title of the parent variant.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
               "name": "quantity",
               "description": "The number of line item groups ordered.",
               "args": [],
@@ -21416,11 +22318,25 @@
               "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "branding",
-              "description": "Branding data for the current market contex.",
+              "description": "Branding data for the current market context.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
                 "name": "JSON",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "brandingSettings",
+              "description": "Typed branding data for the current market context.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "MarketConfigurationBrandingSettings",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -21459,7 +22375,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "merchantPolicies",
               "description": "The list of merchant policies for the current market context.",
@@ -21786,6 +22702,24 @@
           "name": "MarketConfigurationActivatedExtensionExtension",
           "description": "A Customer Account UI extension.",
           "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "apiKey",
+              "description": "The API key of the extension.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
@@ -22333,9 +23267,260 @@
         },
         {
           "kind": "OBJECT",
+          "name": "MarketConfigurationBrandingSettings",
+          "description": "Branding data for the current market context.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "customizations",
+              "description": "The customizations that apply to specific components or areas of the user interface.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "designSystem",
+              "description": "The design system settings including colors, typography, and corner radius.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "MarketConfigurationBrandingSettingsDesignSystem",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MarketConfigurationBrandingSettingsDesignSystem",
+          "description": "The design system settings including colors, typography, and corner radius.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "colors",
+              "description": "The color settings for global colors and color schemes.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "MarketConfigurationBrandingSettingsDesignSystemColors",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "cornerRadius",
+              "description": "The corner radius variables.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "MarketConfigurationBrandingSettingsDesignSystemCornerRadius",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "typography",
+              "description": "The typography settings for primary and secondary fonts.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "MarketConfigurationBrandingSettingsDesignSystemTypography",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MarketConfigurationBrandingSettingsDesignSystemColors",
+          "description": "The color settings for global colors and color schemes.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "global",
+              "description": "Global color settings including brand, accent, decorative, success, warning, critical, and info.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "schemes",
+              "description": "Color schemes for different UI states and components.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MarketConfigurationBrandingSettingsDesignSystemCornerRadius",
+          "description": "The corner radius variables.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "base",
+              "description": "Base corner radius value.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "large",
+              "description": "Large corner radius value.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "small",
+              "description": "Small corner radius value.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MarketConfigurationBrandingSettingsDesignSystemTypography",
+          "description": "The typography settings for primary and secondary fonts.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "primary",
+              "description": "Primary font settings including name, weight, sources, and loading strategy.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "secondary",
+              "description": "Secondary font settings including name, weight, sources, and loading strategy.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "size",
+              "description": "Size settings including base size and ratio.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "MarketConfigurationMenu",
           "description": "Menu data including navigation items.",
           "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "handle",
+              "description": "The menu's handle.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
@@ -22612,6 +23797,232 @@
           "possibleTypes": null
         },
         {
+          "kind": "INTERFACE",
+          "name": "Media",
+          "description": "Represents a media interface.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to share the nature or contents of a media.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "GenericFile",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "MediaImage",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Model3d",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Video",
+              "ofType": null
+            }
+          ]
+        },
+        {
+          "kind": "ENUM",
+          "name": "MediaContentType",
+          "description": "The content types that a media can have.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "MODEL_3D",
+              "description": "A Shopify hosted 3D model.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "GENERIC_FILE",
+              "description": "A Shopify hosted generic file.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "IMAGE",
+              "description": "A Shopify hosted image.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "VIDEO",
+              "description": "A Shopify hosted video.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MediaImage",
+          "description": "Represents a Shopify hosted image.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to share the nature or contents of a media.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "image",
+              "description": "The image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Media",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "OBJECT",
           "name": "Menu",
           "description": "A menu for display on the customer account.",
@@ -22789,7 +24200,7 @@
           "description": "Represents a merchant policy such as privacy policy, terms of service, or refund policy.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "body",
               "description": "The HTML content of the policy.",
@@ -22807,7 +24218,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "handle",
               "description": "The handle of the policy.",
@@ -22825,7 +24236,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "title",
               "description": "The title of the policy.",
@@ -22843,7 +24254,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "url",
               "description": "The URL of the policy.",
@@ -22989,6 +24400,20 @@
                   "name": "String",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "reference",
+              "description": "Returns a reference object if the metafield's type is a resource reference.",
+              "args": [],
+              "type": {
+                "kind": "UNION",
+                "name": "MetafieldReference",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -23181,6 +24606,37 @@
           "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
+        },
+        {
+          "kind": "UNION",
+          "name": "MetafieldReference",
+          "description": "Returns the resource which is being referred to by a metafield.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "GenericFile",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "MediaImage",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Model3d",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Video",
+              "ofType": null
+            }
+          ]
         },
         {
           "kind": "ENUM",
@@ -23732,6 +25188,196 @@
         },
         {
           "kind": "OBJECT",
+          "name": "Model3d",
+          "description": "Represents a Shopify hosted 3D model.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to share the nature or contents of a media.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "sources",
+              "description": "The sources for a 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "Model3dSource",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Media",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Model3dSource",
+          "description": "Represents a source for a Shopify hosted 3d model.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "filesize",
+              "description": "The filesize of the 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "format",
+              "description": "The format of the 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mimeType",
+              "description": "The MIME type of the 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "url",
+              "description": "The URL of the 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "MoneyBag",
           "description": "A collection of monetary values in their respective currencies. Typically used in the context of multi-currency pricing and transactions,\nwhen an amount in the shop's currency is converted to the customer's currency of choice (the presentment currency).",
           "fields": [
@@ -23939,6 +25585,16 @@
                     "ofType": null
                   },
                   "defaultValue": null
+                },
+                {
+                  "name": "includeRevoked",
+                  "description": "Whether to allow updating a revoked payment method.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
                 }
               ],
               "type": {
@@ -24377,6 +26033,16 @@
                     }
                   },
                   "defaultValue": null
+                },
+                {
+                  "name": "includeRevoked",
+                  "description": "Whether to allow updating revoked a payment method.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
                 }
               ],
               "type": {
@@ -24507,6 +26173,49 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "customerEmailAddressChangeConfirm",
+              "description": "Validate a email change request with confromation code and Update the email address of a customer",
+              "args": [
+                {
+                  "name": "emailAddressAddRequestId",
+                  "description": "The ID of the email address change request to confirm.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "confirmationCode",
+                  "description": "The confirmation code to validate the email address change request.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "CustomerEmailAddressChangeConfirmPayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "customerEmailAddressChangeRequest",
               "description": "Request an email address update for a customer.",
               "args": [
@@ -24528,6 +26237,35 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "CustomerEmailAddressChangeRequestPayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "customerEmailAddressChangeRequestResend",
+              "description": "Resend a email address change request.",
+              "args": [
+                {
+                  "name": "emailAddressAddRequestId",
+                  "description": "The ID of the email address change request to resend the OTP.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "CustomerEmailAddressChangeRequestResendPayload",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -24694,6 +26432,16 @@
                     }
                   },
                   "defaultValue": null
+                },
+                {
+                  "name": "includeRevoked",
+                  "description": "Whether to allow updating a revoked payment method.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
                 }
               ],
               "type": {
@@ -24832,6 +26580,71 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "paymentInstrumentAdd",
+              "description": "Adds a new payment instrument and associates mandates. Returns the created instrument on success.",
+              "args": [
+                {
+                  "name": "idempotencyKey",
+                  "description": "Unique key for this request.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "instrument",
+                  "description": "The payment instrument to add.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "PaymentInstrumentInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "mandates",
+                  "description": "The mandates to associate with this instrument.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                          "kind": "INPUT_OBJECT",
+                          "name": "PaymentMandateInput",
+                          "ofType": null
+                        }
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "PaymentInstrumentAddPayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "paymentInstrumentRemove",
               "description": "Removes a payment instrument from a customer's account.",
               "args": [
@@ -24863,6 +26676,81 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "PaymentInstrumentRemovePayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "paymentInstrumentReplace",
+              "description": "Replace existing payment mandates with a new (or existing) instrument. Subscriptions require special treatment.",
+              "args": [
+                {
+                  "name": "id",
+                  "description": "The ID of the existing payment instrument to replace.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "idempotencyKey",
+                  "description": "Unique key for this request.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "instrument",
+                  "description": "The new payment instrument to replace with.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "PaymentInstrumentInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "mandates",
+                  "description": "The mandates to associate with this instrument. If not provided, all mandates are replaced.",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "PaymentMandateInput",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "PaymentInstrumentReplacePayload",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -24957,6 +26845,73 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "paypalBillingAgreementUpdate",
+              "description": "Updates a payment method with a PayPal billing agreement.",
+              "args": [
+                {
+                  "name": "paymentMethodId",
+                  "description": "The ID of the payment method to be updated.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "paypalToken",
+                  "description": "The PayPal Express token.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "paypalPayerId",
+                  "description": "The Payer ID provided by PayPal.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "includeRevoked",
+                  "description": "Whether to allow updating a revoked payment method.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "PaypalBillingAgreementUpdatePayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "paypalTokenCreate",
               "description": "Creates a PayPal Express token.",
               "args": [],
@@ -25001,7 +26956,7 @@
               "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "resendOrderNotification",
-              "description": "Resends an order confirmation notification to the customer.",
+              "description": "Resends an order link notification to the customer.",
               "args": [
                 {
                   "name": "orderToken",
@@ -25068,6 +27023,20 @@
               },
               "isDeprecated": true,
               "deprecationReason": "The `storefrontCustomerAccessTokenCreate` is deprecated and will be removed in a future version. Please see [the changelog](https://shopify.dev/changelog/deprecation-of-storefrontcustomeraccesstokencreate-mutation) for more information."
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "stripeFinancialConnectionsSessionInitiate",
+              "description": "Initiates a new Stripe Financial Connections session.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "StripeFinancialConnectionsSessionInitiatePayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             },
             {
               "isPreAuthAccessible": false,
@@ -25414,6 +27383,11 @@
             },
             {
               "kind": "OBJECT",
+              "name": "BankPaymentInstrument",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
               "name": "Checkout",
               "ofType": null
             },
@@ -25649,11 +27623,6 @@
             },
             {
               "kind": "OBJECT",
-              "name": "RefundLineItem",
-              "ofType": null
-            },
-            {
-              "kind": "OBJECT",
               "name": "RemainingLineItemContainerLineItem",
               "ofType": null
             },
@@ -25670,6 +27639,11 @@
             {
               "kind": "OBJECT",
               "name": "ReturnLineItem",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "ReturnReasonDefinition",
               "ofType": null
             },
             {
@@ -26515,43 +28489,6 @@
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": true,
-              "isProtected": false,
-              "name": "estimatedRefund",
-              "description": "A refund estimate for the order based on a set of line items.",
-              "args": [
-                {
-                  "name": "requestedLineItems",
-                  "description": "The line items proposed for refund.",
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "LIST",
-                      "name": null,
-                      "ofType": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                          "kind": "INPUT_OBJECT",
-                          "name": "RefundEstimateLineItemInput",
-                          "ofType": null
-                        }
-                      }
-                    }
-                  },
-                  "defaultValue": null
-                }
-              ],
-              "type": {
-                "kind": "OBJECT",
-                "name": "OrderEstimatedRefund",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -29162,256 +31099,6 @@
           "possibleTypes": null
         },
         {
-          "kind": "OBJECT",
-          "name": "OrderEstimatedRefund",
-          "description": "The estimated refund amount for a buyer based on the items requested for return. Estimated refund may include return fees depending on the [return rules](https://help.shopify.com/manual/fulfillment/managing-orders/returns/return-rules) at the time the order was placed.",
-          "fields": [
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "amountSet",
-              "description": "The total monetary value expected to be refunded, expressed in shop and presentment currencies.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MoneyBag",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "discountedSubtotalSet",
-              "description": "The total of all discounted prices of the line items expected to be refunded.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MoneyBag",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "refundLineItems",
-              "description": "A list of line items expected to be refunded, along with restock instructions.",
-              "args": [
-                {
-                  "name": "first",
-                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "after",
-                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "last",
-                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "before",
-                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "reverse",
-                  "description": "Reverse the order of the underlying list.",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Boolean",
-                    "ofType": null
-                  },
-                  "defaultValue": "false"
-                }
-              ],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "RefundLineItemConnection",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "returnRestockingFee",
-              "description": "The restocking fee generated by the return process.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "ReturnRestockingFee",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "returnShippingFee",
-              "description": "The shipping fee generated by the return process.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "ReturnShippingFee",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "shipping",
-              "description": "The shipping costs expected to be refunded from the order.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "ShippingRefund",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "subtotalSet",
-              "description": "The total of all amounts of the line items expected to be refunded in shop and presentment currencies.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MoneyBag",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "suggestedTransactions",
-              "description": "A list of suggested order transactions.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "OBJECT",
-                      "name": "SuggestedOrderTransaction",
-                      "ofType": null
-                    }
-                  }
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "totalCartDiscountAmountSet",
-              "description": "The total cart discount amount that was applied to all line items in this expected refund.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MoneyBag",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "totalTaxSet",
-              "description": "The total of the taxes expected to be refunded from the order in shop and presentment currencies.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MoneyBag",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
-          "inputFields": null,
-          "interfaces": [],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
           "kind": "ENUM",
           "name": "OrderFinancialStatus",
           "description": "Represents the order's current financial status.",
@@ -29516,7 +31203,7 @@
             },
             {
               "name": "IN_PROGRESS",
-              "description": "Displayed as **In progress**. Some of the items in the order have been fulfilled, or a request for fulfillment has been sent to the fulfillment service.",
+              "description": "Displayed as **In progress**. All of the items in the order have had a request for fulfillment sent to the fulfillment service or all of the items have been marked as in progress.",
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -30919,6 +32606,12 @@
               "deprecationReason": null
             },
             {
+              "name": "ACH",
+              "description": "An ACH bank account transaction.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "STORE_CREDIT",
               "description": "A store credit transaction.",
               "isDeprecated": false,
@@ -31003,6 +32696,55 @@
           "possibleTypes": null
         },
         {
+          "kind": "INPUT_OBJECT",
+          "name": "PaymentCredentialRemoteTokenInput",
+          "description": "The input fields for a single remote-token credential.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "providerId",
+              "description": "Internal provider identifier.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "type",
+              "description": "Credential type.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "token",
+              "description": "Opaque credential token.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "UNION",
           "name": "PaymentDetails",
           "description": "Payment details related to a transaction.",
@@ -31011,6 +32753,11 @@
           "interfaces": null,
           "enumValues": null,
           "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "AchPaymentDetails",
+              "ofType": null
+            },
             {
               "kind": "OBJECT",
               "name": "CardPaymentDetails",
@@ -31320,6 +33067,11 @@
           "possibleTypes": [
             {
               "kind": "OBJECT",
+              "name": "BankPaymentInstrument",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
               "name": "CustomerCreditCard",
               "ofType": null
             },
@@ -31329,6 +33081,85 @@
               "ofType": null
             }
           ]
+        },
+        {
+          "kind": "OBJECT",
+          "name": "PaymentInstrumentAddPayload",
+          "description": "Return type for `paymentInstrumentAdd` mutation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "nextActionUrl",
+              "description": "The URL to which the customer should be redirected to complete the 3D Secure payment flow.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "URL",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "paymentInstrument",
+              "description": "The newly added payment instrument.",
+              "args": [],
+              "type": {
+                "kind": "INTERFACE",
+                "name": "PaymentInstrument",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "processing",
+              "description": "If the payment verification result is processing. When this is true, payment_instrument will be null.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "userErrors",
+              "description": "The list of errors that occurred from executing the mutation.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "UserErrorsPaymentInstrumentUserErrors",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
         },
         {
           "kind": "OBJECT",
@@ -31497,6 +33328,155 @@
         },
         {
           "kind": "OBJECT",
+          "name": "PaymentInstrumentConnection",
+          "description": "An auto-generated type for paginating through multiple PaymentInstruments.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "edges",
+              "description": "The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "PaymentInstrumentEdge",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "nodes",
+              "description": "A list of nodes that are contained in PaymentInstrumentEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INTERFACE",
+                      "name": "PaymentInstrument",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "pageInfo",
+              "description": "An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "PaymentInstrumentEdge",
+          "description": "An auto-generated type which holds one PaymentInstrument and a cursor during pagination.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "cursor",
+              "description": "The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "node",
+              "description": "The item at the end of PaymentInstrumentEdge.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "PaymentInstrument",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "PaymentInstrumentInput",
+          "description": "The input fields for a payment instrument.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "remoteToken",
+              "description": "The remote-token based instrument (e.g., credit card session, PayPal token).",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "RemoteTokenPaymentInstrumentInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "PaymentInstrumentRemovePayload",
           "description": "Return type for `paymentInstrumentRemove` mutation.",
           "fields": [
@@ -31509,6 +33489,85 @@
               "type": {
                 "kind": "SCALAR",
                 "name": "ID",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "userErrors",
+              "description": "The list of errors that occurred from executing the mutation.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "UserErrorsPaymentInstrumentUserErrors",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "PaymentInstrumentReplacePayload",
+          "description": "Return type for `paymentInstrumentReplace` mutation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "nextActionUrl",
+              "description": "The URL to which the customer should be redirected to complete the 3D Secure payment flow.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "URL",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "paymentInstrument",
+              "description": "The replacement payment instrument.",
+              "args": [],
+              "type": {
+                "kind": "INTERFACE",
+                "name": "PaymentInstrument",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "processing",
+              "description": "If the payment verification result is processing. When this is true, payment_instrument will be null.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -31624,6 +33683,143 @@
               "deprecationReason": null
             }
           ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "PaymentMandateInput",
+          "description": "The input fields for a mandate association for a payment instrument.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "resourceType",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "PaymentMandateResourceType",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "resourceId",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "PaymentMandateResourceType",
+          "description": "Resources a mandate can be associated with.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "ORDER",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "DRAFTORDER",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "CHECKOUT",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "RECEIPT",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "SUBSCRIPTIONS",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "ANY",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "UNION",
+          "name": "PaymentMethod",
+          "description": "A payment method that customers can use to pay.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "BankPaymentMethod",
+              "ofType": null
+            }
+          ]
+        },
+        {
+          "kind": "OBJECT",
+          "name": "PaymentProviderClientCredentials",
+          "description": "Represents a payment provider client credentials.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "apiClientKey",
+              "description": "The API client key for the payment provider client.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "merchantAccountId",
+              "description": "The merchant's payment provider account id.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
           "possibleTypes": null
         },
         {
@@ -32511,6 +34707,85 @@
               "ofType": null
             }
           ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "PaypalBillingAgreementUpdatePayload",
+          "description": "Return type for `paypalBillingAgreementUpdate` mutation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "nextActionUrl",
+              "description": "The URL to which the customer should be redirected to complete the PayPal payment flow.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "URL",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "paypalBillingAgreement",
+              "description": "The updated PayPal billing agreement.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "PaypalBillingAgreement",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "processing",
+              "description": "If the verification result is processing. When this is true, paypal_billing_agreement will be null.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "userErrors",
+              "description": "The list of errors that occurred from executing the mutation.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "UserErrorsPaypalTokenUserErrors",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
           "enumValues": null,
           "possibleTypes": null
         },
@@ -34041,7 +36316,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "marketConfiguration",
               "description": "Fetch market-specific configuration including branding, extensions, and menu.",
@@ -34264,19 +36539,33 @@
                   "name": "extensionIds",
                   "description": "The UI extension IDs for which metafields will be fetched.",
                   "type": {
-                    "kind": "NON_NULL",
+                    "kind": "LIST",
                     "name": null,
                     "ofType": {
-                      "kind": "LIST",
+                      "kind": "NON_NULL",
                       "name": null,
                       "ofType": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                          "kind": "SCALAR",
-                          "name": "ID",
-                          "ofType": null
-                        }
+                        "kind": "SCALAR",
+                        "name": "ID",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "extensionHandles",
+                  "description": "The UI extension handles for which metafields will be fetched.",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "ExtensionHandleInput",
+                        "ofType": null
                       }
                     }
                   },
@@ -34607,258 +36896,6 @@
           "possibleTypes": null
         },
         {
-          "kind": "INPUT_OBJECT",
-          "name": "RefundEstimateLineItemInput",
-          "description": "The input fields for a requested line item.",
-          "fields": null,
-          "inputFields": [
-            {
-              "name": "lineItemId",
-              "description": "The ID of the line item to be returned.",
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "ID",
-                  "ofType": null
-                }
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "quantity",
-              "description": "The quantity of the item to be returned.",
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              },
-              "defaultValue": null
-            }
-          ],
-          "interfaces": null,
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "OBJECT",
-          "name": "RefundLineItem",
-          "description": "A line item that is included in a refund.",
-          "fields": [
-            {
-              "isPreAuthAccessible": true,
-              "isProtected": false,
-              "name": "id",
-              "description": "A globally-unique ID.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "ID",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "lineItem",
-              "description": "The line item that was associated with the refund.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "LineItem",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "quantity",
-              "description": "The quantity of the line item that has already been refunded.",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "subtotalSet",
-              "description": "The subtotal amount that was already refunded, in both shop and presentment currencies.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MoneyBag",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
-          "inputFields": null,
-          "interfaces": [
-            {
-              "kind": "INTERFACE",
-              "name": "Node",
-              "ofType": null
-            }
-          ],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "OBJECT",
-          "name": "RefundLineItemConnection",
-          "description": "An auto-generated type for paginating through multiple RefundLineItems.",
-          "fields": [
-            {
-              "isPreAuthAccessible": true,
-              "isProtected": false,
-              "name": "edges",
-              "description": "The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "OBJECT",
-                      "name": "RefundLineItemEdge",
-                      "ofType": null
-                    }
-                  }
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": true,
-              "isProtected": false,
-              "name": "nodes",
-              "description": "A list of nodes that are contained in RefundLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "OBJECT",
-                      "name": "RefundLineItem",
-                      "ofType": null
-                    }
-                  }
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": true,
-              "isProtected": false,
-              "name": "pageInfo",
-              "description": "An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "PageInfo",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
-          "inputFields": null,
-          "interfaces": [],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "OBJECT",
-          "name": "RefundLineItemEdge",
-          "description": "An auto-generated type which holds one RefundLineItem and a cursor during pagination.",
-          "fields": [
-            {
-              "isPreAuthAccessible": true,
-              "isProtected": false,
-              "name": "cursor",
-              "description": "The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql).",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": true,
-              "isProtected": false,
-              "name": "node",
-              "description": "The item at the end of RefundLineItemEdge.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "RefundLineItem",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
-          "inputFields": null,
-          "interfaces": [],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
           "kind": "OBJECT",
           "name": "RemainingLineItemContainer",
           "description": "The information about the line items container for items that have not been refunded or removed.",
@@ -35139,6 +37176,63 @@
         },
         {
           "kind": "INPUT_OBJECT",
+          "name": "RemoteTokenPaymentInstrumentInput",
+          "description": "The input fields for a remote-token instrument.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "ownerId",
+              "description": "The owner ID to associate with this instrument.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "credentials",
+              "description": "Credentials for the remote token instrument. Multiple entries may be required for some instrument types.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "PaymentCredentialRemoteTokenInput",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "billingAddress",
+              "description": "The billing address associated with the payment instrument.",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "CustomerAddressInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
           "name": "RequestedLineItemInput",
           "description": "The input fields for a line item requested for return.",
           "fields": null,
@@ -35172,16 +37266,12 @@
               "defaultValue": null
             },
             {
-              "name": "returnReason",
-              "description": "The reason for returning the item.",
+              "name": "returnReasonDefinitionId",
+              "description": "The ID of the return reason definition for the item to be returned.",
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "ENUM",
-                  "name": "ReturnReason",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
               },
               "defaultValue": null
             },
@@ -36444,8 +38534,44 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "returnOrderLevelDiscountSubtotalSet",
+              "description": "The sum of all order level discounts that are target_all?.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "returnShippingFeeSubtotalSet",
               "description": "The subtotal of all return line items shipping fees.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "returnSubtotalBeforeTargetAllDiscountsSet",
+              "description": "The subtotal of all return line items excluding target_all discounts.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -36613,6 +38739,20 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "returnReasonDefinition",
+              "description": "The structured reason definition for returning the item.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ReturnReasonDefinition",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -36704,6 +38844,20 @@
                   "name": "ReturnReason",
                   "ofType": null
                 }
+              },
+              "isDeprecated": true,
+              "deprecationReason": "Use `returnReasonDefinition` instead. This field will be removed in the future."
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "returnReasonDefinition",
+              "description": "The structured reason definition for returning the item.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ReturnReasonDefinition",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -36924,6 +39078,252 @@
             {
               "name": "UNKNOWN",
               "description": "The reason is unknown.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "ReturnReasonDefinition",
+          "description": "Represents a structured reason for a return.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "deleted",
+              "description": "Whether the reason is deleted.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "handle",
+              "description": "A stable, human-readable identifier for the reason.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "name",
+              "description": "The localized customer-facing name of the reason.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Node",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "ReturnReasonDefinitionConnection",
+          "description": "An auto-generated type for paginating through multiple ReturnReasonDefinitions.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "edges",
+              "description": "The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "ReturnReasonDefinitionEdge",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "nodes",
+              "description": "A list of nodes that are contained in ReturnReasonDefinitionEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "ReturnReasonDefinition",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "pageInfo",
+              "description": "An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "ReturnReasonDefinitionEdge",
+          "description": "An auto-generated type which holds one ReturnReasonDefinition and a cursor during pagination.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "cursor",
+              "description": "The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "node",
+              "description": "The item at the end of ReturnReasonDefinitionEdge.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "ReturnReasonDefinition",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "ReturnReasonDefinitionSortKeys",
+          "description": "The set of valid sort keys for the ReturnReasonDefinition query.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "HANDLE",
+              "description": "Sort by the `handle` value.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "ID",
+              "description": "Sort by the `id` value.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "NAME",
+              "description": "Sort by the `name` value.",
               "isDeprecated": false,
               "deprecationReason": null
             }
@@ -39055,53 +41455,6 @@
         },
         {
           "kind": "OBJECT",
-          "name": "ShippingRefund",
-          "description": "The shipping costs that are paid back with the refund.",
-          "fields": [
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "maximumRefundableSet",
-              "description": "The maximum amount of shipping fees that can be refunded currently, in both shop and presentment currencies.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MoneyBag",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "taxSet",
-              "description": "The monetary value of the tax allocated to the shipping fees that are to be refunded, in both shop and presentment currencies.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MoneyBag",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
-          "inputFields": null,
-          "interfaces": [],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "OBJECT",
           "name": "Shop",
           "description": "A collection of the general information about the shop.",
           "fields": [
@@ -39277,6 +41630,131 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "returnReasonDefinitions",
+              "description": "The list of all return reason definitions.",
+              "args": [
+                {
+                  "name": "ids",
+                  "description": "The list of return reason definition IDs to retrieve.",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "ID",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "handles",
+                  "description": "The list of return reason definition handles to retrieve.",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                },
+                {
+                  "name": "sortKey",
+                  "description": "Sort the underlying list using a key. If your query is slow or returns an error, then [try specifying a sort key that matches the field used in the search](https://shopify.dev/api/usage/pagination-graphql#search-performance-considerations).",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "ReturnReasonDefinitionSortKeys",
+                    "ofType": null
+                  },
+                  "defaultValue": "ID"
+                },
+                {
+                  "name": "query",
+                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| default | string | Filter by a case-insensitive search of multiple fields in a document. | | | - `query=Bob Norman`<br/> - `query=title:green hoodie` |\n| deleted | boolean | Filter by whether the return reason has been deleted (deactivated). |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| name | string | Filter by name. |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "ReturnReasonDefinitionConnection",
                   "ofType": null
                 }
               },
@@ -41096,6 +43574,57 @@
           "fields": null,
           "inputFields": null,
           "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "StripeFinancialConnectionsSessionInitiatePayload",
+          "description": "Return type for `stripeFinancialConnectionsSessionInitiate` mutation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "clientSecret",
+              "description": "The Stripe Financial Connections client secret for session initiation.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "userErrors",
+              "description": "The list of errors that occurred from executing the mutation.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "UserErrorsStripeFinancialConnectionsSessionUserErrors",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
           "enumValues": null,
           "possibleTypes": null
         },
@@ -46198,105 +48727,6 @@
           "possibleTypes": null
         },
         {
-          "kind": "OBJECT",
-          "name": "SuggestedOrderTransaction",
-          "description": "A suggested order transaction. Suggested transactions are usually used in the context of refunds\nand exchanges.",
-          "fields": [
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "cardBrand",
-              "description": "The brand of the card used or the card type.",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "formattedGateway",
-              "description": "The human-readable payment gateway name suggested to process the transaction.",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "gateway",
-              "description": "The suggested payment gateway used to process the transaction.",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "last4",
-              "description": "The last four digits of the card used.",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "maximumRefundableSet",
-              "description": "The available amount to refund on the gateway in shop and presentment currencies. Only available within SuggestedRefund.",
-              "args": [],
-              "type": {
-                "kind": "OBJECT",
-                "name": "MoneyBag",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "refundedUsingGateway",
-              "description": "Whether the payment provider supports refunds.\nIf true, then the provider supports refunds.\nIf false, then the provider doesn't support refunds.",
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Boolean",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
-          "inputFields": null,
-          "interfaces": [],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
           "kind": "ENUM",
           "name": "TaxExemption",
           "description": "The available tax exemptions for a customer.",
@@ -50244,6 +52674,20 @@
                   "ofType": null
                 }
               },
+              "isDeprecated": true,
+              "deprecationReason": "Use `returnReasonDefinition` instead. This field will be removed in the future."
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "returnReasonDefinition",
+              "description": "The structured reason definition for returning the item.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ReturnReasonDefinition",
+                "ofType": null
+              },
               "isDeprecated": false,
               "deprecationReason": null
             }
@@ -50258,6 +52702,63 @@
             {
               "kind": "INTERFACE",
               "name": "ReturnLineItemType",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "UserError",
+          "description": "Represents an error in the input of a mutation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "field",
+              "description": "The path to the input field that caused the error.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "message",
+              "description": "The error message.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "DisplayableError",
               "ofType": null
             }
           ],
@@ -50842,6 +53343,100 @@
         },
         {
           "kind": "OBJECT",
+          "name": "UserErrorsCustomerEmailAddressChangeErrors",
+          "description": "Provides error codes for failed email address change mutations.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "code",
+              "description": "The error code.",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "UserErrorsCustomerEmailAddressChangeErrorsCode",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "field",
+              "description": "The path to the input field that caused the error.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "message",
+              "description": "The error message.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "DisplayableError",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "UserErrorsCustomerEmailAddressChangeErrorsCode",
+          "description": "Possible error codes that can be returned by `UserErrorsCustomerEmailAddressChangeErrors`.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "TAKEN",
+              "description": "The email address is already taken.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "INVALID",
+              "description": "The input value is invalid.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "UserErrorsCustomerEmailMarketingOptInUserErrors",
           "description": "Provides error codes for failed marketing opt-in mutations.",
           "fields": [
@@ -51364,6 +53959,12 @@
               "deprecationReason": null
             },
             {
+              "name": "OWNER_ID_INVALID",
+              "description": "Owner ID is invalid.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "EXPIRED",
               "description": "The card is expired.",
               "isDeprecated": false,
@@ -51562,6 +54163,12 @@
             {
               "name": "TOKEN_COULD_NOT_BE_CREATED",
               "description": "PayPal Express token could not be created.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "PAYMENT_INSTRUMENT_ID_DOES_NOT_EXIST",
+              "description": "Payment method ID does not exist.",
               "isDeprecated": false,
               "deprecationReason": null
             }
@@ -51854,6 +54461,302 @@
               "deprecationReason": null
             }
           ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "UserErrorsStripeFinancialConnectionsSessionUserErrors",
+          "description": "The error codes for failed Stripe Financial Connections session initiation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "code",
+              "description": "The error code.",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "UserErrorsStripeFinancialConnectionsSessionUserErrorsCode",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "field",
+              "description": "The path to the input field that caused the error.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "message",
+              "description": "The error message.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "DisplayableError",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "UserErrorsStripeFinancialConnectionsSessionUserErrorsCode",
+          "description": "Possible error codes that can be returned by `UserErrorsStripeFinancialConnectionsSessionUserErrors`.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "STRIPE_FINANCIAL_CONNECTIONS_SESSION_ERROR",
+              "description": "Stripe Financial Connections session could not be initiated.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Video",
+          "description": "Represents a Shopify hosted video.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to share the nature or contents of a media.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "sources",
+              "description": "The sources for a video.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "VideoSource",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Media",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VideoSource",
+          "description": "Represents a source for a Shopify hosted video.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "format",
+              "description": "The format of the video source.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "height",
+              "description": "The height of the video.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mimeType",
+              "description": "The video MIME type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "url",
+              "description": "The URL of the video.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "width",
+              "description": "The width of the video.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
           "possibleTypes": null
         },
         {
@@ -53328,6 +56231,16 @@
             {
               "name": "preferredLocationId",
               "description": "The identifier of the customer's preferred location.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "channelId",
+              "description": "Id of the channel for context.",
               "type": {
                 "kind": "SCALAR",
                 "name": "ID",

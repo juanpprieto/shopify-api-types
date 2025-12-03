@@ -5723,6 +5723,12 @@
             "deprecationReason": null
           },
           {
+            "name": "BUYER_CANNOT_PURCHASE_FOR_COMPANY_LOCATION",
+            "description": "Buyer cannot purchase for company location.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "ADDRESS_FIELD_IS_REQUIRED",
             "description": "The specified address field is required.",
             "isDeprecated": false,
@@ -20518,6 +20524,12 @@
             "description": "Metafield not found.",
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "APP_NOT_AUTHORIZED",
+            "description": "The current app is not authorized to perform this action.",
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "possibleTypes": null
@@ -21036,6 +21048,12 @@
           {
             "name": "INVALID_TYPE",
             "description": "The type is invalid.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "APP_NOT_AUTHORIZED",
+            "description": "The current app is not authorized to perform this action.",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -39077,42 +39095,44 @@
     ],
     "directives": [
       {
-        "name": "include",
-        "description": "Directs the executor to include this field or fragment only when the `if` argument is true.",
-        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "name": "accessRestricted",
+        "description": "Marks an element of a GraphQL schema as having restricted access.",
+        "locations": ["FIELD_DEFINITION", "OBJECT"],
         "args": [
           {
-            "name": "if",
-            "description": "Included when true.",
+            "name": "reason",
+            "description": "Explains the reason around this restriction",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
-            "defaultValue": null
+            "defaultValue": "null"
           }
         ]
       },
       {
-        "name": "skip",
-        "description": "Directs the executor to skip this field or fragment when the `if` argument is true.",
-        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "name": "defer",
+        "description": "Informs the server to delay the execution of the current fragment, potentially resulting in multiple responses from the server. Non-deferred data is delivered in the initial response and data deferred is delivered in subsequent responses. Only available on development stores with the Defer Directive developer preview enabled.",
+        "locations": ["FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
         "args": [
           {
             "name": "if",
-            "description": "Skipped when true.",
+            "description": "When `true`, fragment should be deferred. When `false`, fragment will not be\ndeferred and data will be included in the initial response. Defaults to `true`\nwhen omitted.\n",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": "true"
+          },
+          {
+            "name": "label",
+            "description": "May be used to identify the data from responses and associate it with the\ncorresponding defer directive. `label` must be unique label across all `@defer` and\n`@stream` directives in a document. `label` must not be provided as a variable.\n",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "defaultValue": null
           }
@@ -39137,50 +39157,6 @@
               "ofType": null
             },
             "defaultValue": "\"No longer supported\""
-          }
-        ]
-      },
-      {
-        "name": "oneOf",
-        "description": "Requires that exactly one field must be supplied and that field must not be `null`.",
-        "locations": ["INPUT_OBJECT"],
-        "args": []
-      },
-      {
-        "name": "specifiedBy",
-        "description": "Exposes a URL that specifies the behavior of this scalar.",
-        "locations": ["SCALAR"],
-        "args": [
-          {
-            "name": "url",
-            "description": "The URL that specifies the behavior of this scalar.",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "defaultValue": null
-          }
-        ]
-      },
-      {
-        "name": "accessRestricted",
-        "description": "Marks an element of a GraphQL schema as having restricted access.",
-        "locations": ["FIELD_DEFINITION", "OBJECT"],
-        "args": [
-          {
-            "name": "reason",
-            "description": "Explains the reason around this restriction",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": "null"
           }
         ]
       },
@@ -39232,27 +39208,69 @@
         ]
       },
       {
-        "name": "defer",
-        "description": "Informs the server to delay the execution of the current fragment, potentially resulting in multiple responses from the server. Non-deferred data is delivered in the initial response and data deferred is delivered in subsequent responses. Only available on development stores with the Defer Directive developer preview enabled.",
-        "locations": ["FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "name": "include",
+        "description": "Directs the executor to include this field or fragment only when the `if` argument is true.",
+        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
         "args": [
           {
             "name": "if",
-            "description": "When `true`, fragment should be deferred. When `false`, fragment will not be\ndeferred and data will be included in the initial response. Defaults to `true`\nwhen omitted.\n",
+            "description": "Included when true.",
             "type": {
-              "kind": "SCALAR",
-              "name": "Boolean",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
             },
-            "defaultValue": "true"
-          },
+            "defaultValue": null
+          }
+        ]
+      },
+      {
+        "name": "oneOf",
+        "description": "Requires that exactly one field must be supplied and that field must not be `null`.",
+        "locations": ["INPUT_OBJECT"],
+        "args": []
+      },
+      {
+        "name": "skip",
+        "description": "Directs the executor to skip this field or fragment when the `if` argument is true.",
+        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "args": [
           {
-            "name": "label",
-            "description": "May be used to identify the data from responses and associate it with the\ncorresponding defer directive. `label` must be unique label across all `@defer` and\n`@stream` directives in a document. `label` must not be provided as a variable.\n",
+            "name": "if",
+            "description": "Skipped when true.",
             "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ]
+      },
+      {
+        "name": "specifiedBy",
+        "description": "Exposes a URL that specifies the behavior of this scalar.",
+        "locations": ["SCALAR"],
+        "args": [
+          {
+            "name": "url",
+            "description": "The URL that specifies the behavior of this scalar.",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
             },
             "defaultValue": null
           }

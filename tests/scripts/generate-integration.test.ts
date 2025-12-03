@@ -3,7 +3,10 @@ import fs from 'fs/promises';
 import path from 'path';
 import { generatePackageExports } from '../../scripts/generate-exports.js';
 import { generateIndexFiles } from '../../scripts/generate-indexes.js';
-import { getSupportedVersions } from '../../scripts/version-utils.js';
+import {
+  getSupportedVersions,
+  getCurrentVersionSet,
+} from '../../scripts/version-utils.js';
 
 describe('Generation Scripts Integration Tests', () => {
   describe('Generate Exports', () => {
@@ -123,14 +126,15 @@ describe('Generation Scripts Integration Tests', () => {
   describe('Version Consistency', () => {
     it('should use the same 4 versions across all generation scripts', async () => {
       const versions = getSupportedVersions();
+      const versionSet = getCurrentVersionSet();
 
       // Should always be exactly 4 versions
       expect(versions).toHaveLength(4);
 
-      // Should include current, previous, RC, and unstable
-      expect(versions).toContain('2025-07'); // current
-      expect(versions).toContain('2025-04'); // previous
-      expect(versions).toContain('2025-10'); // RC
+      // Should include current, previous, RC, and unstable from dynamic calculation
+      expect(versions).toContain(versionSet.current);
+      expect(versions).toContain(versionSet.previous);
+      expect(versions).toContain(versionSet.releaseCandidate);
       expect(versions).toContain('unstable');
     });
   });

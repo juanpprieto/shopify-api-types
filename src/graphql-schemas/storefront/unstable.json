@@ -5835,6 +5835,12 @@
             "deprecationReason": null
           },
           {
+            "name": "MERCHANDISE_NOT_APPLICABLE",
+            "description": "Item cannot be purchased as configured.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "MISSING_DISCOUNT_CODE",
             "description": "Missing discount code.",
             "isDeprecated": false,
@@ -5979,6 +5985,12 @@
             "deprecationReason": null
           },
           {
+            "name": "PARENT_LINE_INVALID_REFERENCE",
+            "description": "Cannot reference existing parent lines by variant_id.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "PARENT_LINE_NOT_FOUND",
             "description": "Parent line not found.",
             "isDeprecated": false,
@@ -5993,6 +6005,12 @@
           {
             "name": "PARENT_LINE_OPERATION_BLOCKED",
             "description": "Nested cartlines are blocked due to an incompatibility.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "GIFT_CARD_RECIPIENT_INVALID",
+            "description": "The specified gift card recipient is invalid.",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -6254,6 +6272,77 @@
           }
         ],
         "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CartGiftCardCodesAddPayload",
+        "description": "Return type for `cartGiftCardCodesAdd` mutation.",
+        "fields": [
+          {
+            "name": "cart",
+            "description": "The updated cart.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Cart",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "userErrors",
+            "description": "The list of errors that occurred from executing the mutation.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "CartUserError",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "warnings",
+            "description": "A list of warnings that occurred during the mutation.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "CartWarning",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -11403,6 +11492,30 @@
             "deprecationReason": null
           },
           {
+            "name": "shopifyAnalyticsCookie",
+            "description": "The _shopify_analytics cookie to set.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "shopifyEssentialCookie",
+            "description": "The _shopify_essential cookie to set.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "trackingConsentCookie",
             "description": "The _tracking_consent cookie, already URI encoded and serialized.",
             "args": [],
@@ -16532,12 +16645,6 @@
           {
             "name": "AMAZON_PAY",
             "description": "Amazon Pay.",
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "FACEBOOK_PAY",
-            "description": "Facebook Pay.",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -22167,6 +22274,12 @@
             "description": "Metafield not found.",
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "APP_NOT_AUTHORIZED",
+            "description": "The current app is not authorized to perform this action.",
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "possibleTypes": null
@@ -22384,6 +22497,11 @@
         "interfaces": null,
         "enumValues": null,
         "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "Article",
+            "ofType": null
+          },
           {
             "kind": "OBJECT",
             "name": "Collection",
@@ -22685,6 +22803,12 @@
           {
             "name": "INVALID_TYPE",
             "description": "The type is invalid.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "APP_NOT_AUTHORIZED",
+            "description": "The current app is not authorized to perform this action.",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -23857,6 +23981,55 @@
             "type": {
               "kind": "OBJECT",
               "name": "CartDiscountCodesUpdatePayload",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cartGiftCardCodesAdd",
+            "description": "Adds gift card codes to the cart without replacing existing ones.",
+            "args": [
+              {
+                "name": "cartId",
+                "description": "The ID of the cart.",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "giftCardCodes",
+                "description": "The case-insensitive gift card codes to add.\n\nThe input must not contain more than `250` values.",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "CartGiftCardCodesAddPayload",
               "ofType": null
             },
             "isDeprecated": false,
@@ -40093,7 +40266,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "VisitorConsent",
-        "description": "The new consent to data processing purposes provided by a visitor of the shop. true meansaccepting the purposes, false declining them, and null means that the visitor didn't express a preference.",
+        "description": "The visitor's consent to data processing purposes for the shop. true means accepting the purposes, false means declining them, and null means that the visitor didn't express a preference.",
         "fields": null,
         "inputFields": [
           {
@@ -41294,42 +41467,44 @@
     ],
     "directives": [
       {
-        "name": "include",
-        "description": "Directs the executor to include this field or fragment only when the `if` argument is true.",
-        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "name": "accessRestricted",
+        "description": "Marks an element of a GraphQL schema as having restricted access.",
+        "locations": ["FIELD_DEFINITION", "OBJECT"],
         "args": [
           {
-            "name": "if",
-            "description": "Included when true.",
+            "name": "reason",
+            "description": "Explains the reason around this restriction",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
-            "defaultValue": null
+            "defaultValue": "null"
           }
         ]
       },
       {
-        "name": "skip",
-        "description": "Directs the executor to skip this field or fragment when the `if` argument is true.",
-        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "name": "defer",
+        "description": "Informs the server to delay the execution of the current fragment, potentially resulting in multiple responses from the server. Non-deferred data is delivered in the initial response and data deferred is delivered in subsequent responses. Only available on development stores with the Defer Directive developer preview enabled.",
+        "locations": ["FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
         "args": [
           {
             "name": "if",
-            "description": "Skipped when true.",
+            "description": "When `true`, fragment should be deferred. When `false`, fragment will not be\ndeferred and data will be included in the initial response. Defaults to `true`\nwhen omitted.\n",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": "true"
+          },
+          {
+            "name": "label",
+            "description": "May be used to identify the data from responses and associate it with the\ncorresponding defer directive. `label` must be unique label across all `@defer` and\n`@stream` directives in a document. `label` must not be provided as a variable.\n",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "defaultValue": null
           }
@@ -41354,50 +41529,6 @@
               "ofType": null
             },
             "defaultValue": "\"No longer supported\""
-          }
-        ]
-      },
-      {
-        "name": "oneOf",
-        "description": "Requires that exactly one field must be supplied and that field must not be `null`.",
-        "locations": ["INPUT_OBJECT"],
-        "args": []
-      },
-      {
-        "name": "specifiedBy",
-        "description": "Exposes a URL that specifies the behavior of this scalar.",
-        "locations": ["SCALAR"],
-        "args": [
-          {
-            "name": "url",
-            "description": "The URL that specifies the behavior of this scalar.",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "defaultValue": null
-          }
-        ]
-      },
-      {
-        "name": "accessRestricted",
-        "description": "Marks an element of a GraphQL schema as having restricted access.",
-        "locations": ["FIELD_DEFINITION", "OBJECT"],
-        "args": [
-          {
-            "name": "reason",
-            "description": "Explains the reason around this restriction",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": "null"
           }
         ]
       },
@@ -41445,31 +41576,83 @@
               "ofType": null
             },
             "defaultValue": null
+          },
+          {
+            "name": "visitorConsent",
+            "description": "The visitor's consent preferences for data processing purposes.",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "VisitorConsent",
+              "ofType": null
+            },
+            "defaultValue": null
           }
         ]
       },
       {
-        "name": "defer",
-        "description": "Informs the server to delay the execution of the current fragment, potentially resulting in multiple responses from the server. Non-deferred data is delivered in the initial response and data deferred is delivered in subsequent responses. Only available on development stores with the Defer Directive developer preview enabled.",
-        "locations": ["FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "name": "include",
+        "description": "Directs the executor to include this field or fragment only when the `if` argument is true.",
+        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
         "args": [
           {
             "name": "if",
-            "description": "When `true`, fragment should be deferred. When `false`, fragment will not be\ndeferred and data will be included in the initial response. Defaults to `true`\nwhen omitted.\n",
+            "description": "Included when true.",
             "type": {
-              "kind": "SCALAR",
-              "name": "Boolean",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
             },
-            "defaultValue": "true"
-          },
+            "defaultValue": null
+          }
+        ]
+      },
+      {
+        "name": "oneOf",
+        "description": "Requires that exactly one field must be supplied and that field must not be `null`.",
+        "locations": ["INPUT_OBJECT"],
+        "args": []
+      },
+      {
+        "name": "skip",
+        "description": "Directs the executor to skip this field or fragment when the `if` argument is true.",
+        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "args": [
           {
-            "name": "label",
-            "description": "May be used to identify the data from responses and associate it with the\ncorresponding defer directive. `label` must be unique label across all `@defer` and\n`@stream` directives in a document. `label` must not be provided as a variable.\n",
+            "name": "if",
+            "description": "Skipped when true.",
             "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ]
+      },
+      {
+        "name": "specifiedBy",
+        "description": "Exposes a URL that specifies the behavior of this scalar.",
+        "locations": ["SCALAR"],
+        "args": [
+          {
+            "name": "url",
+            "description": "The URL that specifies the behavior of this scalar.",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
             },
             "defaultValue": null
           }

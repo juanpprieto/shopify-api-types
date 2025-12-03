@@ -9787,7 +9787,7 @@
               "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "subscriptionContract",
-              "description": "A Subscription Contract resource identified by ID.",
+              "description": "Returns a `SubscriptionContract` resource by ID.",
               "args": [
                 {
                   "name": "id",
@@ -12851,6 +12851,11 @@
             },
             {
               "kind": "OBJECT",
+              "name": "UserError",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
               "name": "UserErrorsBusinessContactUserErrors",
               "ofType": null
             },
@@ -12862,6 +12867,11 @@
             {
               "kind": "OBJECT",
               "name": "UserErrorsCustomerAddressUserErrors",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "UserErrorsCustomerEmailAddressChangeErrors",
               "ofType": null
             },
             {
@@ -12897,6 +12907,11 @@
             {
               "kind": "OBJECT",
               "name": "UserErrorsStorefrontCustomerAccessTokenCreateUserErrors",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "UserErrorsStripeFinancialConnectionsSessionUserErrors",
               "ofType": null
             }
           ]
@@ -19741,6 +19756,20 @@
             {
               "isPreAuthAccessible": true,
               "isProtected": false,
+              "name": "deliverable",
+              "description": "Whether the group merchandise is itself deliverable.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": true,
+              "deprecationReason": "Use `is_concrete` instead."
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
               "name": "discountInformation",
               "description": "The discount information for the line item group.",
               "args": [],
@@ -19787,6 +19816,34 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "isConcrete",
+              "description": "Whether the group represents concrete merchandise (as opposed to virtual merchandise).",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "parentLineItemId",
+              "description": "ID of the parent line item.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -22416,6 +22473,20 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "stripeFinancialConnectionsSessionInitiate",
+              "description": "Initiates a new Stripe Financial Connections session.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "StripeFinancialConnectionsSessionInitiatePayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "subscriptionBillingCycleSkip",
               "description": "Skips a Subscription Billing Cycle.",
               "args": [
@@ -22969,11 +23040,6 @@
             {
               "kind": "OBJECT",
               "name": "RefundAgreement",
-              "ofType": null
-            },
-            {
-              "kind": "OBJECT",
-              "name": "RefundLineItem",
               "ofType": null
             },
             {
@@ -26256,7 +26322,7 @@
             },
             {
               "name": "IN_PROGRESS",
-              "description": "Displayed as **In progress**. Some of the items in the order have been fulfilled, or a request for fulfillment has been sent to the fulfillment service.",
+              "description": "Displayed as **In progress**. All of the items in the order have had a request for fulfillment sent to the fulfillment service or all of the items have been marked as in progress.",
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -28326,6 +28392,24 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "totalBalance",
+              "description": "Remaining balance to be paid or authorized by the customer for this payment schedule.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyV2",
                   "ofType": null
                 }
               },
@@ -36386,6 +36470,57 @@
           "fields": null,
           "inputFields": null,
           "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "StripeFinancialConnectionsSessionInitiatePayload",
+          "description": "Return type for `stripeFinancialConnectionsSessionInitiate` mutation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "clientSecret",
+              "description": "The Stripe Financial Connections client secret for session initiation.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "userErrors",
+              "description": "The list of errors that occurred from executing the mutation.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "UserErrorsStripeFinancialConnectionsSessionUserErrors",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
           "enumValues": null,
           "possibleTypes": null
         },
@@ -46899,6 +47034,94 @@
             {
               "name": "CUSTOMER_DOES_NOT_EXIST",
               "description": "The customer does not exist.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "UserErrorsStripeFinancialConnectionsSessionUserErrors",
+          "description": "The error codes for failed Stripe Financial Connections session initiation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "code",
+              "description": "The error code.",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "UserErrorsStripeFinancialConnectionsSessionUserErrorsCode",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "field",
+              "description": "The path to the input field that caused the error.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "message",
+              "description": "The error message.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "DisplayableError",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "UserErrorsStripeFinancialConnectionsSessionUserErrorsCode",
+          "description": "Possible error codes that can be returned by `UserErrorsStripeFinancialConnectionsSessionUserErrors`.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "STRIPE_FINANCIAL_CONNECTIONS_SESSION_ERROR",
+              "description": "Stripe Financial Connections session could not be initiated.",
               "isDeprecated": false,
               "deprecationReason": null
             }

@@ -2004,7 +2004,7 @@ export type Customer = HasMetafields & HasStoreCreditAccounts & Node & {
   return: Maybe<Return>;
   /** A list of the owner resource's store credit accounts. Store credit accounts are not shown for shops with store credit disabled at checkout. */
   storeCreditAccounts: StoreCreditAccountConnection;
-  /** A Subscription Contract resource identified by ID. */
+  /** Returns a `SubscriptionContract` resource by ID. */
   subscriptionContract: Maybe<SubscriptionContract>;
   /** The Subscription Contracts associated with the customer. */
   subscriptionContracts: SubscriptionContractConnection;
@@ -4302,6 +4302,8 @@ export type Mutation = {
    * @deprecated The `storefrontCustomerAccessTokenCreate` is deprecated and will be removed in a future version. Please see [the changelog](https://shopify.dev/changelog/deprecation-of-storefrontcustomeraccesstokencreate-mutation) for more information.
    */
   storefrontCustomerAccessTokenCreate: Maybe<StorefrontCustomerAccessTokenCreatePayload>;
+  /** Initiates a new Stripe Financial Connections session. */
+  stripeFinancialConnectionsSessionInitiate: Maybe<StripeFinancialConnectionsSessionInitiatePayload>;
   /** Skips a Subscription Billing Cycle. */
   subscriptionBillingCycleSkip: Maybe<SubscriptionBillingCycleSkipPayload>;
   /** Unskips a Subscription Billing Cycle. */
@@ -5094,7 +5096,7 @@ export type OrderFinancialStatus =
 export type OrderFulfillmentStatus =
   /** Displayed as **Fulfilled**. All of the items in the order have been fulfilled. */
   | 'FULFILLED'
-  /** Displayed as **In progress**. Some of the items in the order have been fulfilled, or a request for fulfillment has been sent to the fulfillment service. */
+  /** Displayed as **In progress**. All of the items in the order have had a request for fulfillment sent to the fulfillment service or all of the items have been marked as in progress. */
   | 'IN_PROGRESS'
   /** Displayed as **On hold**. All of the unfulfilled items in this order are on hold. */
   | 'ON_HOLD'
@@ -6874,6 +6876,14 @@ export type StorefrontCustomerAccessTokenCreatePayload = {
   customerAccessToken: Maybe<Scalars['String']['output']>;
   /** The list of errors that occurred from executing the mutation. */
   userErrors: Array<UserErrorsStorefrontCustomerAccessTokenCreateUserErrors>;
+};
+
+/** Return type for `stripeFinancialConnectionsSessionInitiate` mutation. */
+export type StripeFinancialConnectionsSessionInitiatePayload = {
+  /** The Stripe Financial Connections client secret for session initiation. */
+  clientSecret: Maybe<Scalars['String']['output']>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<UserErrorsStripeFinancialConnectionsSessionUserErrors>;
 };
 
 /** Represents a subscription anchor. */
@@ -9061,6 +9071,21 @@ export type UserErrorsStorefrontCustomerAccessTokenCreateUserErrors = Displayabl
 export type UserErrorsStorefrontCustomerAccessTokenCreateUserErrorsCode =
   /** The customer does not exist. */
   | 'CUSTOMER_DOES_NOT_EXIST';
+
+/** The error codes for failed Stripe Financial Connections session initiation. */
+export type UserErrorsStripeFinancialConnectionsSessionUserErrors = DisplayableError & {
+  /** The error code. */
+  code: Maybe<UserErrorsStripeFinancialConnectionsSessionUserErrorsCode>;
+  /** The path to the input field that caused the error. */
+  field: Maybe<Array<Scalars['String']['output']>>;
+  /** The error message. */
+  message: Scalars['String']['output'];
+};
+
+/** Possible error codes that can be returned by `UserErrorsStripeFinancialConnectionsSessionUserErrors`. */
+export type UserErrorsStripeFinancialConnectionsSessionUserErrorsCode =
+  /** Stripe Financial Connections session could not be initiated. */
+  | 'STRIPE_FINANCIAL_CONNECTIONS_SESSION_ERROR';
 
 /** The configuration used for Payment Wallets. */
 export type WalletPaymentConfig = ApplePayWalletConfig | GooglePayWalletConfig;

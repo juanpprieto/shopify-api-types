@@ -1314,6 +1314,8 @@ export type CartErrorCode =
   | 'CART_TOO_LARGE'
   /** Delivery addresses cannot be added nor changed. */
   | 'DELIVERY_ADDRESS_NOT_EDITABLE'
+  /** The specified gift card recipient is invalid. */
+  | 'GIFT_CARD_RECIPIENT_INVALID'
   /** The input value is invalid. */
   | 'INVALID'
   /** Company location not found or not allowed. */
@@ -1344,6 +1346,8 @@ export type CartErrorCode =
   | 'LESS_THAN'
   /** The quantity must be below the specified maximum for the item. */
   | 'MAXIMUM_EXCEEDED'
+  /** Item cannot be purchased as configured. */
+  | 'MERCHANDISE_NOT_APPLICABLE'
   /** The quantity must be above the specified minimum for the item. */
   | 'MINIMUM_NOT_MET'
   /** The customer access token is required when setting a company location. */
@@ -1356,6 +1360,8 @@ export type CartErrorCode =
   | 'NOTE_TOO_LONG'
   /** Only one delivery address can be selected. */
   | 'ONLY_ONE_DELIVERY_ADDRESS_CAN_BE_SELECTED'
+  /** Cannot reference existing parent lines by variant_id. */
+  | 'PARENT_LINE_INVALID_REFERENCE'
   /** Parent line nesting is too deep or circular. */
   | 'PARENT_LINE_NESTING_TOO_DEEP'
   /** Parent line not found. */
@@ -1426,6 +1432,16 @@ export type CartEstimatedCost = {
 export type CartFreePaymentMethodInput = {
   /** The customer's billing address. */
   billingAddress: MailingAddressInput;
+};
+
+/** Return type for `cartGiftCardCodesAdd` mutation. */
+export type CartGiftCardCodesAddPayload = {
+  /** The updated cart. */
+  cart?: Maybe<Cart>;
+  /** The list of errors that occurred from executing the mutation. */
+  userErrors: Array<CartUserError>;
+  /** A list of warnings that occurred during the mutation. */
+  warnings: Array<CartWarning>;
 };
 
 /** Return type for `cartGiftCardCodesRemove` mutation. */
@@ -2471,6 +2487,10 @@ export type ConsentManagementCookies = {
   landingPageCookie?: Maybe<Scalars['String']['output']>;
   /** If needed, the _orig_referrer cookie to set. */
   origReferrerCookie?: Maybe<Scalars['String']['output']>;
+  /** The _shopify_analytics cookie to set. */
+  shopifyAnalyticsCookie?: Maybe<Scalars['String']['output']>;
+  /** The _shopify_essential cookie to set. */
+  shopifyEssentialCookie?: Maybe<Scalars['String']['output']>;
   /** The _tracking_consent cookie, already URI encoded and serialized. */
   trackingConsentCookie: Scalars['String']['output'];
 };
@@ -3853,8 +3873,6 @@ export type DigitalWallet =
   | 'ANDROID_PAY'
   /** Apple Pay. */
   | 'APPLE_PAY'
-  /** Facebook Pay. */
-  | 'FACEBOOK_PAY'
   /** Google Pay. */
   | 'GOOGLE_PAY'
   /** Shopify Pay. */
@@ -5193,6 +5211,8 @@ export type MetafieldReferencesArgs = {
 
 /** Possible error codes that can be returned by `MetafieldDeleteUserError`. */
 export type MetafieldDeleteErrorCode =
+  /** The current app is not authorized to perform this action. */
+  | 'APP_NOT_AUTHORIZED'
   /** The owner ID is invalid. */
   | 'INVALID_OWNER'
   /** Metafield not found. */
@@ -5234,7 +5254,7 @@ export type MetafieldParentResource = Article | Blog | Cart | Collection | Compa
  * Returns the resource which is being referred to by a metafield.
  *
  */
-export type MetafieldReference = Collection | GenericFile | MediaImage | Metaobject | Model3d | Page | Product | ProductVariant | Video;
+export type MetafieldReference = Article | Collection | GenericFile | MediaImage | Metaobject | Model3d | Page | Product | ProductVariant | Video;
 
 /**
  * An auto-generated type for paginating through multiple MetafieldReferences.
@@ -5274,6 +5294,8 @@ export type MetafieldsSetUserError = DisplayableError & {
 
 /** Possible error codes that can be returned by `MetafieldsSetUserError`. */
 export type MetafieldsSetUserErrorCode =
+  /** The current app is not authorized to perform this action. */
+  | 'APP_NOT_AUTHORIZED'
   /** The input value is blank. */
   | 'BLANK'
   /** The input value isn't included in the list. */
@@ -5469,6 +5491,8 @@ export type Mutation = {
   cartDeliveryAddressesUpdate?: Maybe<CartDeliveryAddressesUpdatePayload>;
   /** Updates the discount codes applied to the cart. */
   cartDiscountCodesUpdate?: Maybe<CartDiscountCodesUpdatePayload>;
+  /** Adds gift card codes to the cart without replacing existing ones. */
+  cartGiftCardCodesAdd?: Maybe<CartGiftCardCodesAddPayload>;
   /** Removes the gift card codes applied to the cart. */
   cartGiftCardCodesRemove?: Maybe<CartGiftCardCodesRemovePayload>;
   /** Updates the gift card codes applied to the cart. */
@@ -5642,6 +5666,13 @@ export type MutationCartDeliveryAddressesUpdateArgs = {
 export type MutationCartDiscountCodesUpdateArgs = {
   cartId: Scalars['ID']['input'];
   discountCodes: Array<Scalars['String']['input']>;
+};
+
+
+/** The schema’s entry-point for mutations. This acts as the public, top-level API from which all mutation queries must start. */
+export type MutationCartGiftCardCodesAddArgs = {
+  cartId: Scalars['ID']['input'];
+  giftCardCodes: Array<Scalars['String']['input']>;
 };
 
 
@@ -9224,7 +9255,7 @@ export type VideoSource = {
   width: Scalars['Int']['output'];
 };
 
-/** The new consent to data processing purposes provided by a visitor of the shop. true meansaccepting the purposes, false declining them, and null means that the visitor didn't express a preference. */
+/** The visitor's consent to data processing purposes for the shop. true means accepting the purposes, false means declining them, and null means that the visitor didn't express a preference. */
 export type VisitorConsent = {
   /** The visitor accepts or rejects the analytics data processing purpose. */
   analytics?: InputMaybe<Scalars['Boolean']['input']>;

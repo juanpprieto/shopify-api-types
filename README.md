@@ -1,408 +1,195 @@
 # @juanpprieto/shopify-api-types
 
-[![npm version](https://img.shields.io/npm/v/@juanpprieto/shopify-api-types.svg)](https://www.npmjs.com/package/@juanpprieto/shopify-api-types)
-[![npm downloads](https://img.shields.io/npm/dm/@juanpprieto/shopify-api-types.svg)](https://www.npmjs.com/package/@juanpprieto/shopify-api-types)
+TypeScript definitions for the Shopify GraphQL APIs, automatically generated
+from the official Shopify GraphQL schemas.
 
-Complete TypeScript type definitions for all Shopify APIs - Storefront, Admin,
-and Customer Account APIs. Stay up-to-date with the latest Shopify API changes
-with automatic type generation and version-specific exports.
+[![npm version](https://img.shields.io/npm/v/@juanpprieto/shopify-api-types.svg)](https://www.npmjs.com/package/@juanpprieto/shopify-api-types)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 📦 Installation
 
 ```bash
 npm install @juanpprieto/shopify-api-types
+# or
+yarn add @juanpprieto/shopify-api-types
+# or
+pnpm add @juanpprieto/shopify-api-types
 ```
 
 ## 🚀 Quick Start
 
-### Storefront API (261 types)
-
-Product catalog, cart, checkout, and others
+Import types for the specific API and version you need:
 
 ```typescript
+// Storefront API
 import {
   Product,
   Cart,
   Checkout,
-} from '@juanpprieto/shopify-api-types/storefront/2025-07';
-
-// Use current stable version
-import {
-  Product,
-  Cart,
-  Checkout,
-} from '@juanpprieto/shopify-api-types/storefront/current';
-```
-
-### Admin API (1758 types)
-
-Store management, webhooks, analytics, and others
-
-```typescript
-import {
-  Shop,
-  Webhook,
-  InventoryLevel,
-} from '@juanpprieto/shopify-api-types/admin/2025-07';
-
-// Use current stable version
-import {
-  Shop,
-  Webhook,
-  InventoryLevel,
-} from '@juanpprieto/shopify-api-types/admin/current';
-```
-
-### Customer Account API (296 types)
-
-Customer profiles, orders, addresses, and others
-
-```typescript
-import {
-  Customer,
-  Order,
-  MailingAddress,
-} from '@juanpprieto/shopify-api-types/customer-account/2025-07';
-
-// Use current stable version
-import {
-  Customer,
-  Order,
-  MailingAddress,
-} from '@juanpprieto/shopify-api-types/customer-account/current';
-```
-
-## 📋 API Versions
-
-| Version     | Status               | Description                                        |
-| ----------- | -------------------- | -------------------------------------------------- |
-| 2025-04     | 🔒 Previous          | Previous stable release with security patches only |
-| **2025-07** | ✅ **Current**       | Current stable release with full support           |
-| 2025-10     | 🧪 Release Candidate | Release candidate for next API version             |
-| unstable    | ⚠️ Experimental      | Unstable development version - APIs may change     |
-
-## 📖 Version-Specific Imports
-
-### Using Specific Versions
-
-```typescript
-// Specific API versions
-import type { Product } from '@juanpprieto/shopify-api-types/storefront/2025-04';
-import type { Product } from '@juanpprieto/shopify-api-types/storefront/2025-07';
-import type { Product } from '@juanpprieto/shopify-api-types/storefront/2025-10';
+} from '@juanpprieto/shopify-api-types/sfapi/2025-10';
 
 // Admin API
-import type { Shop } from '@juanpprieto/shopify-api-types/admin/2025-07';
+import {
+  Shop,
+  Webhook,
+  InventoryLevel,
+} from '@juanpprieto/shopify-api-types/admin/2025-10';
 
 // Customer Account API
-import type { Customer } from '@juanpprieto/shopify-api-types/customer-account/2025-07';
+import {
+  Customer,
+  Order,
+  MailingAddress,
+} from '@juanpprieto/shopify-api-types/caapi/2025-10';
 ```
 
-### Using Semantic Versions
+## 📋 Available APIs
+
+| API                      | Types       | Description                                       | Examples                              |
+| ------------------------ | ----------- | ------------------------------------------------- | ------------------------------------- |
+| **Storefront API**       | 266 types   | Product catalog, cart, checkout, and others       | `Product`, `Cart`, `Checkout`         |
+| **Admin API**            | 1,775 types | Store management, webhooks, analytics, and others | `Shop`, `Webhook`, `InventoryLevel`   |
+| **Customer Account API** | 298 types   | Customer profiles, orders, addresses, and others  | `Customer`, `Order`, `MailingAddress` |
+
+## 🏷️ Version Support
+
+### Current Versions
+
+| Version      | Status          | Description                                        |
+| ------------ | --------------- | -------------------------------------------------- |
+| **2025-10**  | ✅ Stable       | Current stable release with full support           |
+| **2025-07**  | 🔒 Maintenance  | Previous stable release with security patches only |
+| **2026-01**  | 🚧 Preview      | Release candidate for next API version             |
+| **unstable** | ⚠️ Experimental | Unstable development version - APIs may change     |
+
+### Import Patterns
+
+You can import types using specific versions or aliases:
 
 ```typescript
-// Always get the current stable version
-import type { Product } from '@juanpprieto/shopify-api-types/storefront/current';
+// Specific versions
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/2025-10';
+import { Shop } from '@juanpprieto/shopify-api-types/admin/2025-07';
 
-// Get the previous version
-import type { Product } from '@juanpprieto/shopify-api-types/storefront/previous';
-
-// Get the next release candidate
-import type { Product } from '@juanpprieto/shopify-api-types/storefront/next';
+// Version aliases
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/current';
+import { Shop } from '@juanpprieto/shopify-api-types/admin/previous';
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/next';
 ```
 
-## 💡 Production-Ready Examples
+## 📊 What's New in 2025-10
 
-This package includes comprehensive demo implementations showing real-world
-integration patterns:
+### Storefront API Changes
 
-### Storefront API with GraphQL Client
+- **20 total changes** with **0 breaking changes**
+- ✨ **New features**: Cart cloning, delivery address management, gift card
+  support
+- 🔧 **Enhanced cart functionality**: Parent-child line item relationships,
+  better error handling
 
-```typescript
-import { createGraphQLClient } from '@shopify/graphql-client';
-import type {
-  QueryRoot,
-  Mutation,
-  CartInput,
-} from '@juanpprieto/shopify-api-types/storefront/current';
+### Admin API Changes
 
-// Use Pick<> for targeted type safety
-type ProductsQueryResponse = Pick<QueryRoot, 'products'>;
-type CartCreateMutationResponse = Pick<Mutation, 'cartCreate'>;
+- **158 total changes** with **3 breaking changes**
+- ✨ **New features**: Theme duplication, fulfillment order rerouting, enhanced
+  metaobjects
+- 🔧 **Function improvements**: Better function identifier handling across
+  customizations
+- ⚠️ **Breaking changes**: Collection reorder error types, cart transform
+  function IDs
 
-const client = createGraphQLClient({
-  url: 'https://your-shop.myshopify.com/api/2025-07/graphql.json',
-  headers: {
-    'X-Shopify-Storefront-Access-Token': 'your-token-here',
-  },
-});
+### Customer Account API Changes
 
-const response = await client.request<ProductsQueryResponse>(
-  GET_PRODUCTS_QUERY,
-  {
-    variables: { first: 10 },
-  },
-);
-```
+- **4 total changes** with **0 breaking changes**
+- 🔧 **Minor improvements**: Internal optimizations and bug fixes
 
-### Admin API with Dedicated Client
-
-```typescript
-import { createAdminApiClient } from '@shopify/admin-api-client';
-import type {
-  QueryRoot,
-  Mutation,
-  ProductInput,
-  CustomerInput,
-} from '@juanpprieto/shopify-api-types/admin/current';
-
-const adminClient = createAdminApiClient({
-  storeDomain: 'your-store.myshopify.com',
-  apiVersion: '2025-07',
-  accessToken: 'your-admin-access-token',
-});
-
-// Strongly typed queries and mutations
-type ProductsQueryResponse = Pick<QueryRoot, 'products'>;
-type ProductCreateMutationResponse = Pick<Mutation, 'productCreate'>;
-```
-
-### Multi-API Version Support
-
-```typescript
-// Use different API versions in the same project
-import type { Product as CurrentProduct } from '@juanpprieto/shopify-api-types/storefront/current';
-import type { Product as LegacyProduct } from '@juanpprieto/shopify-api-types/storefront/2025-04';
-import type { Product as BetaProduct } from '@juanpprieto/shopify-api-types/storefront/2025-10';
-
-// Type-safe migration helpers
-function migrateProduct(legacy: LegacyProduct): CurrentProduct {
-  // Implementation with full type safety
-}
-```
-
-> **Demo Application**: Check the `/demo` folder for a complete Vite + React
-> TypeScript application demonstrating all integration patterns with both
-> Storefront and Admin APIs.
-
-## 🔄 API Changes & Migration
-
-### Current Changes (2025-04 → 2025-07)
-
-#### 🏪 Storefront API
-
-- **37 total changes** (0 breaking)
-- ✅ **2 additions**: New `CartRemovePersonalDataPayload` type and
-  `cartRemovePersonalData` mutation
-- 🔧 **33 modifications**: Enhanced cart error handling and unit price
-  measurements
-- 📦 **New Features**:
-  - Personal data removal for carts
-  - Improved discount validation
-  - Extended unit measurement types (FLOZ, PT, QT, GAL, etc.)
-
-#### 🛒 Customer Account API
-
-- **38 total changes** (0 breaking)
-- ✅ **12 additions**: New subscription discounts, exchange line items, and BMP
-  image support
-- 🔧 **14 modifications**: Enhanced unit measurements and company location
-  features
-
-#### ⚙️ Admin API
-
-- **334 total changes** (13 breaking)
-- ✅ **172 additions**: Major inventory management overhaul with transfers and
-  shipments
-- ⚠️ **13 breaking changes**: Subscription address types, metafield improvements
-- 📦 **New Features**:
-  - Complete inventory transfer system
-  - Inventory shipment management
-  - PayPal wallet payment details
-  - Shop Pay payment requests
-  - Enhanced return processing
-
-### Next Changes (2025-07 → 2025-10)
-
-#### 🏪 Storefront API
-
-- **5 total changes** (0 breaking)
-- New cart cloning and delivery address management
-
-#### ⚙️ Admin API
-
-- **87 total changes** (0 breaking)
-- Enhanced discount contexts and order edit sessions
-- New theme duplication capabilities
-
-## 📊 GraphQL Schema Support
-
-Access GraphQL schemas for runtime validation and tooling:
-
-```typescript
-// Import schemas for different versions
-import storefrontSchema from '@juanpprieto/shopify-api-types/schemas/storefront/2025-07';
-import adminSchema from '@juanpprieto/shopify-api-types/schemas/admin/2025-07';
-import customerSchema from '@juanpprieto/shopify-api-types/schemas/customer-account/2025-07';
-```
-
-## 🔍 Change Comparisons
-
-Access detailed API comparisons between versions:
-
-```typescript
-// Get current changes (2025-04 to 2025-07)
-import currentChanges from '@juanpprieto/shopify-api-types/comparisons/current';
-
-// Get next changes (2025-07 to 2025-10)
-import nextChanges from '@juanpprieto/shopify-api-types/comparisons/next';
-
-console.log(currentChanges.storefront.summary);
-// { totalChanges: 37, breakingChanges: 0, additions: 2, ... }
-```
+[View detailed changelog →](./CHANGELOG.md)
 
 ## 🛠️ Advanced Usage
 
-### Type-Safe GraphQL Client Wrapper
+### Schema Validation
+
+JSON schemas are available for runtime validation:
 
 ```typescript
-import type {
-  QueryRoot,
-  Mutation,
-} from '@juanpprieto/shopify-api-types/storefront/current';
-import { createGraphQLClient } from '@shopify/graphql-client';
+import adminSchema from '@juanpprieto/shopify-api-types/schemas/admin/2025-10';
+import storefrontSchema from '@juanpprieto/shopify-api-types/schemas/sfapi/2025-10';
 
-class TypeSafeStorefrontClient {
-  private client: ReturnType<typeof createGraphQLClient>;
-
-  constructor(config: { url: string; headers: Record<string, string> }) {
-    this.client = createGraphQLClient(config);
-  }
-
-  async query<T extends Pick<QueryRoot, K>, K extends keyof QueryRoot>(
-    query: string,
-    variables?: any,
-  ): Promise<{ data?: T }> {
-    return this.client.request<T>(query, { variables });
-  }
-
-  async mutate<T extends Pick<Mutation, K>, K extends keyof Mutation>(
-    mutation: string,
-    variables?: any,
-  ): Promise<{ data?: T }> {
-    return this.client.request<T>(mutation, { variables });
-  }
-}
-
-// Usage with full type safety
-const client = new TypeSafeStorefrontClient({
-  url: 'https://shop.myshopify.com/api/2025-07/graphql.json',
-  headers: { 'X-Shopify-Storefront-Access-Token': 'token' },
-});
-
-type ProductsResponse = Pick<QueryRoot, 'products'>;
-const result = await client.query<ProductsResponse>(GET_PRODUCTS_QUERY);
+// Use with your preferred validation library
 ```
 
-## 📚 Examples & Guides
+### Version Comparisons
 
-### Working with Products
+Access detailed API change information:
 
 ```typescript
-import type {
-  Product,
-  ProductVariant,
-} from '@juanpprieto/shopify-api-types/storefront/current';
+import currentChanges from '@juanpprieto/shopify-api-types/comparisons/current';
+import nextChanges from '@juanpprieto/shopify-api-types/comparisons/next';
 
-function processProduct(product: Product) {
-  const variant: ProductVariant | undefined = product.variants.edges[0]?.node;
-
-  if (variant?.priceV2) {
-    console.log(
-      `Price: ${variant.priceV2.amount} ${variant.priceV2.currencyCode}`,
-    );
-  }
-}
+console.log(currentChanges.admin.summary.totalChanges); // 158
+console.log(nextChanges.storefront.summary.breakingChanges); // 1
 ```
 
-### Admin API Mutations
+## 🔄 Migration Guide
+
+### Upgrading from 2025-07 to 2025-10
+
+Most changes are additive and non-breaking:
 
 ```typescript
-import type {
-  ProductInput,
-  Mutation,
-} from '@juanpprieto/shopify-api-types/admin/current';
+// ✅ Safe - no breaking changes in Storefront API
+import { Product, Cart } from '@juanpprieto/shopify-api-types/sfapi/2025-10';
 
-type ProductCreateMutationResponse = Pick<Mutation, 'productCreate'>;
-
-async function createProduct(
-  input: ProductInput,
-): Promise<ProductCreateMutationResponse> {
-  // Your GraphQL client implementation
-}
+// ⚠️ Check breaking changes in Admin API
+import { CollectionReorderProductsPayload } from '@juanpprieto/shopify-api-types/admin/2025-10';
+// Note: userErrors field type changed
 ```
 
-### Type-Safe GraphQL Operations
+### Preparing for 2026-01
 
 ```typescript
-import type {
-  QueryRoot,
-  Mutation,
-} from '@juanpprieto/shopify-api-types/storefront/current';
-
-// Instead of defining custom interfaces, use Pick<> for precision
-type ProductQuery = Pick<QueryRoot, 'products' | 'shop'>;
-type CartMutation = Pick<Mutation, 'cartCreate' | 'cartLinesAdd'>;
-
-// This ensures your types match Shopify's schema exactly
-const response = await client.request<ProductQuery>(query, variables);
+// Preview upcoming changes
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/2026-01';
+// Note: returnReason field changes in RequestedLineItemInput
 ```
+
+## 📖 API Reference
+
+### Export Structure
+
+```
+@juanpprieto/shopify-api-types/
+├── sfapi/{version}          # Storefront API types
+├── admin/{version}          # Admin API types
+├── caapi/{version}          # Customer Account API types
+├── schemas/                 # JSON schemas for validation
+└── comparisons/             # API change information
+```
+
+### Version Aliases
+
+| Alias      | Resolves To | Description             |
+| ---------- | ----------- | ----------------------- |
+| `current`  | `2025-10`   | Current stable version  |
+| `previous` | `2025-07`   | Previous stable version |
+| `next`     | `2026-01`   | Next preview version    |
+| `unstable` | `unstable`  | Development version     |
 
 ## 🤝 Contributing
 
-We welcome contributions! This package is automatically generated from Shopify's
-official GraphQL schemas.
+We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md)
+for details.
 
 ## 📄 License
 
-MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see the [LICENSE](./LICENSE) file for details.
 
-## 🔗 Related Packages
+## 🔗 Links
 
-- [`@shopify/admin-api-client`](https://www.npmjs.com/package/@shopify/admin-api-client) -
-  Official Shopify Admin API client
-- [`@shopify/graphql-client`](https://www.npmjs.com/package/@shopify/graphql-client) -
-  Universal GraphQL client for Storefront API
-
-## 🎯 Best Practices
-
-### ✅ Recommended Patterns
-
-```typescript
-// ✅ Use Pick<> for targeted operations
-type ProductsQuery = Pick<QueryRoot, 'products'>;
-
-// ✅ Import specific versions when needed
-import type { Product } from '@juanpprieto/shopify-api-types/storefront/2025-07';
-
-// ✅ Use semantic versions for flexibility
-import type { Product } from '@juanpprieto/shopify-api-types/storefront/current';
-```
-
-### ❌ Anti-Patterns
-
-```typescript
-// ❌ Don't create custom interfaces that duplicate Shopify types
-interface CustomProduct {
-  id: string;
-  title: string;
-  // This can become out of sync with Shopify's schema
-}
-
-// ❌ Don't use 'any' - leverage the type system
-const response: any = await client.request(query); // Loses type safety
-```
+- [Shopify GraphQL Admin API](https://shopify.dev/docs/api/admin-graphql)
+- [Shopify Storefront API](https://shopify.dev/docs/api/storefront)
+- [Customer Account API](https://shopify.dev/docs/api/customer)
+- [NPM Package](https://www.npmjs.com/package/@juanpprieto/shopify-api-types)
 
 ---
 
-**Generated at:** 2025-09-06T21:16:54.289Z **Package Version:** 2025.7.0
+_Last updated: November 16, 2025 • Version: 2025.10.0_
