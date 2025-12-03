@@ -387,7 +387,7 @@
     "prepare": "husky",
     "prepublishOnly": "npm run clean && npm run validate && npm run build && npm run ci:validate-build",
     "release:dry": "tsx scripts/release.ts --dry-run",
-    "test": "vitest",
+    "test": "vitest run --silent",
     "test:coverage": "vitest run --coverage",
     "type-check": "NODE_OPTIONS='--max-old-space-size=4096' tsc --noEmit --project tsconfig.check.json",
     "validate": "npm run type-check && npm run lint && npm run test",

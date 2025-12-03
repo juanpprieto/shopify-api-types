@@ -11,9 +11,9 @@ import {
 // Mock the version-utils module
 vi.mock('../../scripts/version-utils.js', () => ({
   getSupportedVersions: vi.fn(() => [
-    '2025-07',
-    '2025-04',
     '2025-10',
+    '2025-07',
+    '2026-01',
     'unstable',
   ]),
 }));
@@ -53,7 +53,7 @@ describe('validate-build', () => {
 
       // Add all API files
       const apis = ['storefront', 'customer-account', 'admin'];
-      const versions = ['2025-07', '2025-04', '2025-10', 'unstable'];
+      const versions = ['2025-10', '2025-07', '2026-01', 'unstable'];
 
       for (const api of apis) {
         buildFiles[`dist/${api}/index.d.ts`] =
@@ -200,7 +200,7 @@ describe('validate-build', () => {
 
       // Add version files
       const apis = ['storefront', 'customer-account', 'admin'];
-      const versions = ['2025-07', '2025-04', '2025-10', 'unstable'];
+      const versions = ['2025-10', '2025-07', '2026-01', 'unstable'];
 
       for (const api of apis) {
         for (const version of versions) {
@@ -271,7 +271,7 @@ describe('validate-build', () => {
       };
 
       const validApis = ['storefront', 'customer-account', 'admin'];
-      const validVersions = ['2025-07', '2025-04', '2025-10', 'unstable'];
+      const validVersions = ['2025-10', '2025-07', '2026-01', 'unstable'];
 
       for (const api of validApis) {
         buildFiles[`dist/${api}/index.d.ts`] =
@@ -339,8 +339,8 @@ describe('validate-build', () => {
             },
           )
           .with(
-            (P.string.includes('Missing') && P.string.includes('2024-')) ||
-              P.string.includes('2025-'),
+            (P.string.includes('Missing') && P.string.includes('2025-')) ||
+              P.string.includes('2026-'),
             () => {
               errorCategories.missingVersionFiles++;
             },

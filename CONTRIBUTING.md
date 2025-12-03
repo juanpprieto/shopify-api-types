@@ -336,20 +336,284 @@ npm run changeset:publish
 
 ## 🔄 API Version Management
 
-### Supported Versions
+### Supported Versions (Updated 2025.10.0)
 
-- **Current**: `2025-07` - Active stable version
-- **Previous**: `2025-04` - Legacy support
-- **Next**: `2025-10` - Release candidate
+- **Current**: `2025-10` - Active stable version
+- **Previous**: `2025-07` - Legacy support
+- **Next**: `2026-01` - Release candidate
 - **Unstable**: Latest development version
+
+## 📅 Quarterly API Release Guide
+
+This section documents the complete process for releasing a new Shopify API
+quarterly version, based on our successful 2025.10.0 release.
+
+### 🎯 Overview
+
+Shopify releases new API versions quarterly (January, April, July, October). Our
+package uses automated CalVer versioning that dynamically calculates the correct
+versions based on the current date.
+
+**Version Set Calculation:**
+
+- Q4 (Oct-Dec): current=2025-10, previous=2025-07, next=2026-01
+- Q1 (Jan-Mar): current=2026-01, previous=2025-10, next=2026-04
+- Q2 (Apr-Jun): current=2026-04, previous=2026-01, next=2026-07
+- Q3 (Jul-Sep): current=2026-07, previous=2026-04, next=2026-10
+
+### 🚀 Complete Release Process (2025.10.0 Template)
+
+Follow these exact steps for the next quarterly release:
+
+#### Step 1: Environment Setup & Verification
+
+```bash
+# Verify current version set
+tsx -e "import { getCurrentVersionSet } from './scripts/version-utils.js'; console.log('Current version set:', getCurrentVersionSet());"
+
+# Expected output for Q1 2026:
+# { current: '2026-01', previous: '2025-10', releaseCandidate: '2026-04', unstable: 'unstable' }
+
+# Ensure clean working directory
+git status
+npm run clean
+```
+
+#### Step 2: Update Package Version
+
+```bash
+# Update package.json to new CalVer version
+# Example: 2025.10.0 → 2026.01.0
+npm version 2026.1.0 --no-git-tag-version
+```
+
+#### Step 3: Fetch Latest API Schemas
+
+```bash
+# Verify environment variables are set
+echo $SHOPIFY_ADMIN_ACCESS_TOKEN
+echo $SHOPIFY_STOREFRONT_ACCESS_TOKEN
+echo $SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN
+
+# Fetch all API schemas (this will automatically fetch current/previous/next/unstable)
+npm run fetch-schemas
+
+# Verify schemas were downloaded
+ls -la src/graphql-schemas/admin/
+ls -la src/graphql-schemas/storefront/
+ls -la src/graphql-schemas/customer-account/
+```
+
+#### Step 4: Generate TypeScript Types
+
+```bash
+# Generate types for all API versions
+npm run generate-types
+
+# This creates types for all supported versions automatically
+# Verify type generation
+npm run count-types
+```
+
+#### Step 5: Update Package Exports
+
+```bash
+# Generate new package.json exports for all versions
+npm run generate:exports
+
+# Verify exports were created correctly
+grep -A 5 -B 5 "2026-01" package.json
+```
+
+#### Step 6: Build & Validate
+
+```bash
+# Full build with validation
+npm run build
+
+# This runs:
+# 1. TypeScript compilation
+# 2. Fix JS extensions
+# 3. Copy schemas to dist
+# 4. Generate comparisons
+# 5. System validation
+
+# Verify build output
+npm run ci:validate-build
+```
+
+#### Step 7: Fix Test Mocks (Critical Step!)
+
+```bash
+# Update test mocks to use new version set
+# Edit tests/scripts/validate-build.test.ts
+# Change the mock from old versions to new versions:
+
+# FROM:
+# getSupportedVersions: vi.fn(() => [
+#   '2025-10', '2025-07', '2026-01', 'unstable'
+# ])
+
+# TO:
+# getSupportedVersions: vi.fn(() => [
+#   '2026-01', '2025-10', '2026-04', 'unstable'
+# ])
+
+# Also update all version arrays in test files to match new version set
+```
+
+#### Step 8: Clean Up Old Unsupported Versions
+
+```bash
+# Remove old version files that are no longer supported
+# (The automated version set only supports 4 versions at a time)
+rm -rf dist/admin/2025-04 dist/customer-account/2025-04 dist/storefront/2025-04
+
+# Re-validate after cleanup
+npm run ci:validate-build
+```
+
+#### Step 9: Run Full Validation Suite
+
+```bash
+# Ensure tests use run mode (not watch mode)
+# Verify package.json has: "test": "vitest run --silent"
+
+# Run complete validation
+npm run validate
+
+# Additional validation
+npm run ci:validate-system
+```
+
+#### Step 10: Update Documentation
+
+```bash
+# Update README.md examples with new version paths
+# Update CONTRIBUTING.md supported versions section
+# Generate API comparisons for release notes
+npm run generate:comparisons
+```
+
+#### Step 11: Test Package Exports
+
+```bash
+# Create temporary test project to verify exports work
+cd /tmp
+mkdir test-shopify-types
+cd test-shopify-types
+npm init -y
+npm install file:/path/to/your/shopify-ts
+
+# Test imports work correctly
+node -e "
+const admin = require('@juanpprieto/shopify-api-types/admin/current');
+const storefront = require('@juanpprieto/shopify-api-types/sfapi/current');
+console.log('Imports successful!');
+"
+```
+
+#### Step 12: Commit & Push Changes
+
+```bash
+# Add all changes
+git add .
+
+# Commit with descriptive message
+git commit -m "feat: release 2026.1.0 with 2026-01 API support
+
+- Add 2026-01 API schemas and types
+- Update CalVer version set for Q1 2026
+- Generate new package exports and comparisons
+- Update test mocks for new version set
+- Remove unsupported 2025-04 version files
+
+Version set: current=2026-01, previous=2025-10, next=2026-04"
+
+# Push to remote
+git push origin main
+```
+
+#### Step 13: Publish to NPM
+
+```bash
+# Ensure you have 2FA set up and authenticator app ready
+npm publish --access public --otp=123456
+
+# Replace 123456 with your 6-digit OTP code from authenticator app
+```
+
+#### Step 14: Verify Publication
+
+```bash
+# Check that new version is available
+npm view @juanpprieto/shopify-api-types version
+
+# Verify new exports work
+npm view @juanpprieto/shopify-api-types exports | grep 2026-01
+```
+
+### 🔍 Key Files Modified During Release
+
+1. **package.json** - Version number and exports
+2. **src/graphql-schemas/** - New API schemas
+3. **src/{admin,storefront,customer-account}/** - Generated types
+4. **dist/** - Built output with new types and schemas
+5. **tests/scripts/validate-build.test.ts** - Test version mocks
+6. **README.md** - Documentation and examples
+
+### 💡 Lessons Learned from 2025.10.0
+
+1. **CalVer automation works perfectly** - No manual version calculation needed
+2. **Test mocks must be updated** - Critical for CI validation
+3. **Watch mode causes publish loops** - Always use `vitest run --silent`
+4. **Old version cleanup is essential** - Remove unsupported versions
+5. **2FA setup required** - Ensure authenticator app is configured
+
+### 🚨 Common Pitfalls to Avoid
+
+- ❌ Forgetting to update test mocks → CI failures
+- ❌ Using `vitest` instead of `vitest run` → infinite loops during publish
+- ❌ Not cleaning up old version files → validation failures
+- ❌ Missing environment variables → schema fetch failures
+- ❌ Not testing exports in temp project → runtime import errors
+
+### ✅ Success Criteria
+
+Your release is successful when:
+
+- ✅ All CI validation passes
+- ✅ Package builds without errors
+- ✅ All 39+ export paths are valid
+- ✅ npm publish succeeds
+- ✅ New version appears on npmjs.com
+- ✅ Import examples work in test project
+
+### 📊 Expected Results (2026.01.0 Example)
+
+**Generated Types:**
+
+- Admin API: ~1,800+ types
+- Storefront API: ~270+ types
+- Customer Account API: ~300+ types
+
+**Package Size:**
+
+- Compressed: ~4.5MB
+- Unpacked: ~60MB
+
+**Export Paths:**
+
+- 39+ total exports (types + schemas + comparisons)
+- Semantic aliases: current/previous/next/unstable
 
 ### Adding New API Versions
 
-1. Update `scripts/version-utils.ts` with new version
+1. **Automatic detection** - CalVer logic automatically calculates new versions
 2. Run schema fetch: `npm run fetch-schemas`
 3. Generate types: `npm run generate-types`
 4. Update exports: `npm run generate:exports`
-5. Validate: `npm run ci:validate-all`
+5. Validate: `npm run build && npm run ci:validate-build`
 
 ## 🧪 Testing Guidelines
 
