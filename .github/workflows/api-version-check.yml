@@ -197,13 +197,26 @@ jobs:
             echo "⚠️ Comparison generation skipped - some schemas may not be available"
           fi
 
-      - name: Update documentation
+      - name: Validate everything before paid doc generation
         run: |
+          # Token optimization: the AI docs generator spends API tokens.
+          # Run it only after every other check passes, so a red build
+          # never wastes a docs run.
+          npm run validate
+          npm run ci:validate-build
+
+      - name: Update documentation
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "⚠️ ANTHROPIC_API_KEY not set - skipping AI doc generation."
+            echo "Regenerate the README in the release flow instead."
+            exit 0
+          fi
+
           echo "📝 Regenerating documentation with new version info..."
-
-          # Regenerate documentation with new version and any available comparisons
           npm run docs
-
           echo "✅ Documentation updated"
 
       - name: Create changeset
@@ -218,14 +231,11 @@ jobs:
           Add support for Shopify API ${new_version}
 
           - Added new types for API version ${new_version}
-          - Updated version model: current/previous/next(RC)/unstable structure
-          - Generated comprehensive schema comparisons with changelog
-          - Maintained rolling 4-version support window
-          - Updated AI agent documentation system
-          - Breaking: Updated version model and export paths
+          - Updated the support-window version set (4 stable quarters + RC + unstable)
+          - Generated schema comparisons for every adjacent version pair
 
-          This release updates the package to support the latest Shopify API version and implements
-          the new Phase 5 version model with enhanced schema comparison and documentation features.
+          This release updates the package to the latest Shopify API version
+          under the support-window version model (see CONTRIBUTING.md).
           EOF
 
       - name: Commit changes
@@ -259,19 +269,17 @@ jobs:
 
           ### 📋 Changes
           - ✅ Fetch schemas for API version \`${new_version}\`
-          - ✅ Update 4-version model: current/previous/next(RC)/unstable
-          - ✅ Generate comprehensive schema comparisons and changelogs
-          - ✅ Update TypeScript types with new version structure
-          - ✅ Regenerate documentation with schema change highlights
-          - ✅ Validate AI agent documentation system
+          - ✅ Update the support-window version set (4 stable quarters + RC + unstable)
+          - ✅ Generate schema comparisons for every adjacent version pair
+          - ✅ Update TypeScript types
+          - ✅ Regenerate documentation (only after all validations pass)
           - ✅ Create major changeset
 
-          ### 🔄 New Version Model
-          This implements the enhanced version structure:
-          - **Current**: Latest stable release
-          - **Previous**: Previous quarter for comparison
-          - **Next (RC)**: Release candidate for upcoming quarter
-          - **Unstable**: Latest development version
+          ### 🔄 Version Model
+          Support-window model (see CONTRIBUTING.md "Version Support Principle"):
+          - **Current / Previous / 2 older supported**: every stable quarter Shopify still serves
+          - **Next (RC)**: release candidate for the upcoming quarter
+          - **Unstable**: latest development version
 
           ### 📊 Schema Comparisons
           Automated schema comparison generation provides:
