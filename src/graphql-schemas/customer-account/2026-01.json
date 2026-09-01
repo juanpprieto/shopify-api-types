@@ -588,6 +588,59 @@
           "possibleTypes": null
         },
         {
+          "kind": "OBJECT",
+          "name": "App",
+          "description": "A Shopify app.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "title",
+              "description": "The name of the app.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Node",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "INPUT_OBJECT",
           "name": "ApplePayBillingAddressInput",
           "description": "The input fields for the billing address received from Apple Pay.",
@@ -1058,8 +1111,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -1076,8 +1129,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": true,
@@ -1112,8 +1165,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -1130,8 +1183,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             }
           ],
           "inputFields": null,
@@ -1315,8 +1368,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -1337,8 +1390,8 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             }
           ],
           "inputFields": null,
@@ -1464,6 +1517,75 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "draftOrders",
+              "description": "The list of open draft orders associated with this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "DraftOrderConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "id",
               "description": "The globally-unique ID.",
               "args": [],
@@ -1491,6 +1613,164 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "orders",
+              "description": "The list of pending orders associated with this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "OrderConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "subscriptionContracts",
+              "description": "The list of subscription contracts charged using this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                },
+                {
+                  "name": "sortKey",
+                  "description": "Sort the underlying list using a key. If your query is slow or returns an error, then [try specifying a sort key that matches the field used in the search](https://shopify.dev/api/usage/pagination-graphql#search-performance-considerations).",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "SubscriptionContractsSortKeys",
+                    "ofType": null
+                  },
+                  "defaultValue": "CREATED_AT"
+                },
+                {
+                  "name": "query",
+                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| created_at | time |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| last_billing_attempt_error_type | string |\n| status | string |\n| updated_at | time |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "SubscriptionContractConnection",
                   "ofType": null
                 }
               },
@@ -1540,6 +1820,16 @@
           ],
           "inputFields": null,
           "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "SCALAR",
+          "name": "BigInt",
+          "description": "Represents non-fractional signed whole numeric values. Since the value may exceed the size of a 32-bit integer, it's encoded as a string.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
         },
@@ -2165,7 +2455,7 @@
           "description": "The calculated financial outcome of a return based on the line items requested for return.Includes the monetary values of the line items, along with applicable taxes, discounts, and otherfees on the order. Financial summary may include return fees depending onthe [return rules](https://help.shopify.com/manual/fulfillment/managing-orders/returns/return-rules)at the time the order was placed.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "financialSummary",
               "description": "A breakdown of the monetary values for the calculated return.",
@@ -2183,7 +2473,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnLineItems",
               "description": "A list of line items being processed for a return.",
@@ -2263,7 +2553,7 @@
           "description": "The line item being processed for a return and its calculated monetary values.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "lineItem",
               "description": "The line item being processed for a return.",
@@ -2281,7 +2571,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "quantity",
               "description": "The quantity being returned.",
@@ -2299,7 +2589,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "subtotalBeforeTargetAllDiscountsSet",
               "description": "The subtotal of the return line item without target all discounts.",
@@ -2317,7 +2607,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "subtotalSet",
               "description": "The subtotal of the return line item.",
@@ -2335,7 +2625,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "totalTaxSet",
               "description": "The total tax of the return line item.",
@@ -2557,8 +2847,8 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2571,8 +2861,8 @@
                 "name": "AvailableShippingRates",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2589,8 +2879,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2607,8 +2897,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2633,8 +2923,8 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2702,8 +2992,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2716,11 +3006,11 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
-              "isPreAuthAccessible": true,
+              "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "id",
               "description": "A globally-unique ID.",
@@ -2803,8 +3093,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2821,8 +3111,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2835,8 +3125,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2853,8 +3143,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2871,8 +3161,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2889,8 +3179,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2903,8 +3193,8 @@
                 "name": "CustomerMailingAddress",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2929,8 +3219,8 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2943,8 +3233,8 @@
                 "name": "ShippingRate",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2961,8 +3251,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2979,8 +3269,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2997,8 +3287,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -3011,8 +3301,8 @@
                 "name": "MoneyV2",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -3029,8 +3319,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -3047,8 +3337,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -3065,8 +3355,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             }
           ],
           "inputFields": null,
@@ -3108,11 +3398,11 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
-              "isPreAuthAccessible": true,
+              "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "id",
               "description": "A globally-unique ID.",
@@ -3140,8 +3430,8 @@
                 "name": "MoneyV2",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -3158,8 +3448,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -3176,8 +3466,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -3190,8 +3480,8 @@
                 "name": "MoneyV2",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -3204,8 +3494,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             }
           ],
           "inputFields": null,
@@ -3609,7 +3899,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -5792,6 +6082,24 @@
             {
               "isPreAuthAccessible": true,
               "isProtected": false,
+              "name": "marketCurrencyCode",
+              "description": "The currency for the company location's market, derived from the location's shipping address. When the location has no shipping address, or no market currency matches the address, this falls back to the shop's currency. Use it to choose which store credit balance to present as the primary one.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CurrencyCode",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
               "name": "metafield",
               "description": "A metafield found by namespace and key.",
               "args": [
@@ -5836,7 +6144,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -6620,7 +6928,7 @@
         {
           "kind": "OBJECT",
           "name": "Count",
-          "description": "Details for count of elements.",
+          "description": "A numeric count with precision information indicating whether the count is exact or an estimate.",
           "fields": [
             {
               "isPreAuthAccessible": true,
@@ -9871,8 +10179,8 @@
                 "name": "Checkout",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -9884,6 +10192,24 @@
                 "kind": "SCALAR",
                 "name": "String",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "marketCurrencyCode",
+              "description": "The currency for the customer's selected country market, derived from the buyer context (set via the `@inContext` directive). When no buyer context is present (no `@inContext` directive) or no market currency matches the context, this falls back to the shop's currency. Use it to choose which store credit balance to present as the primary one.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CurrencyCode",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -9935,7 +10261,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -11209,6 +11535,75 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "draftOrders",
+              "description": "The list of open draft orders associated with this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "DraftOrderConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "expiresSoon",
               "description": "Whether the credit card is about to expire.",
               "args": [],
@@ -11409,6 +11804,75 @@
                 "ofType": {
                   "kind": "OBJECT",
                   "name": "DraftOrderConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "orders",
+              "description": "The list of pending orders associated with this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "OrderConnection",
                   "ofType": null
                 }
               },
@@ -12415,16 +12879,6 @@
               "defaultValue": null
             },
             {
-              "name": "territoryCode",
-              "description": "The two-letter code for the country of the address.",
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
               "name": "firstName",
               "description": "The first name of the customer.",
               "type": {
@@ -12509,8 +12963,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `smsMarketingConsent.state` instead."
             },
             {
               "isPreAuthAccessible": false,
@@ -14499,8 +14953,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Please use `approximateDiscountedUnitPrice` instead."
             },
             {
               "isPreAuthAccessible": true,
@@ -14630,6 +15084,20 @@
                   "name": "MoneyV2",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "presentmentVariantTitle",
+              "description": "The name of the variant, localized to the buyer's language. Falls back to the variant title when no localized value is stored.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -16923,6 +17391,129 @@
         },
         {
           "kind": "OBJECT",
+          "name": "GenericFile",
+          "description": "The generic file resource lets you manage files in a merchant's store. Generic files include any file that doesn't fit into a designated type such as image or video. Example: PDF, JSON.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to indicate the contents of a file.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mimeType",
+              "description": "The MIME type of the file.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "originalFileSize",
+              "description": "The size of the original file in bytes.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "url",
+              "description": "The URL of the file.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "URL",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Media",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "GiftCardDetails",
           "description": "The gift card payment details related to a transaction.",
           "fields": [
@@ -17681,7 +18272,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -17897,7 +18488,7 @@
         {
           "kind": "SCALAR",
           "name": "ISO8601DateTime",
-          "description": "An ISO 8601-encoded datetime",
+          "description": "An ISO 8601-encoded datetime.",
           "fields": null,
           "inputFields": null,
           "interfaces": null,
@@ -19419,8 +20010,40 @@
             {
               "isPreAuthAccessible": true,
               "isProtected": false,
+              "name": "presentmentName",
+              "description": "The name of the product, localized to the order's language. Falls back to the base name when no localized value is stored.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
               "name": "presentmentTitle",
               "description": "The title of the line item variant.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "presentmentVariantTitle",
+              "description": "The name of the variant, localized to the order's language. Falls back to the variant title when no localized value is stored.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -19626,18 +20249,8 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "suggestedReturnReasonDefinitions",
-              "description": "The suggested return reasons for this line item based on its product category and shop customizations.",
+              "description": "Return reasons suggested based on the line item's product category in Shopify's product taxonomy. These are a curated subset of the full library of available reasons via the [`returnReasonDefinitions`](https://shopify.dev/docs/api/admin-graphql/latest/queries/returnReasonDefinitions) query.",
               "args": [
-                {
-                  "name": "includeExtendedReasons",
-                  "description": "Whether to include extended return reasons.",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Boolean",
-                    "ofType": null
-                  },
-                  "defaultValue": "false"
-                },
                 {
                   "name": "first",
                   "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
@@ -20921,6 +21534,232 @@
           "possibleTypes": null
         },
         {
+          "kind": "INTERFACE",
+          "name": "Media",
+          "description": "Represents a media interface.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to share the nature or contents of a media.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "GenericFile",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "MediaImage",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Model3d",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Video",
+              "ofType": null
+            }
+          ]
+        },
+        {
+          "kind": "ENUM",
+          "name": "MediaContentType",
+          "description": "The content types that a media can have.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "MODEL_3D",
+              "description": "A Shopify hosted 3D model.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "GENERIC_FILE",
+              "description": "A Shopify hosted generic file.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "IMAGE",
+              "description": "A Shopify hosted image.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "VIDEO",
+              "description": "A Shopify hosted video.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MediaImage",
+          "description": "Represents a Shopify hosted image.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to share the nature or contents of a media.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "image",
+              "description": "The image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Media",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "OBJECT",
           "name": "Metafield",
           "description": "The custom metadata attached to a resource. Metafields can be sorted into namespaces and are\ncomprised of keys, values, and value types.",
@@ -21043,6 +21882,75 @@
                   "name": "String",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "reference",
+              "description": "Returns a reference object if the metafield's type is a resource reference.",
+              "args": [],
+              "type": {
+                "kind": "UNION",
+                "name": "MetafieldReference",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "references",
+              "description": "A list of reference objects if the metafield's type is a resource reference list.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "MetafieldReferenceConnection",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -21233,6 +22141,170 @@
             }
           ],
           "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "UNION",
+          "name": "MetafieldReference",
+          "description": "Returns the resource which is being referred to by a metafield.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "GenericFile",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "MediaImage",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Metaobject",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Model3d",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Video",
+              "ofType": null
+            }
+          ]
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MetafieldReferenceConnection",
+          "description": "An auto-generated type for paginating through multiple MetafieldReferences.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "edges",
+              "description": "The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "MetafieldReferenceEdge",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "nodes",
+              "description": "A list of nodes that are contained in MetafieldReferenceEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "UNION",
+                      "name": "MetafieldReference",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "pageInfo",
+              "description": "An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MetafieldReferenceEdge",
+          "description": "An auto-generated type which holds one MetafieldReference and a cursor during pagination.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "cursor",
+              "description": "The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "node",
+              "description": "The item at the end of MetafieldReferenceEdge.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "UNION",
+                  "name": "MetafieldReference",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
           "enumValues": null,
           "possibleTypes": null
         },
@@ -21532,7 +22604,7 @@
             },
             {
               "name": "type",
-              "description": "The type of data that is stored in the metafield.\nThe type must be one of the [supported types](https://shopify.dev/apps/metafields/types).\nRequired when there is no corresponding definition for the given `namespace`, `key`, and\nowner resource type (derived from `ownerId`).",
+              "description": "The type of data that's stored in the metafield.\nThe type must be one of the [supported types](https://shopify.dev/apps/metafields/types).\nRequired when there's no corresponding definition for the given `namespace`, `key`, and\nowner resource type (derived from `ownerId`).",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -21786,8 +22858,417 @@
         },
         {
           "kind": "OBJECT",
+          "name": "Metaobject",
+          "description": "An instance of a user-defined model based on a MetaobjectDefinition.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "field",
+              "description": "Accesses a field of the object by key.",
+              "args": [
+                {
+                  "name": "key",
+                  "description": "The key of the field.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "MetaobjectField",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "fields",
+              "description": "All object fields with defined values.\nOmitted object keys can be assumed null, and no guarantees are made about field order.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "MetaobjectField",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "handle",
+              "description": "The unique handle of the metaobject. Useful as a custom ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "type",
+              "description": "The type of the metaobject.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "updatedAt",
+              "description": "The date and time when the metaobject was last updated.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "DateTime",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Node",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "MetaobjectField",
+          "description": "Provides the value of a Metaobject field.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "key",
+              "description": "The field key.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "reference",
+              "description": "A referenced object if the field type is a resource reference.",
+              "args": [],
+              "type": {
+                "kind": "UNION",
+                "name": "MetafieldReference",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "type",
+              "description": "The type name of the field.\nSee the list of [supported types](https://shopify.dev/apps/metafields/definitions/types).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "value",
+              "description": "The field value.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Model3d",
+          "description": "Represents a Shopify hosted 3D model.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to share the nature or contents of a media.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "sources",
+              "description": "The sources for a 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "Model3dSource",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Media",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Model3dSource",
+          "description": "Represents a source for a Shopify hosted 3d model.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "filesize",
+              "description": "The filesize of the 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "format",
+              "description": "The format of the 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mimeType",
+              "description": "The MIME type of the 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "url",
+              "description": "The URL of the 3d model.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "MoneyBag",
-          "description": "A collection of monetary values in their respective currencies. Typically used in the context of multi-currency pricing and transactions,\nwhen an amount in the shop's currency is converted to the customer's currency of choice (the presentment currency).",
+          "description": "A collection of monetary values in their respective currencies. Used throughout the API for multi-currency pricing and transactions, when an amount in the shop's currency is converted to the customer's currency of choice. The `presentmentMoney` field contains the amount in the customer's selected currency. The `shopMoney` field contains the equivalent in the shop's base currency.",
           "fields": [
             {
               "isPreAuthAccessible": true,
@@ -21834,7 +23315,7 @@
         {
           "kind": "OBJECT",
           "name": "MoneyV2",
-          "description": "A precise monetary value and its associated currency. For example, 12.99 USD.",
+          "description": "A precise monetary value and its associated currency. Combines a decimal amount with a three-letter currency code to express prices, costs, and other financial values throughout the API. For example, 12.99 USD.",
           "fields": [
             {
               "isPreAuthAccessible": true,
@@ -23559,6 +25040,11 @@
             },
             {
               "kind": "OBJECT",
+              "name": "App",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
               "name": "AppliedGiftCard",
               "ofType": null
             },
@@ -23715,6 +25201,11 @@
             {
               "kind": "OBJECT",
               "name": "Metafield",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "Metaobject",
               "ofType": null
             },
             {
@@ -25008,7 +26499,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -28473,7 +29964,7 @@
               "description": "Internal provider identifier.",
               "type": {
                 "kind": "SCALAR",
-                "name": "Int",
+                "name": "BigInt",
                 "ofType": null
               },
               "defaultValue": null
@@ -28796,6 +30287,75 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "draftOrders",
+              "description": "The list of open draft orders associated with this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "DraftOrderConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "id",
               "description": "A globally-unique ID.",
               "args": [],
@@ -28805,6 +30365,164 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "orders",
+              "description": "The list of pending orders associated with this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "OrderConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "subscriptionContracts",
+              "description": "The list of subscription contracts charged using this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                },
+                {
+                  "name": "sortKey",
+                  "description": "Sort the underlying list using a key. If your query is slow or returns an error, then [try specifying a sort key that matches the field used in the search](https://shopify.dev/api/usage/pagination-graphql#search-performance-considerations).",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "SubscriptionContractsSortKeys",
+                    "ofType": null
+                  },
+                  "defaultValue": "CREATED_AT"
+                },
+                {
+                  "name": "query",
+                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| created_at | time |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| last_billing_attempt_error_type | string |\n| status | string |\n| updated_at | time |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "SubscriptionContractConnection",
                   "ofType": null
                 }
               },
@@ -29453,7 +31171,7 @@
               "description": null,
               "type": {
                 "kind": "SCALAR",
-                "name": "Int",
+                "name": "BigInt",
                 "ofType": null
               },
               "defaultValue": null
@@ -30217,6 +31935,75 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "draftOrders",
+              "description": "The list of open draft orders associated with this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "DraftOrderConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "id",
               "description": "The globally-unique ID.",
               "args": [],
@@ -30226,6 +32013,75 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "orders",
+              "description": "The list of pending orders associated with this payment instrument.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "OrderConnection",
                   "ofType": null
                 }
               },
@@ -31341,6 +33197,26 @@
                     "ofType": null
                   },
                   "defaultValue": null
+                },
+                {
+                  "name": "configurationRecordId",
+                  "description": "The configuration record ID of the UI extension.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "registrationUuid",
+                  "description": "The registration UUID of the UI extension.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
                 }
               ],
               "type": {
@@ -31991,7 +33867,7 @@
             },
             {
               "name": "returnReasonDefinitionId",
-              "description": "The ID of the return reason definition for the item to be returned.",
+              "description": "The ID of a [`ReturnReasonDefinition`](https://shopify.dev/docs/api/customer/latest/objects/ReturnReasonDefinition). Use [`LineItem.suggestedReturnReasonDefinitions`](https://shopify.dev/docs/api/customer/latest/objects/LineItem#field-LineItem.fields.suggestedReturnReasonDefinitions) to get reasons tailored to the product's category.",
               "type": {
                 "kind": "SCALAR",
                 "name": "ID",
@@ -33187,7 +35063,7 @@
           "description": "The financial breakdown of the return.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "restockingFeeSubtotalSet",
               "description": "The subtotal of all return line items restocking fees.",
@@ -33205,7 +35081,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnOrderLevelDiscountSubtotalSet",
               "description": "The sum of all order level discounts that are target_all?.",
@@ -33223,10 +35099,10 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnShippingFeeSubtotalSet",
-              "description": "The subtotal of all return line items shipping fees.",
+              "description": "The subtotal of all return shipping fees.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -33241,7 +35117,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnSubtotalBeforeTargetAllDiscountsSet",
               "description": "The subtotal of all return line items excluding target_all discounts.",
@@ -33259,7 +35135,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnSubtotalSet",
               "description": "The subtotal of all return line items.",
@@ -33277,7 +35153,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnSubtotalWithCartDiscountSet",
               "description": "The subtotal of all return line items with order level discounts applied.",
@@ -33295,7 +35171,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnTotalSet",
               "description": "The total sum of all return line items, including return line item subtotals, fees and taxes.",
@@ -33313,10 +35189,10 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnTotalTaxSet",
-              "description": "The total tax sum of all return line items.",
+              "description": "The total tax sum of all return line items and return shipping fees.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -33417,7 +35293,7 @@
               "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "returnReasonDefinition",
-              "description": "The structured reason definition for returning the item.",
+              "description": "The standardized reason for why the item is being returned.",
               "args": [],
               "type": {
                 "kind": "OBJECT",
@@ -33525,7 +35401,7 @@
               "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "returnReasonDefinition",
-              "description": "The structured reason definition for returning the item.",
+              "description": "The standardized reason for why the item is being returned.",
               "args": [],
               "type": {
                 "kind": "OBJECT",
@@ -33689,7 +35565,7 @@
         {
           "kind": "ENUM",
           "name": "ReturnReason",
-          "description": "The reason for returning the item.",
+          "description": "The reason for returning the item.\n\n> **Deprecated**: This enum is deprecated in favor of `ReturnReasonDefinition`.\n> Use `returnReasonDefinitionId` in input objects and `returnReasonDefinition` in return line items instead.\n> This enum will be removed in a future API version.",
           "fields": null,
           "inputFields": null,
           "interfaces": null,
@@ -33760,13 +35636,13 @@
         {
           "kind": "OBJECT",
           "name": "ReturnReasonDefinition",
-          "description": "Represents a structured reason for a return.",
+          "description": "A standardized reason for returning an item.\n\n- Shopify offers an expanded library of return reasons available to all merchants\n- For each product, Shopify suggests a curated subset of reasons based on the product's category.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "deleted",
-              "description": "Whether the reason is deleted.",
+              "description": "Whether the return reason has been removed from taxonomy.\n\nDeleted reasons should not be presented to customers when creating new returns, but may still\nappear on existing returns that were created before the reason was deleted. This field enables\ngraceful deprecation of return reasons without breaking historical data.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -33781,10 +35657,10 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "handle",
-              "description": "A stable, human-readable identifier for the reason.",
+              "description": "A unique, human-readable, stable identifier for the return reason.\n\nExample values include \"arrived-late\", \"comfort\", \"too-tight\", \"color-too-bright\", and \"quality\".\nThe handle remains consistent across API versions and localizations, making it suitable for programmatic use.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -33817,10 +35693,10 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "name",
-              "description": "The localized customer-facing name of the reason.",
+              "description": "The localized, user-facing name of the return reason.\n\nThis field returns the reason name in the requested locale, automatically falling back to\nEnglish if no translation is available. Use this field when displaying return reasons to\ncustomers.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -33972,35 +35848,6 @@
           "inputFields": null,
           "interfaces": [],
           "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "ENUM",
-          "name": "ReturnReasonDefinitionSortKeys",
-          "description": "The set of valid sort keys for the ReturnReasonDefinition query.",
-          "fields": null,
-          "inputFields": null,
-          "interfaces": null,
-          "enumValues": [
-            {
-              "name": "HANDLE",
-              "description": "Sort by the `handle` value.",
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "ID",
-              "description": "Sort by the `id` value.",
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "NAME",
-              "description": "Sort by the `name` value.",
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
           "possibleTypes": null
         },
         {
@@ -34320,7 +36167,7 @@
           "description": "A line item with at least one unit that is eligible for return.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "lineItem",
               "description": "The related line item.",
@@ -34338,7 +36185,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "quantity",
               "description": "The quantity of units that can be returned.",
@@ -36197,7 +38044,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -36268,131 +38115,6 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "String",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "isPreAuthAccessible": false,
-              "isProtected": false,
-              "name": "returnReasonDefinitions",
-              "description": "The list of all return reason definitions.",
-              "args": [
-                {
-                  "name": "ids",
-                  "description": "The list of return reason definition IDs to retrieve.",
-                  "type": {
-                    "kind": "LIST",
-                    "name": null,
-                    "ofType": {
-                      "kind": "NON_NULL",
-                      "name": null,
-                      "ofType": {
-                        "kind": "SCALAR",
-                        "name": "ID",
-                        "ofType": null
-                      }
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "handles",
-                  "description": "The list of return reason definition handles to retrieve.",
-                  "type": {
-                    "kind": "LIST",
-                    "name": null,
-                    "ofType": {
-                      "kind": "NON_NULL",
-                      "name": null,
-                      "ofType": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                      }
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "first",
-                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "after",
-                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "last",
-                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "before",
-                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "reverse",
-                  "description": "Reverse the order of the underlying list.",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Boolean",
-                    "ofType": null
-                  },
-                  "defaultValue": "false"
-                },
-                {
-                  "name": "sortKey",
-                  "description": "Sort the underlying list using a key. If your query is slow or returns an error, then [try specifying a sort key that matches the field used in the search](https://shopify.dev/api/usage/pagination-graphql#search-performance-considerations).",
-                  "type": {
-                    "kind": "ENUM",
-                    "name": "ReturnReasonDefinitionSortKeys",
-                    "ofType": null
-                  },
-                  "defaultValue": "ID"
-                },
-                {
-                  "name": "query",
-                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| default | string | Filter by a case-insensitive search of multiple fields in a document. | | | - `query=Bob Norman`<br/> - `query=title:green hoodie` |\n| deleted | boolean | Filter by whether the return reason has been deleted (deactivated). |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| name | string | Filter by name. |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                }
-              ],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "ReturnReasonDefinitionConnection",
                   "ofType": null
                 }
               },
@@ -38150,6 +39872,12 @@
               "description": "Tax finalization affected the store credit payment.",
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "RECURRING_PAYMENT",
+              "description": "Store credit was used as payment for a recurring order.",
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "possibleTypes": null
@@ -39062,6 +40790,20 @@
             {
               "isPreAuthAccessible": false,
               "isProtected": false,
+              "name": "app",
+              "description": "The subscription app that the subscription contract is registered to.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "App",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
               "name": "appEligibleForCustomerActions",
               "description": "Whether the subscription contract is eligible for customer actions.",
               "args": [],
@@ -39273,7 +41015,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": true,
+              "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "id",
               "description": "A globally-unique ID.",
@@ -41331,16 +43073,6 @@
           "fields": null,
           "inputFields": [
             {
-              "name": "address",
-              "description": "The address to ship to.",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "CustomerMailingAddressInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
               "name": "shippingAddress",
               "description": "The address to ship to.",
               "type": {
@@ -43363,6 +45095,18 @@
             {
               "name": "CA_SK_RESELLER_EXEMPTION",
               "description": "This customer is exempt from specific taxes for holding a valid RESELLER_EXEMPTION in Saskatchewan.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "CA_SK_VPT_RESELLER_EXEMPTION",
+              "description": "This customer is exempt from VPT (Vapour Products Tax) for holding a valid VPT_RESELLER_EXEMPTION in Saskatchewan.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "CA_NL_VPT_RESELLER_EXEMPTION",
+              "description": "This customer is exempt from VPT (Vapour Products Tax) for holding a valid VPT_RESELLER_EXEMPTION in Newfoundland and Labrador.",
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -47283,7 +49027,7 @@
               "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "returnReasonDefinition",
-              "description": "The structured reason definition for returning the item.",
+              "description": "The standardized reason for why the item is being returned.",
               "args": [],
               "type": {
                 "kind": "OBJECT",
@@ -48891,6 +50635,214 @@
           "possibleTypes": null
         },
         {
+          "kind": "OBJECT",
+          "name": "Video",
+          "description": "Represents a Shopify hosted video.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "alt",
+              "description": "A word or phrase to share the nature or contents of a media.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mediaContentType",
+              "description": "The media content type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "MediaContentType",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "previewImage",
+              "description": "The preview image for the media.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Image",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "sources",
+              "description": "The sources for a video.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "VideoSource",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Media",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "VideoSource",
+          "description": "Represents a source for a Shopify hosted video.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "format",
+              "description": "The format of the video source.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "height",
+              "description": "The height of the video.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "mimeType",
+              "description": "The video MIME type.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "url",
+              "description": "The URL of the video.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "width",
+              "description": "The width of the video.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "UNION",
           "name": "WalletPaymentConfig",
           "description": "The configuration used for Payment Wallets.",
@@ -48914,7 +50866,7 @@
         {
           "kind": "OBJECT",
           "name": "Weight",
-          "description": "A weight, which includes a numeric value and a unit of measurement.",
+          "description": "A weight measurement with its numeric value and unit. Used throughout the API, for example in shipping calculations, delivery conditions, order line items, and inventory measurements.\n\nThe weight combines a decimal value with a standard unit of measurement to ensure consistent weight handling across different regional systems.",
           "fields": [
             {
               "isPreAuthAccessible": false,
@@ -49218,6 +51170,12 @@
               "deprecationReason": null
             },
             {
+              "name": "VARIABLE_DEFINITION",
+              "description": "Location adjacent to a variable definition.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "SCHEMA",
               "description": "Location adjacent to a schema definition.",
               "isDeprecated": false,
@@ -49280,12 +51238,6 @@
             {
               "name": "INPUT_FIELD_DEFINITION",
               "description": "Location adjacent to an input object field definition.",
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "VARIABLE_DEFINITION",
-              "description": "Location adjacent to a variable definition.",
               "isDeprecated": false,
               "deprecationReason": null
             }
