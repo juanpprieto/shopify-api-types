@@ -1,5 +1,30 @@
 # @juanpprieto/shopify-api-types
 
+## 2026.1.0
+
+### Major Changes (New API Version: 2026-01)
+
+- **New current version 2026-01** for Storefront, Admin, and Customer Account
+  APIs. Version set: current=2026-01, previous=2025-10, olderSupported=[2025-07,
+  2025-04], next(RC)=2026-04, unstable.
+- **Support-window version model**: each release now ships every API version
+  Shopify still supports (4 stable quarters + release candidate + unstable),
+  aligned with Shopify's 12-month support policy. See CONTRIBUTING.md "Version
+  Support Principle" and decisions/011.
+- **Comparisons for every adjacent version pair** (4 pairs), exported as
+  `comparisons/<from>-to-<to>` plus the `comparisons/current` and
+  `comparisons/next` aliases.
+- **`RELEASE_DATE` env override** for back-dated builds, and fall-forward guards
+  in the schema fetcher (header check + content-duplicate check) so
+  retired-version schemas can never be silently overwritten.
+- Type counts: Admin 1,790 / Customer Account 320 / Storefront 268.
+- Breaking changes from 2025-10 to 2026-01 are listed in the README and in
+  `comparisons/current`.
+
+Note: this release was published 2026-09-01 as a catch-up for the 2026-01
+quarter. Its RC (2026-04) and unstable schemas are snapshots from the
+publication date.
+
 ## 2025.7.0
 
 ### Major Changes

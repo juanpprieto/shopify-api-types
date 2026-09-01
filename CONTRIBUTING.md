@@ -394,6 +394,47 @@ Shopify serves a different version than requested, and keeps the existing file
 in `src/graphql-schemas/` instead. Retired versions can only be built from
 schemas already in the repo.
 
+### 🧭 Release Crossroads (decisions for future maintainers and agents)
+
+These rules resolve the recurring decision points of a release. They come from
+the 2026-09 catch-up releases (see `decisions/011`).
+
+1. **Back-dated releases use `RELEASE_DATE`.** Set it (YYYY-MM-DD, mid-month
+   day) on EVERY command of that release: fetch, generate, build, validate,
+   `git push` (the pre-push hook rebuilds), and `npm publish` (`prepublishOnly`
+   rebuilds). A missed override rebuilds with today's version set and corrupts
+   the release artifacts.
+2. **Retired schema files are irreplaceable.** Once Shopify retires a version,
+   `src/graphql-schemas/<api>/<version>.json` is the only source. Never delete
+   them from `src`. Two guards protect them during fetch:
+   - Storefront/Admin: the `x-shopify-api-version` response header must equal
+     the requested version.
+   - Customer Account: the endpoint sends no version header, so the fetch script
+     detects fall-forward by content - a dated version whose bytes equal a newer
+     version's schema is a fall-forward response, and the previous file is
+     restored automatically.
+3. **dist ships only the release window.** The build compiles every version dir
+   in `src`, so after the build remove the
+   `dist/{storefront,admin,customer-account}/<version>` dirs that are outside
+   the release's version set. Remove from `dist` only - never from `src`.
+4. **Publish locally before you push.** Order: commit → `npm publish` (with OTP,
+   and `RELEASE_DATE` if back-dated) → tag → push → GitHub release. Pushing an
+   unpublished version first makes the CI release workflow publish it via
+   `NPM_TOKEN`, which bypasses the local verification flow.
+5. **Paid doc generation runs last.** `npm run docs` calls the Anthropic API and
+   costs tokens. Run it only after `npm run validate`, `ci:validate-build`, and
+   the export smoke test all pass. The same gate exists in the quarterly
+   `api-version-check` workflow. Model: `claude-sonnet-5` (override with
+   `ANTHROPIC_MODEL`).
+6. **Changesets on release.** A release consumes the pending changeset files
+   together with the manual CalVer version bump. Close any bot-opened "Version
+   Packages" PR that a release supersedes.
+7. **Node support follows EOL.** The CI matrices test only non-EOL Node
+   versions, and `engines.node` mirrors the oldest tested version.
+8. **The e2e test-app never hardcodes versions.** It enumerates every export
+   path from the installed package.json at test time, so quarterly version-set
+   changes cannot break it.
+
 ### 🚀 Complete Release Process (2025.10.0 Template)
 
 Follow these exact steps for the next quarterly release:

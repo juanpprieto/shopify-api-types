@@ -1,10 +1,5 @@
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -12,14 +7,14 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  BigInt: { input: any; output: any; }
+  BigInt: { input: unknown; output: unknown; }
   DateTime: { input: string; output: string; }
   Decimal: { input: string; output: string; }
   HTML: { input: string; output: string; }
-  Handle: { input: any; output: any; }
+  Handle: { input: unknown; output: unknown; }
   ISO8601DateTime: { input: string; output: string; }
   JSON: { input: unknown; output: unknown; }
-  ReadonlyCustomFieldTarget: { input: any; output: any; }
+  ReadonlyCustomFieldTarget: { input: unknown; output: unknown; }
   URL: { input: string; output: string; }
   UnsignedInt64: { input: string; output: string; }
 };

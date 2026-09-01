@@ -310,9 +310,31 @@ async function fetchSchemas(): Promise<void> {
   console.log(`   Release Candidate: ${versionSet.releaseCandidate}`);
   console.log(`   Unstable: ${versionSet.unstable}\n`);
 
+  const apis: ApiType[] = ['storefront', 'customer-account', 'admin'];
+
+  // Backup existing schema files before fetching. The customer-account
+  // endpoint sends no x-shopify-api-version header, so its fall-forward
+  // responses can only be detected AFTER download (see below) - and then
+  // the original file must be restorable.
+  const backups = new Map<string, string>();
+  for (const api of apis) {
+    for (const version of allVersions) {
+      const filePath = path.join(
+        'src',
+        'graphql-schemas',
+        api,
+        `${version}.json`,
+      );
+      const content = await fs.readFile(filePath, 'utf-8').catch(() => null);
+      if (content !== null) {
+        backups.set(`${api}/${version}`, content);
+      }
+    }
+  }
+
   const fetchPromises: Promise<void>[] = [];
 
-  for (const api of ['storefront', 'customer-account', 'admin'] as ApiType[]) {
+  for (const api of apis) {
     for (const version of allVersions) {
       fetchPromises.push(fetchApiSchema(api, version));
     }
@@ -320,12 +342,75 @@ async function fetchSchemas(): Promise<void> {
 
   try {
     await Promise.all(fetchPromises);
-
-    console.log('\nAll schemas fetched successfully!');
   } catch {
     console.error('\nSome schemas failed to fetch');
     process.exit(1);
   }
+
+  // Fall-forward detection by content: when an endpoint gives no version
+  // header, a retired version is served as the oldest supported version -
+  // byte-identical to a newer version's schema. Distinct quarters are never
+  // byte-identical, so equality means fall-forward.
+  const datedVersions = allVersions
+    .filter((v): v is string => v !== 'unstable')
+    .sort()
+    .reverse(); // newest first
+
+  let restoredCount = 0;
+  for (const api of apis) {
+    const contents = new Map<string, string>();
+    for (const version of datedVersions) {
+      const filePath = path.join(
+        'src',
+        'graphql-schemas',
+        api,
+        `${version}.json`,
+      );
+      const content = await fs.readFile(filePath, 'utf-8').catch(() => null);
+      if (content !== null) {
+        contents.set(version, content);
+      }
+    }
+
+    for (let i = 1; i < datedVersions.length; i++) {
+      const older = datedVersions[i];
+      if (older === undefined) continue;
+      const olderContent = contents.get(older);
+      if (olderContent === undefined) continue;
+
+      const duplicateOf = datedVersions
+        .slice(0, i)
+        .find((newer) => contents.get(newer) === olderContent);
+      if (duplicateOf === undefined) continue;
+
+      const filePath = path.join(
+        'src',
+        'graphql-schemas',
+        api,
+        `${older}.json`,
+      );
+      const backup = backups.get(`${api}/${older}`);
+
+      if (backup !== undefined && backup !== olderContent) {
+        await fs.writeFile(filePath, backup, 'utf-8');
+        console.warn(
+          `⚠ ${api}/${older} content is identical to ${duplicateOf} (fall-forward). ` +
+            `Restored the previous ${filePath}.`,
+        );
+        restoredCount++;
+      } else if (backup === undefined) {
+        console.error(
+          `✗ ${api}/${older} content is identical to ${duplicateOf} (fall-forward) ` +
+            `and no previous file exists to restore.`,
+        );
+        process.exit(1);
+      }
+    }
+  }
+
+  console.log(
+    `\nAll schemas fetched successfully!${restoredCount > 0 ? ` (${restoredCount} retired version(s) restored from existing files)` : ''}`,
+  );
 }
 
 // Run if called directly

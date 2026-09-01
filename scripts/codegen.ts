@@ -25,9 +25,10 @@ function createCodegenConfig(): CodegenConfig {
           scalars: SHOPIFY_SCALARS,
           avoidOptionals: api === 'customer-account', // Customer Account API has more optional fields
           maybeValue: 'T | null | undefined',
+          // codegen 7 bundles change-case-all, not the old per-case modules
           namingConvention: {
-            typeNames: 'pascal-case#pascalCase',
-            enumValues: 'upper-case#upperCase',
+            typeNames: 'change-case-all#pascalCase',
+            enumValues: 'change-case-all#upperCase',
           },
         },
       };
