@@ -433,6 +433,12 @@ Correctness requirements:
   Export keys use slashes: "@juanpprieto/shopify-api-types/sfapi/2026-01", "/sfapi/current", "/schemas/admin/2026-01", "/comparisons/current".
 - Use only version numbers, counts, and change details present in the input data. Invent nothing.
 
+Readability requirements:
+- Wrap every GraphQL identifier in backticks: type names, field names, argument names, and type expressions like \`[UserError!]!\`.
+- Breaking-change bullets follow the pattern: \`Identifier\` - what changed. When there are more than 6, group them under short bold labels by kind (removed types, field type changes, input changes).
+- For additions, do NOT list every name. State the total count, name the feature area, and give at most 8 representative type names in backticks.
+- Short paragraphs. No sentence over 25 words in prose sections.
+
 Style contract (strict):
 - Zero emojis anywhere, including headings.
 - Zero em dashes. Use commas, parentheses, or periods.

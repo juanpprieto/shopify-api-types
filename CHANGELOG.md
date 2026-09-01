@@ -1,5 +1,24 @@
 # @juanpprieto/shopify-api-types
 
+## 2026.7.0
+
+### Major Changes (New API Version: 2026-07)
+
+- New current version 2026-07 for the Storefront, Admin, and Customer Account
+  APIs. Version set: current=2026-07, previous=2026-04, olderSupported=[2026-01,
+  2025-10], next(RC)=2026-10, unstable.
+- Breaking changes from 2026-04 to 2026-07 (Admin only, 12 total): the
+  InventoryScheduledChange type family was removed, remote payment input fields
+  became required, and the deprecated inventorySetScheduledChanges mutation and
+  CollectionInput arguments were removed. Full list in the README and in
+  `comparisons/current`.
+- Release candidate preview (2026-10): Admin removes the PriceRule type family;
+  Customer Account removes legacy Checkout types. See `comparisons/next`.
+- Type counts: Admin 2,041 / Customer Account 323 / Storefront 271.
+
+This release completes the 2026 catch-up. The package is current with Shopify's
+quarterly schedule again.
+
 ## 2026.4.0
 
 ### Major Changes (New API Version: 2026-04)

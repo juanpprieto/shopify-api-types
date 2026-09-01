@@ -3,7 +3,7 @@
 Welcome! This guide will help you understand how to contribute to this
 TypeScript types package for Shopify's GraphQL APIs.
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -19,7 +19,7 @@ npm run build
 npm run ci:validate-all
 ```
 
-## 📋 NPM Scripts Reference
+## NPM Scripts Reference
 
 ### Core Development Scripts
 
@@ -94,12 +94,12 @@ npm run ci:validate-all
 | `version:correct`   | Manual CalVer correction after changeset                     | Fix version post-changeset     |
 | `version:test`      | Test next CalVer version calculation                         | Release validation             |
 
-## 📋 CalVer Workflow Guide
+## CalVer Workflow Guide
 
 This package uses **Shopify CalVer** (`YYYY.[1|4|7|10].PATCH`) with Changesets
 for version management. Here's how to use it:
 
-### 🔄 Complete Release Workflow
+### Complete Release Workflow
 
 #### 1. Development & Testing
 
@@ -137,10 +137,10 @@ npm run version:calver -- --dry-run
 npm run validate && npm run build
 ```
 
-#### 4. Release Process ⭐ **NEW CALVER WORKFLOW**
+#### 4. Release Process **NEW CALVER WORKFLOW**
 
 ```bash
-# 🔥 USE THIS INSTEAD of "changeset version"
+# USE THIS INSTEAD of "changeset version"
 npm run version:calver
 
 # This does:
@@ -156,12 +156,12 @@ cat package.json | grep version
 npx changeset publish
 ```
 
-### 🚨 CalVer Constraints & Validation
+### CalVer Constraints & Validation
 
 **Important:** Our CalVer integration enforces Shopify's quarterly pattern:
 
-- ✅ **Valid major versions**: `2025.1.0`, `2025.4.0`, `2025.7.0`, `2025.10.0`
-- ❌ **Invalid major versions**: `2025.2.0`, `2025.5.0`, `2025.6.0`, `2025.8.0`
+- **Valid major versions**: `2025.1.0`, `2025.4.0`, `2025.7.0`, `2025.10.0`
+- **Invalid major versions**: `2025.2.0`, `2025.5.0`, `2025.6.0`, `2025.8.0`
 
 **Change Type Mapping:**
 
@@ -169,7 +169,7 @@ npx changeset publish
 - `minor` → Treated as patch in CalVer (`2025.7.0` → `2025.7.1`)
 - `major` → New API quarter (`2025.7.0` → `2025.10.0`)
 
-### 🎯 Example Workflows
+### Example Workflows
 
 #### Bug Fix Release
 
@@ -224,7 +224,7 @@ npx changeset version  # 2025.7.0 → 2025.10.0
 npx changeset publish
 ```
 
-### 🔧 CalVer Scripts Reference
+### CalVer Scripts Reference
 
 | Command                               | Purpose                                              | Output                         |
 | ------------------------------------- | ---------------------------------------------------- | ------------------------------ |
@@ -236,7 +236,7 @@ npx changeset publish
 | `npx changeset status`                | View pending changesets                              | Lists changes to be released   |
 | `npx changeset publish`               | Publish to NPM                                       | Releases new version           |
 
-### ⚠️ Important Notes
+### Important Notes
 
 1. **Use `npm run version:calver` instead of `changeset version`** - This is the
    main difference!
@@ -249,22 +249,19 @@ npx changeset publish
    `npm run validate && npm run build`
 6. **Use CI for publishing** - manual publishing should be rare
 
-### ✅ **Tested & Proven Results**
+### **Tested & Proven Results**
 
 Our CalVer integration has been fully tested and works perfectly:
 
-- ✅ **Major changeset**: `2025.4.0` → `2025.7.0` (not `2026.0.0`!)
-- ✅ **Automatic correction**: SemVer `2026.0.0` automatically becomes CalVer
+- **Major changeset**: `2025.4.0` → `2025.7.0` (not `2026.0.0`!)
+- **Automatic correction**: SemVer `2026.0.0` automatically becomes CalVer
   `2025.7.0`
-- ✅ **CHANGELOG.md updated**: Header changes from `## 2026.0.0` to
-  `## 2025.7.0`
-- ✅ **API Version detection**: Correctly identifies `2025-07` as the API
-  version
-- ✅ **Quarterly validation**: Only allows `1`, `4`, `7`, `10` for major
-  versions
-- ✅ **Custom changelog context**: Adds "(New API Version)" for major releases
+- **CHANGELOG.md updated**: Header changes from `## 2026.0.0` to `## 2025.7.0`
+- **API Version detection**: Correctly identifies `2025-07` as the API version
+- **Quarterly validation**: Only allows `1`, `4`, `7`, `10` for major versions
+- **Custom changelog context**: Adds "(New API Version)" for major releases
 
-## 🏗️ Development Workflow
+## Development Workflow
 
 ### 1. Setting Up Development Environment
 
@@ -320,7 +317,7 @@ npm run changeset:version
 npm run changeset:publish
 ```
 
-## 📦 Package Structure
+## Package Structure
 
 ```
 ├── src/
@@ -334,7 +331,7 @@ npm run changeset:publish
 └── demo/               # Demo React application
 ```
 
-## 🔄 API Version Management
+## API Version Management
 
 ### Supported Versions (Updated 2025.10.0)
 
@@ -343,18 +340,18 @@ npm run changeset:publish
 - **Next**: `2026-01` - Release candidate
 - **Unstable**: Latest development version
 
-## 📅 Quarterly API Release Guide
+## Quarterly API Release Guide
 
 This section documents the complete process for releasing a new Shopify API
 quarterly version, based on our successful 2025.10.0 release.
 
-### 🎯 Overview
+### Overview
 
 Shopify releases new API versions quarterly (January, April, July, October). Our
 package uses automated CalVer versioning that dynamically calculates the correct
 versions based on the current date.
 
-### 📐 Version Support Principle
+### Version Support Principle
 
 **Each package release ships every API version that Shopify still supports.**
 
@@ -394,7 +391,7 @@ Shopify serves a different version than requested, and keeps the existing file
 in `src/graphql-schemas/` instead. Retired versions can only be built from
 schemas already in the repo.
 
-### 🧭 Release Crossroads (decisions for future maintainers and agents)
+### Release Crossroads (decisions for future maintainers and agents)
 
 These rules resolve the recurring decision points of a release. They come from
 the 2026-09 catch-up releases (see `decisions/011`).
@@ -435,7 +432,7 @@ the 2026-09 catch-up releases (see `decisions/011`).
    path from the installed package.json at test time, so quarterly version-set
    changes cannot break it.
 
-### 🚀 Complete Release Process (2025.10.0 Template)
+### Complete Release Process (2025.10.0 Template)
 
 Follow these exact steps for the next quarterly release:
 
@@ -627,7 +624,7 @@ npm view @juanpprieto/shopify-api-types version
 npm view @juanpprieto/shopify-api-types exports | grep 2026-01
 ```
 
-### 🔍 Key Files Modified During Release
+### Key Files Modified During Release
 
 1. **package.json** - Version number and exports
 2. **src/graphql-schemas/** - New API schemas
@@ -636,7 +633,7 @@ npm view @juanpprieto/shopify-api-types exports | grep 2026-01
 5. **tests/scripts/validate-build.test.ts** - Test version mocks
 6. **README.md** - Documentation and examples
 
-### 💡 Lessons Learned from 2025.10.0
+### Lessons Learned from 2025.10.0
 
 1. **CalVer automation works perfectly** - No manual version calculation needed
 2. **Test mocks must be updated** - Critical for CI validation
@@ -644,26 +641,26 @@ npm view @juanpprieto/shopify-api-types exports | grep 2026-01
 4. **Old version cleanup is essential** - Remove unsupported versions
 5. **2FA setup required** - Ensure authenticator app is configured
 
-### 🚨 Common Pitfalls to Avoid
+### Common Pitfalls to Avoid
 
-- ❌ Forgetting to update test mocks → CI failures
-- ❌ Using `vitest` instead of `vitest run` → infinite loops during publish
-- ❌ Not cleaning up old version files → validation failures
-- ❌ Missing environment variables → schema fetch failures
-- ❌ Not testing exports in temp project → runtime import errors
+- Forgetting to update test mocks → CI failures
+- Using `vitest` instead of `vitest run` → infinite loops during publish
+- Not cleaning up old version files → validation failures
+- Missing environment variables → schema fetch failures
+- Not testing exports in temp project → runtime import errors
 
-### ✅ Success Criteria
+### Success Criteria
 
 Your release is successful when:
 
-- ✅ All CI validation passes
-- ✅ Package builds without errors
-- ✅ All 39+ export paths are valid
-- ✅ npm publish succeeds
-- ✅ New version appears on npmjs.com
-- ✅ Import examples work in test project
+- All CI validation passes
+- Package builds without errors
+- All 39+ export paths are valid
+- npm publish succeeds
+- New version appears on npmjs.com
+- Import examples work in test project
 
-### 📊 Expected Results (2026.01.0 Example)
+### Expected Results (2026.01.0 Example)
 
 **Generated Types:**
 
@@ -689,7 +686,7 @@ Your release is successful when:
 4. Update exports: `npm run generate:exports`
 5. Validate: `npm run build && npm run ci:validate-build`
 
-## 🧪 Testing Guidelines
+## Testing Guidelines
 
 ### Test Categories
 
@@ -709,7 +706,7 @@ describe('feature-name', () => {
 });
 ```
 
-## 🎯 Code Quality Standards
+## Code Quality Standards
 
 ### TypeScript Configuration
 
@@ -732,7 +729,7 @@ describe('feature-name', () => {
 - All tests must pass
 - Linting must pass
 
-## 🚢 Release Process
+## Release Process
 
 ### Automated Release Pipeline
 
@@ -790,7 +787,7 @@ This package follows **Shopify CalVer** versioning pattern:
 - Minor changes are treated as patch releases in CalVer
 - Breaking changes should align with Shopify's quarterly release schedule
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -852,7 +849,7 @@ npm run test:coverage
 | `npm run ci:validate-all` | Full system validation          |
 | `npm run knip:strict`     | Strict dependency analysis      |
 
-## 📚 Documentation
+## Documentation
 
 ### Generating Documentation
 
@@ -871,7 +868,7 @@ npm run docs
 - Update README for user-facing changes
 - Document breaking changes in changeset
 
-## 🤝 Contributing Guidelines
+## Contributing Guidelines
 
 ### Getting Started
 
@@ -901,23 +898,23 @@ npm run docs
 
 ### What We Look For
 
-- ✅ Clean, readable code
-- ✅ Comprehensive tests
-- ✅ Proper error handling
-- ✅ Performance considerations
-- ✅ Backward compatibility
-- ✅ Clear documentation
+- Clean, readable code
+- Comprehensive tests
+- Proper error handling
+- Performance considerations
+- Backward compatibility
+- Clear documentation
 
 ### Areas for Contribution
 
-- 🆕 New API version support
-- 🐛 Bug fixes and improvements
-- 📝 Documentation enhancements
-- 🧪 Test coverage improvements
-- ⚡ Performance optimizations
-- 🔧 Developer experience improvements
+- New API version support
+- Bug fixes and improvements
+- Documentation enhancements
+- Test coverage improvements
+- Performance optimizations
+- Developer experience improvements
 
-## 📞 Getting Help
+## Getting Help
 
 ### Resources
 
@@ -945,7 +942,7 @@ For new features:
 - Consider backward compatibility
 - Discuss implementation approach
 
-## 🤖 Claude AI Configuration
+## Claude AI Configuration
 
 The documentation generation uses Claude AI. The model selection works as
 follows:
@@ -972,4 +969,4 @@ This approach ensures:
 
 ---
 
-Thank you for contributing to @juanpprieto/shopify-api-types! 🎉
+Thank you for contributing to @juanpprieto/shopify-api-types!
