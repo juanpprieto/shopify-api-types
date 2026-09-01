@@ -27,12 +27,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Derive RELEASE_DATE from package version
+        run:
+          echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>
+          $GITHUB_ENV
 
       - name: Run quality checks
         run: |
@@ -128,7 +133,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies

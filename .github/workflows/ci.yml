@@ -91,6 +91,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Derive RELEASE_DATE from package version
+        run:
+          echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>
+          $GITHUB_ENV
+
       - name: Build package
         run: npm run build:ci
 
@@ -132,6 +137,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Derive RELEASE_DATE from package version
+        run:
+          echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>
+          $GITHUB_ENV
 
       - name: Build
         run: npm run build:ci
@@ -205,6 +215,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Derive RELEASE_DATE from package version
+        run:
+          echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>
+          $GITHUB_ENV
 
       - name: Check for changesets
         run: |

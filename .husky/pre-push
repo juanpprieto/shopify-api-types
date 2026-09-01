@@ -1,7 +1,13 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "Running comprehensive checks before push..."
+
+# Derive RELEASE_DATE from the committed version so back-dated release
+# commits rebuild with their own version set (Release Crossroads rule 1).
+# An explicitly exported RELEASE_DATE wins.
+if [ -z "${RELEASE_DATE:-}" ]; then
+  RELEASE_DATE="$(npx tsx scripts/release-date-from-version.ts)"
+  export RELEASE_DATE
+  echo "RELEASE_DATE derived from package version: ${RELEASE_DATE:-<none>}"
+fi
 
 # Run tests
 npm test

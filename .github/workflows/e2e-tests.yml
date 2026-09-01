@@ -27,6 +27,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Derive RELEASE_DATE from package version
+        run:
+          echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>
+          $GITHUB_ENV
+
       - name: Run linting
         run: npm run lint
 
