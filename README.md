@@ -1,5 +1,8 @@
 # @juanpprieto/shopify-api-types
 
+[![CI](https://github.com/juanpprieto/shopify-api-types/actions/workflows/ci.yml/badge.svg)](https://github.com/juanpprieto/shopify-api-types/actions/workflows/ci.yml)
+[![Release](https://github.com/juanpprieto/shopify-api-types/actions/workflows/release.yml/badge.svg)](https://github.com/juanpprieto/shopify-api-types/actions/workflows/release.yml)
+
 TypeScript definitions for the Shopify GraphQL APIs, automatically generated
 from the official Shopify GraphQL schemas.
 
