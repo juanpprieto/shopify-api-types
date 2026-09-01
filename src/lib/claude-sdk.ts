@@ -8,10 +8,10 @@ export type ClaudeResult<T> =
 const CLAUDE_MODELS = {
   // Primary: Use environment variable if set
   fromEnv: process.env['ANTHROPIC_MODEL'],
-  // Secondary: current recommended default model
-  latest: 'claude-opus-5',
+  // Secondary: cheapest current Sonnet model
+  latest: 'claude-sonnet-5',
   // Tertiary: fallback if the primary model is unavailable
-  fallback: 'claude-opus-4-8',
+  fallback: 'claude-sonnet-4-6',
 } as const;
 
 /**
