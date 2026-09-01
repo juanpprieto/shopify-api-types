@@ -2,17 +2,16 @@ import Anthropic from '@anthropic-ai/sdk';
 
 // Result type for Claude API calls
 export type ClaudeResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: { message: string } };
+  { success: true; data: T } | { success: false; error: { message: string } };
 
 // Model configuration with fallback hierarchy
 const CLAUDE_MODELS = {
   // Primary: Use environment variable if set
   fromEnv: process.env['ANTHROPIC_MODEL'],
-  // Secondary: Use latest production alias (automatically updated by Anthropic)
-  latest: 'claude-sonnet-4-0',
-  // Tertiary: Fallback to specific version if alias fails
-  fallback: 'claude-sonnet-4-20250514',
+  // Secondary: cheapest current Sonnet model
+  latest: 'claude-sonnet-5',
+  // Tertiary: fallback if the primary model is unavailable
+  fallback: 'claude-sonnet-4-6',
 } as const;
 
 /**

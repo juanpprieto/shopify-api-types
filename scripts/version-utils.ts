@@ -22,59 +22,56 @@ export function getLatestVersion(): ApiVersion {
 // =============================================================================
 
 /**
- * Get the current version set: current, previous, next (RC), and unstable
+ * Shift a quarter-anchored date by a number of quarters and format as YYYY-MM
+ */
+function shiftQuarter(
+  year: number,
+  quarterMonth: number,
+  offset: number,
+): string {
+  // Quarter months are 1, 4, 7, 10 → indexes 0-3
+  const index = (quarterMonth - 1) / 3 + offset;
+  const shiftedYear = year + Math.floor(index / 4);
+  const shiftedMonth = (((index % 4) + 4) % 4) * 3 + 1;
+  return `${shiftedYear}-${shiftedMonth.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Get the current version set: current, previous, olderSupported, next (RC), and unstable.
+ *
+ * Shopify supports each stable version for a minimum of 12 months, so the
+ * 4 most recent stable quarters are live at any time. See CONTRIBUTING.md
+ * "Version Support Principle".
+ *
+ * Set the RELEASE_DATE env var (YYYY-MM-DD) to compute the set for a past
+ * or future date, e.g. for back-dated catch-up releases.
  */
 export function getCurrentVersionSet(): VersionSet {
-  const now = new Date();
+  const releaseDate = process.env['RELEASE_DATE'];
+  const now = releaseDate ? new Date(releaseDate) : new Date();
+
+  if (releaseDate && isNaN(now.getTime())) {
+    throw new Error(
+      `Invalid RELEASE_DATE "${releaseDate}" - expected YYYY-MM-DD`,
+    );
+  }
+
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1; // 0-indexed, so add 1
 
-  // Determine current quarter
-  const quarters = [1, 4, 7, 10];
-  const currentQuarter =
-    quarters.find((q) => {
-      const nextQuarter = quarters[quarters.indexOf(q) + 1] || 13; // 13 for wrap-around
-      return currentMonth >= q && currentMonth < nextQuarter;
-    }) ?? 10; // Default to Q4 if no match
+  // Anchor to the current quarter month (1, 4, 7, 10)
+  const quarterMonth = Math.floor((currentMonth - 1) / 3) * 3 + 1;
 
-  const currentQuarterIndex = quarters.indexOf(currentQuarter);
-
-  // Calculate versions using pattern matching
-  const versionSet = match({ currentQuarter, currentQuarterIndex })
-    .with({ currentQuarterIndex: 3 }, () => {
-      // Q4 (October) - next quarter is Q1 of next year
-      return {
-        current: `${currentYear}-${currentQuarter.toString().padStart(2, '0')}`,
-        previous: `${currentYear}-07`,
-        releaseCandidate: `${currentYear + 1}-01`,
-        unstable: 'unstable',
-      };
-    })
-    .with({ currentQuarterIndex: 0 }, () => {
-      // Q1 (January) - previous quarter is Q4 of previous year
-      return {
-        current: `${currentYear}-${currentQuarter.toString().padStart(2, '0')}`,
-        previous: `${currentYear - 1}-10`,
-        releaseCandidate: `${currentYear}-04`,
-        unstable: 'unstable',
-      };
-    })
-    .otherwise(({ currentQuarterIndex }) => {
-      // Q2 (April) or Q3 (July)
-      const previousQuarter = quarters[currentQuarterIndex - 1];
-      const nextQuarter = quarters[currentQuarterIndex + 1];
-
-      if (!previousQuarter || !nextQuarter) {
-        throw new Error('Invalid quarter calculation');
-      }
-
-      return {
-        current: `${currentYear}-${currentQuarter.toString().padStart(2, '0')}`,
-        previous: `${currentYear}-${previousQuarter.toString().padStart(2, '0')}`,
-        releaseCandidate: `${currentYear}-${nextQuarter.toString().padStart(2, '0')}`,
-        unstable: 'unstable',
-      };
-    });
+  const versionSet = {
+    current: shiftQuarter(currentYear, quarterMonth, 0),
+    previous: shiftQuarter(currentYear, quarterMonth, -1),
+    olderSupported: [
+      shiftQuarter(currentYear, quarterMonth, -2),
+      shiftQuarter(currentYear, quarterMonth, -3),
+    ],
+    releaseCandidate: shiftQuarter(currentYear, quarterMonth, 1),
+    unstable: 'unstable',
+  };
 
   // Validate the version set
   const validation = VersionSetSchema.safeParse(versionSet);
@@ -106,6 +103,10 @@ export function classifyVersion(
       () => 'previous' as const,
     )
     .when(
+      (v) => vs.olderSupported.includes(v),
+      () => 'previous' as const,
+    )
+    .when(
       (v) => v === vs.releaseCandidate,
       () => 'release-candidate' as const,
     )
@@ -128,35 +129,70 @@ export function classifyVersion(
  * Get all supported versions as an array (for backward compatibility)
  */
 export function getAllSupportedVersions(): ExtendedApiVersion[] {
-  const versionSet = getCurrentVersionSet();
-  return [
-    versionSet.current,
-    versionSet.previous,
-    versionSet.releaseCandidate,
-    versionSet.unstable,
-  ];
+  return getSupportedVersions();
 }
 
 /**
- * Get only the 4 supported versions for the 4-version model
- * Returns: [current, previous, releaseCandidate, unstable]
+ * Get all supported versions for the support-window model
+ * Returns: [current, previous, ...olderSupported, releaseCandidate, unstable]
  */
 export function getSupportedVersions(): ExtendedApiVersion[] {
   const versionSet = getCurrentVersionSet();
   return [
     versionSet.current,
     versionSet.previous,
+    ...versionSet.olderSupported,
     versionSet.releaseCandidate,
     versionSet.unstable,
   ];
 }
 
 /**
- * Get only stable versions (current and previous)
+ * Get only stable versions (current, previous, and older supported)
  */
 export function getStableVersions(): ApiVersion[] {
   const versionSet = getCurrentVersionSet();
-  return [versionSet.current, versionSet.previous];
+  return [
+    versionSet.current,
+    versionSet.previous,
+    ...versionSet.olderSupported,
+  ];
+}
+
+/**
+ * Get the stable versions plus the release candidate, ordered oldest first
+ */
+export function getOrderedStableVersions(
+  versionSet?: VersionSet,
+): ApiVersion[] {
+  const vs = versionSet ?? getCurrentVersionSet();
+  return [
+    ...[...vs.olderSupported].reverse(),
+    vs.previous,
+    vs.current,
+    vs.releaseCandidate,
+  ];
+}
+
+/**
+ * Get every adjacent version pair (oldest first), ending at current → RC.
+ * Used for comparison generation and comparison exports.
+ */
+export function getAdjacentVersionPairs(
+  versionSet?: VersionSet,
+): Array<{ from: ApiVersion; to: ApiVersion }> {
+  const ordered = getOrderedStableVersions(versionSet);
+  const pairs: Array<{ from: ApiVersion; to: ApiVersion }> = [];
+
+  for (let i = 1; i < ordered.length; i++) {
+    const from = ordered[i - 1];
+    const to = ordered[i];
+    if (from !== undefined && to !== undefined) {
+      pairs.push({ from, to });
+    }
+  }
+
+  return pairs;
 }
 
 /**

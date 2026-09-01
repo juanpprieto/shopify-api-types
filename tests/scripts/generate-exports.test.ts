@@ -14,15 +14,24 @@ vi.mock('../../scripts/version-utils.js', () => ({
   getSupportedVersions: vi.fn(() => [
     '2025-07',
     '2025-04',
+    '2025-01',
+    '2024-10',
     '2025-10',
     'unstable',
   ]),
   getCurrentVersionSet: vi.fn(() => ({
     current: '2025-07',
     previous: '2025-04',
+    olderSupported: ['2025-01', '2024-10'],
     releaseCandidate: '2025-10',
     unstable: 'unstable',
   })),
+  getAdjacentVersionPairs: vi.fn(() => [
+    { from: '2024-10', to: '2025-01' },
+    { from: '2025-01', to: '2025-04' },
+    { from: '2025-04', to: '2025-07' },
+    { from: '2025-07', to: '2025-10' },
+  ]),
 }));
 
 describe('generate-exports', () => {
@@ -146,6 +155,12 @@ describe('generate-exports', () => {
           'sfapi/2025-04': ['./dist/storefront/2025-04/index.d.ts'],
           'caapi/2025-04': ['./dist/customer-account/2025-04/index.d.ts'],
           'admin/2025-04': ['./dist/admin/2025-04/index.d.ts'],
+          'sfapi/2025-01': ['./dist/storefront/2025-01/index.d.ts'],
+          'caapi/2025-01': ['./dist/customer-account/2025-01/index.d.ts'],
+          'admin/2025-01': ['./dist/admin/2025-01/index.d.ts'],
+          'sfapi/2024-10': ['./dist/storefront/2024-10/index.d.ts'],
+          'caapi/2024-10': ['./dist/customer-account/2024-10/index.d.ts'],
+          'admin/2024-10': ['./dist/admin/2024-10/index.d.ts'],
           'sfapi/2025-10': ['./dist/storefront/2025-10/index.d.ts'],
           'caapi/2025-10': ['./dist/customer-account/2025-10/index.d.ts'],
           'admin/2025-10': ['./dist/admin/2025-10/index.d.ts'],

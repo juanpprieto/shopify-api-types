@@ -178,15 +178,27 @@ export type ApplePayWalletConfig = {
 
 /** The details about the gift card used on the checkout. */
 export type AppliedGiftCard = Node & {
-  /** The amount deducted from the gift card. */
+  /**
+   * The amount deducted from the gift card.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   amountUsed: MoneyV2;
-  /** The remaining amount on the gift card. */
+  /**
+   * The remaining amount on the gift card.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   balance: MoneyV2;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** The last characters of the gift card. */
+  /**
+   * The last characters of the gift card.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   lastCharacters: Scalars['String']['output'];
-  /** The amount applied to the checkout in its currency. */
+  /**
+   * The amount applied to the checkout in its currency.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   presentmentAmountUsed: MoneyV2;
 };
 
@@ -226,9 +238,13 @@ export type AvailableShippingRates = {
    * Whether the shipping rates are ready.
    * The `shippingRates` field is `null` when this value is `false`.
    * This field should be polled until its value becomes `true`.
+   * @deprecated This field will be removed in a future version of the API.
    */
   ready: Scalars['Boolean']['output'];
-  /** The fetched shipping rates. `null` until the `ready` field is `true`. */
+  /**
+   * The fetched shipping rates. `null` until the `ready` field is `true`.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   shippingRates: Maybe<Array<ShippingRate>>;
 };
 
@@ -410,68 +426,129 @@ export type CardPaymentDetails = {
 
 /** A container for information required to checkout items and pay. Apps using the Customer Account API must meet the protected customer data [requirements](https://shopify.dev/docs/apps/launch/protected-customer-data). */
 export type Checkout = Node & {
-  /** The gift cards used on the checkout. */
+  /**
+   * The gift cards used on the checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   appliedGiftCards: Array<AppliedGiftCard>;
   /**
    * The available shipping rates for this Checkout.
    * Should only be used when checkout `requiresShipping` is `true` and
    * the shipping address is valid.
+   * @deprecated This field will be removed in a future version of the API.
    */
   availableShippingRates: Maybe<AvailableShippingRates>;
-  /** The date and time when the checkout was created. */
+  /**
+   * The date and time when the checkout was created.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   createdAt: Scalars['DateTime']['output'];
-  /** The currency code for the checkout. */
+  /**
+   * The currency code for the checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   currencyCode: CurrencyCode;
-  /** The extra information added to the checkout. */
+  /**
+   * The extra information added to the checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   customAttributes: Array<Attribute>;
-  /** The discounts applied on the checkout. */
+  /**
+   * The discounts applied on the checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   discountApplications: DiscountApplicationConnection;
-  /** The email associated with this checkout. */
+  /**
+   * The email associated with this checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   email: Maybe<Scalars['String']['output']>;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** A list of line item objects, each containing information about an item in the checkout. */
+  /**
+   * A list of line item objects, each containing information about an item in the checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   lineItems: CheckoutLineItemConnection;
   /**
    * The sum of all the prices of all the items in the checkout,
    * excluding duties, taxes, shipping, and discounts.
+   * @deprecated This field will be removed in a future version of the API.
    */
   lineItemsSubtotalPrice: MoneyV2;
-  /** The note associated with the checkout. */
+  /**
+   * The note associated with the checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   note: Maybe<Scalars['String']['output']>;
-  /** The amount left to be paid. This is equal to the cost of the line items, duties, taxes, and shipping, minus discounts and gift cards. */
+  /**
+   * The amount left to be paid. This is equal to the cost of the line items, duties, taxes, and shipping, minus discounts and gift cards.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   paymentDue: MoneyV2;
   /**
    * Whether the Checkout is ready and can be completed. Checkouts may
    * have asynchronous operations that can take time to finish. If you want
    * to complete a checkout or ensure all the fields are populated and up to
    * date, polling is required until the value is true.
+   * @deprecated This field will be removed in a future version of the API.
    */
   ready: Scalars['Boolean']['output'];
-  /** Whether the fulfillment requires shipping. */
+  /**
+   * Whether the fulfillment requires shipping.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   requiresShipping: Scalars['Boolean']['output'];
-  /** The address where the line items will be shipped. */
+  /**
+   * The address where the line items will be shipped.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   shippingAddress: Maybe<CustomerMailingAddress>;
-  /** The discounts allocated to the shipping line by discount applications. */
+  /**
+   * The discounts allocated to the shipping line by discount applications.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   shippingDiscountAllocations: Array<DiscountAllocation>;
-  /** The selected shipping rate, transitioned to a `shipping_line` object. */
+  /**
+   * The selected shipping rate, transitioned to a `shipping_line` object.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   shippingLine: Maybe<ShippingRate>;
-  /** The price at checkout before duties, shipping, and taxes. */
+  /**
+   * The price at checkout before duties, shipping, and taxes.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   subtotalPrice: MoneyV2;
-  /** Whether the checkout is tax exempt. */
+  /**
+   * Whether the checkout is tax exempt.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   taxExempt: Scalars['Boolean']['output'];
-  /** Whether taxes are included in the line item and shipping line prices. */
+  /**
+   * Whether taxes are included in the line item and shipping line prices.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   taxesIncluded: Scalars['Boolean']['output'];
-  /** The sum of all the duties applied to the line items in the checkout. */
+  /**
+   * The sum of all the duties applied to the line items in the checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   totalDuties: Maybe<MoneyV2>;
   /**
    * The sum of all the prices of all the items in the checkout,
    * duties, taxes, and discounts included.
+   * @deprecated This field will be removed in a future version of the API.
    */
   totalPrice: MoneyV2;
-  /** The sum of all the taxes applied to the line items and shipping lines in the checkout. */
+  /**
+   * The sum of all the taxes applied to the line items and shipping lines in the checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   totalTax: MoneyV2;
-  /** The URL for the checkout, accessible from the web. */
+  /**
+   * The URL for the checkout, accessible from the web.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   webUrl: Scalars['URL']['output'];
 };
 
@@ -497,19 +574,37 @@ export type CheckoutLineItemsArgs = {
 
 /** A line item in the checkout, grouped by variant and attributes. */
 export type CheckoutLineItem = Node & {
-  /** An array of Key-Value pairs providing extra information about the line item. */
+  /**
+   * An array of Key-Value pairs providing extra information about the line item.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   customAttributes: Array<Attribute>;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
-  /** The price of the line item. */
+  /**
+   * The price of the line item.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   price: Maybe<MoneyV2>;
-  /** The quantity of the line item. */
+  /**
+   * The quantity of the line item.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   quantity: Scalars['Int']['output'];
-  /** The title of the line item. Defaults to the product's title. */
+  /**
+   * The title of the line item. Defaults to the product's title.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   title: Scalars['String']['output'];
-  /** The unit price of the line item. */
+  /**
+   * The unit price of the line item.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   unitPrice: Maybe<MoneyV2>;
-  /** The name of the variant. */
+  /**
+   * The name of the variant.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   variantTitle: Maybe<Scalars['String']['output']>;
 };
 
@@ -543,10 +638,7 @@ export type Company = HasMetafields & Node & {
   locations: CompanyLocationConnection;
   /** A metafield found by namespace and key. */
   metafield: Maybe<Metafield>;
-  /**
-   * The metafields associated with the resource matching the
-   * supplied list of namespaces and keys.
-   */
+  /** The metafields associated with the resource matching the supplied list of namespaces and keys. */
   metafields: Array<Maybe<Metafield>>;
   /** The name of the company. */
   name: Scalars['String']['output'];
@@ -905,12 +997,11 @@ export type CompanyLocation = HasMetafields & HasStoreCreditAccounts & Node & {
    * @deprecated This `market` field will be removed in a future version of the API.
    */
   market: Market;
+  /** The currency for the company location's market, derived from the location's shipping address. When the location has no shipping address, or no market currency matches the address, this falls back to the shop's currency. Use it to choose which store credit balance to present as the primary one. */
+  marketCurrencyCode: CurrencyCode;
   /** A metafield found by namespace and key. */
   metafield: Maybe<Metafield>;
-  /**
-   * The metafields associated with the resource matching the
-   * supplied list of namespaces and keys.
-   */
+  /** The metafields associated with the resource matching the supplied list of namespaces and keys. */
   metafields: Array<Maybe<Metafield>>;
   /** The name of the company location. */
   name: Scalars['String']['output'];
@@ -1074,7 +1165,7 @@ export type ContactPermissionLocationScopeType =
   /** The contact has permission on only one location. */
   | 'ONE';
 
-/** Details for count of elements. */
+/** A numeric count with precision information indicating whether the count is exact or an estimate. */
 export type Count = {
   /** The count of elements. */
   count: Scalars['Int']['output'];
@@ -1983,16 +2074,18 @@ export type Customer = HasMetafields & HasStoreCreditAccounts & Node & {
   id: Scalars['ID']['output'];
   /** The URL to the avatar image of the customer. */
   imageUrl: Scalars['URL']['output'];
-  /** The customer's most recently updated, incomplete checkout. */
+  /**
+   * The customer's most recently updated, incomplete checkout.
+   * @deprecated This field will be removed in a future version of the API.
+   */
   lastIncompleteCheckout: Maybe<Checkout>;
   /** The last name of the customer. */
   lastName: Maybe<Scalars['String']['output']>;
+  /** The currency for the customer's selected country market, derived from the buyer context (set via the `@inContext` directive). When no buyer context is present (no `@inContext` directive) or no market currency matches the context, this falls back to the shop's currency. Use it to choose which store credit balance to present as the primary one. */
+  marketCurrencyCode: CurrencyCode;
   /** A metafield found by namespace and key. */
   metafield: Maybe<Metafield>;
-  /**
-   * The metafields associated with the resource matching the
-   * supplied list of namespaces and keys.
-   */
+  /** The metafields associated with the resource matching the supplied list of namespaces and keys. */
   metafields: Array<Maybe<Metafield>>;
   /** The orders associated with the customer. */
   orders: OrderConnection;
@@ -2493,8 +2586,6 @@ export type CustomerMailingAddressInput = {
   phone: InputMaybe<Scalars['String']['input']>;
   /** The customer's unique phone number, formatted using E.164 standard. For example, _+16135551111_. */
   phoneNumber: InputMaybe<Scalars['String']['input']>;
-  /** The two-letter code for the country of the address. */
-  territoryCode: InputMaybe<Scalars['String']['input']>;
   /** The zip or postal code of the address. */
   zip: InputMaybe<Scalars['String']['input']>;
   /**
@@ -2506,7 +2597,10 @@ export type CustomerMailingAddressInput = {
 
 /** Defines the phone number of the customer. Apps using the Customer Account API must meet the protected customer data [requirements](https://shopify.dev/docs/apps/launch/protected-customer-data). */
 export type CustomerPhoneNumber = {
-  /** Indicates whether the customer has subscribed to SMS marketing material. */
+  /**
+   * Indicates whether the customer has subscribed to SMS marketing material.
+   * @deprecated Use `smsMarketingConsent.state` instead.
+   */
   marketingState: SmsMarketingState;
   /** The customer's phone number. */
   phoneNumber: Scalars['String']['output'];
@@ -2834,7 +2928,10 @@ export type DraftOrderLineItem = Node & {
   discountInformation: DraftOrderLineItemDiscountInformation;
   /** The total price of the line item after discounts have been applied. */
   discountedTotal: MoneyV2;
-  /** The discounted total divided by the quantity, resulting in the value of the discount per unit. */
+  /**
+   * The discounted total divided by the quantity, resulting in the value of the discount per unit.
+   * @deprecated Please use `approximateDiscountedUnitPrice` instead.
+   */
   discountedUnitPrice: MoneyV2;
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
@@ -2852,6 +2949,8 @@ export type DraftOrderLineItem = Node & {
   originalTotal: MoneyV2;
   /** The price of the variant without any discounts applied. */
   originalUnitPrice: MoneyV2;
+  /** The name of the variant, localized to the buyer's language. Falls back to the variant title when no localized value is stored. */
+  presentmentVariantTitle: Maybe<Scalars['String']['output']>;
   /** The quantity of this variant item in the draft order. */
   quantity: Scalars['Int']['output'];
   /** Whether the variant requires physical shipping. */
@@ -3336,10 +3435,7 @@ export type HasCompareDigest = {
 export type HasMetafields = {
   /** A metafield found by namespace and key. */
   metafield: Maybe<Metafield>;
-  /**
-   * The metafields associated with the resource matching the
-   * supplied list of namespaces and keys.
-   */
+  /** The metafields associated with the resource matching the supplied list of namespaces and keys. */
   metafields: Array<Maybe<Metafield>>;
 };
 
@@ -3807,8 +3903,12 @@ export type LineItem = Node & {
   legacyFeeTitle: Maybe<Scalars['String']['output']>;
   /** The name of the product. */
   name: Scalars['String']['output'];
+  /** The name of the product, localized to the order's language. Falls back to the base name when no localized value is stored. */
+  presentmentName: Scalars['String']['output'];
   /** The title of the line item variant. */
   presentmentTitle: Maybe<Scalars['String']['output']>;
+  /** The name of the variant, localized to the order's language. Falls back to the variant title when no localized value is stored. */
+  presentmentVariantTitle: Maybe<Scalars['String']['output']>;
   /** The product variant price without any discounts applied, in presentment currencies. */
   price: Maybe<MoneyV2>;
   /** The product's ID. */
@@ -4147,9 +4247,9 @@ export type MetafieldsSetInput = {
   /** The unique ID of the resource that the metafield is attached to. */
   ownerId: Scalars['ID']['input'];
   /**
-   * The type of data that is stored in the metafield.
+   * The type of data that's stored in the metafield.
    * The type must be one of the [supported types](https://shopify.dev/apps/metafields/types).
-   * Required when there is no corresponding definition for the given `namespace`, `key`, and
+   * Required when there's no corresponding definition for the given `namespace`, `key`, and
    * owner resource type (derived from `ownerId`).
    */
   type: InputMaybe<Scalars['String']['input']>;
@@ -4208,10 +4308,7 @@ export type MetafieldsSetUserErrorCode =
   /** The input value is too short. */
   | 'TOO_SHORT';
 
-/**
- * A collection of monetary values in their respective currencies. Typically used in the context of multi-currency pricing and transactions,
- * when an amount in the shop's currency is converted to the customer's currency of choice (the presentment currency).
- */
+/** A collection of monetary values in their respective currencies. Used throughout the API for multi-currency pricing and transactions, when an amount in the shop's currency is converted to the customer's currency of choice. The `presentmentMoney` field contains the amount in the customer's selected currency. The `shopMoney` field contains the equivalent in the shop's base currency. */
 export type MoneyBag = {
   /** Amount in presentment currency. */
   presentmentMoney: MoneyV2;
@@ -4219,7 +4316,7 @@ export type MoneyBag = {
   shopMoney: MoneyV2;
 };
 
-/** A precise monetary value and its associated currency. For example, 12.99 USD. */
+/** A precise monetary value and its associated currency. Combines a decimal amount with a three-letter currency code to express prices, costs, and other financial values throughout the API. For example, 12.99 USD. */
 export type MoneyV2 = {
   /**
    * A monetary value in decimal format, allowing for precise representation of cents or fractional
@@ -4701,10 +4798,7 @@ export type Order = HasMetafields & Node & {
   market: Market;
   /** A metafield found by namespace and key. */
   metafield: Maybe<Metafield>;
-  /**
-   * The metafields associated with the resource matching the
-   * supplied list of namespaces and keys.
-   */
+  /** The metafields associated with the resource matching the supplied list of namespaces and keys. */
   metafields: Array<Maybe<Metafield>>;
   /**
    * The identifier for the order that appears on the order.
@@ -5833,7 +5927,9 @@ export type QueryRootUiExtensionMetafieldsArgs = {
 /** This acts as the public, top-level API from which all queries start. */
 export type QueryRootUiExtensionSessionTokenArgs = {
   appId: InputMaybe<Scalars['ID']['input']>;
+  configurationRecordId: InputMaybe<Scalars['ID']['input']>;
   extensionActivationId: InputMaybe<Scalars['ID']['input']>;
+  registrationUuid: InputMaybe<Scalars['String']['input']>;
 };
 
 /** The record of refunds issued to a customer. */
@@ -6160,7 +6256,7 @@ export type ReturnFee = {
 export type ReturnFinancialSummary = {
   /** The subtotal of all return line items restocking fees. */
   restockingFeeSubtotalSet: MoneyBag;
-  /** The subtotal of all return line items shipping fees. */
+  /** The subtotal of all return shipping fees. */
   returnShippingFeeSubtotalSet: MoneyBag;
   /** The subtotal of all return line items. */
   returnSubtotalSet: MoneyBag;
@@ -6168,7 +6264,7 @@ export type ReturnFinancialSummary = {
   returnSubtotalWithCartDiscountSet: MoneyBag;
   /** The total sum of all return line items, including return line item subtotals, fees and taxes. */
   returnTotalSet: MoneyBag;
-  /** The total tax sum of all return line items. */
+  /** The total tax sum of all return line items and return shipping fees. */
   returnTotalTaxSet: MoneyBag;
 };
 
@@ -6214,7 +6310,13 @@ export type ReturnLineItemTypeEdge = {
   node: ReturnLineItemType;
 };
 
-/** The reason for returning the item. */
+/**
+ * The reason for returning the item.
+ *
+ * > **Deprecated**: This enum is deprecated in favor of `ReturnReasonDefinition`.
+ * > Use `returnReasonDefinitionId` in input objects and `returnReasonDefinition` in return line items instead.
+ * > This enum will be removed in a future API version.
+ */
 export type ReturnReason =
   /** The color of the item didn't meet expectations. */
   | 'COLOR'
@@ -6586,10 +6688,7 @@ export type Shop = HasMetafields & Node & {
   id: Scalars['ID']['output'];
   /** A metafield found by namespace and key. */
   metafield: Maybe<Metafield>;
-  /**
-   * The metafields associated with the resource matching the
-   * supplied list of namespaces and keys.
-   */
+  /** The metafields associated with the resource matching the supplied list of namespaces and keys. */
   metafields: Array<Maybe<Metafield>>;
   /** The shop's .myshopify.com domain name. */
   myshopifyDomain: Scalars['String']['output'];
@@ -6878,6 +6977,8 @@ export type StoreCreditSystemEvent =
   | 'PAYMENT_FAILURE'
   /** A smaller amount of store credit was captured than was originally authorized. */
   | 'PAYMENT_RETURNED'
+  /** Store credit was used as payment for a recurring order. */
+  | 'RECURRING_PAYMENT'
   /** Tax finalization affected the store credit payment. */
   | 'TAX_FINALIZATION';
 
@@ -7431,8 +7532,6 @@ export type SubscriptionDeliveryMethodShipping = {
 /** The input fields for a shipping delivery method. */
 export type SubscriptionDeliveryMethodShippingInput = {
   /** The address to ship to. */
-  address: InputMaybe<CustomerMailingAddressInput>;
-  /** The address to ship to. */
   shippingAddress: InputMaybe<CustomerAddressInput>;
 };
 
@@ -7771,6 +7870,8 @@ export type TaxExemption =
   | 'CA_MB_FARMER_EXEMPTION'
   /** This customer is exempt from specific taxes for holding a valid RESELLER_EXEMPTION in Manitoba. */
   | 'CA_MB_RESELLER_EXEMPTION'
+  /** This customer is exempt from VPT (Vapour Products Tax) for holding a valid VPT_RESELLER_EXEMPTION in Newfoundland and Labrador. */
+  | 'CA_NL_VPT_RESELLER_EXEMPTION'
   /** This customer is exempt from specific taxes for holding a valid COMMERCIAL_FISHERY_EXEMPTION in Nova Scotia. */
   | 'CA_NS_COMMERCIAL_FISHERY_EXEMPTION'
   /** This customer is exempt from specific taxes for holding a valid FARMER_EXEMPTION in Nova Scotia. */
@@ -7791,6 +7892,8 @@ export type TaxExemption =
   | 'CA_SK_RESELLER_EXEMPTION'
   /** This customer is exempt from specific taxes for holding a valid SUB_CONTRACTOR_EXEMPTION in Saskatchewan. */
   | 'CA_SK_SUB_CONTRACTOR_EXEMPTION'
+  /** This customer is exempt from VPT (Vapour Products Tax) for holding a valid VPT_RESELLER_EXEMPTION in Saskatchewan. */
+  | 'CA_SK_VPT_RESELLER_EXEMPTION'
   /** This customer is exempt from specific taxes for holding a valid STATUS_CARD_EXEMPTION in Canada. */
   | 'CA_STATUS_CARD_EXEMPTION'
   /** This customer is exempt from VAT for purchases within the EU that is shipping from outside of customer's country, as well as purchases from the EU to the UK. */
@@ -9101,7 +9204,11 @@ export type UserErrorsStripeFinancialConnectionsSessionUserErrorsCode =
 /** The configuration used for Payment Wallets. */
 export type WalletPaymentConfig = ApplePayWalletConfig | GooglePayWalletConfig;
 
-/** A weight, which includes a numeric value and a unit of measurement. */
+/**
+ * A weight measurement with its numeric value and unit. Used throughout the API, for example in shipping calculations, delivery conditions, order line items, and inventory measurements.
+ *
+ * The weight combines a decimal value with a standard unit of measurement to ensure consistent weight handling across different regional systems.
+ */
 export type Weight = {
   /** The unit of measurement for `value`. */
   unit: WeightUnit;

@@ -19,12 +19,26 @@ export function validateComparisons(): void {
       Object.keys(manifest.comparisons).join(', '),
     );
 
+    // Flatten manifest entries: the current/next aliases are single
+    // comparisons, the adjacent key holds an array of pair comparisons
+    const entries: Array<[string, { file: string }]> = [];
+    for (const [key, value] of Object.entries(manifest.comparisons)) {
+      if (Array.isArray(value)) {
+        value.forEach(
+          (comparison: { from: string; to: string; file: string }) =>
+            entries.push([
+              `${key} ${comparison.from}→${comparison.to}`,
+              comparison,
+            ]),
+        );
+      } else {
+        entries.push([key, value as { file: string }]);
+      }
+    }
+
     // Check that comparison files exist and count APIs
     let totalApis = 0;
-    for (const [key, comparison] of Object.entries(manifest.comparisons) as [
-      string,
-      { file: string },
-    ][]) {
+    for (const [key, comparison] of entries) {
       const filePath = path.join('dist/comparisons', comparison.file);
       if (!fs.existsSync(filePath)) {
         throw new Error('Missing comparison file: ' + filePath);

@@ -247,7 +247,13 @@ export function validateEnvironment(env: NodeJS.ProcessEnv): {
   success: boolean;
   error?: string;
 } {
-  const requiredVars = ['SHOPIFY_STOREFRONT_TOKEN'];
+  // These are the variables fetch-schemas actually reads
+  const requiredVars = [
+    'SHOPIFY_STORE_DOMAIN',
+    'SHOPIFY_STOREFRONT_ACCESS_TOKEN',
+    'SHOPIFY_ADMIN_ACCESS_TOKEN',
+    'SHOPIFY_CUSTOMER_ACCOUNT_ACCESS_TOKEN',
+  ];
   const missing = requiredVars.filter((v) => !env[v]);
 
   if (missing.length > 0) {

@@ -354,12 +354,45 @@ Shopify releases new API versions quarterly (January, April, July, October). Our
 package uses automated CalVer versioning that dynamically calculates the correct
 versions based on the current date.
 
-**Version Set Calculation:**
+### 📐 Version Support Principle
 
-- Q4 (Oct-Dec): current=2025-10, previous=2025-07, next=2026-01
-- Q1 (Jan-Mar): current=2026-01, previous=2025-10, next=2026-04
-- Q2 (Apr-Jun): current=2026-04, previous=2026-01, next=2026-07
-- Q3 (Jul-Sep): current=2026-07, previous=2026-04, next=2026-10
+**Each package release ships every API version that Shopify still supports.**
+
+Shopify supports each stable API version for a minimum of 12 months, with at
+least 9 months of overlap between consecutive versions
+([versioning docs](https://shopify.dev/docs/api/usage/versioning)). In practice,
+the 4 most recent stable quarters are callable at any time. A request for a
+retired version silently "falls forward" to the oldest supported version — the
+`x-shopify-api-version` response header reports the version that was actually
+served.
+
+The version set therefore contains 6 versions:
+
+- **current** — this quarter's stable version (alias: `current`)
+- **previous** — last quarter's stable version (alias: `previous`)
+- **olderSupported** — the 2 quarters before that (versioned paths only)
+- **releaseCandidate** — next quarter's preview (alias: `next`)
+- **unstable** — the development version (alias: `unstable`)
+
+Comparisons ship for every adjacent version pair, so users on any supported
+version have an upgrade path. Users on a version that has left the support
+window install the older package release whose window contained it — CalVer
+package versions map one-to-one to Shopify quarters.
+
+**Version Set Calculation (example, Q3 2026):**
+
+- current=2026-07, previous=2026-04, olderSupported=[2026-01, 2025-10],
+  next=2026-10
+
+**Back-dated builds:** set the `RELEASE_DATE` env var (YYYY-MM-DD, use a
+mid-month day) to make all version-set tooling compute the set for that date.
+Example: `RELEASE_DATE=2026-01-15 npm run generate:exports`. This exists for
+catch-up releases of missed quarters.
+
+**Fall-forward guard:** `npm run fetch-schemas` refuses to save a schema when
+Shopify serves a different version than requested, and keeps the existing file
+in `src/graphql-schemas/` instead. Retired versions can only be built from
+schemas already in the repo.
 
 ### 🚀 Complete Release Process (2025.10.0 Template)
 
@@ -466,7 +499,7 @@ npm run ci:validate-build
 
 ```bash
 # Remove old version files that are no longer supported
-# (The automated version set only supports 4 versions at a time)
+# (The automated version set supports 6 versions: 4 stable + RC + unstable)
 rm -rf dist/admin/2025-04 dist/customer-account/2025-04 dist/storefront/2025-04
 
 # Re-validate after cleanup

@@ -40,6 +40,9 @@ export default {
     '@graphql-codegen/introspection', // Schema introspection - Phase 3
     '@graphql-codegen/typescript-operations', // Operations - Phase 3
     '@vitest/coverage-v8', // Coverage reporting for Vitest
+    // Build-time only (schema comparisons); devDependency by design, but
+    // src/lib counts as production in this config
+    '@graphql-inspector/core',
   ],
 
   // Don't report issues with barrel exports

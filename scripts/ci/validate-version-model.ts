@@ -1,4 +1,9 @@
-import { getCurrentVersionSet, getVersionMetadata } from '../version-utils.js';
+import {
+  getCurrentVersionSet,
+  getVersionMetadata,
+  getAdjacentVersionPairs,
+} from '../version-utils.js';
+import type { ExtendedApiVersion } from '../../src/lib/zod.js';
 
 /**
  * Validate the version model and ensure all versions are properly configured
@@ -11,18 +16,30 @@ function validateVersionModel(): void {
     console.log('Current version set:', JSON.stringify(versionSet, null, 2));
 
     // Validate each version has metadata
-    for (const [type, version] of Object.entries(versionSet)) {
+    const labeledVersions: Array<[string, ExtendedApiVersion]> = [
+      ['current', versionSet.current],
+      ['previous', versionSet.previous],
+      ...versionSet.olderSupported.map((v, i): [string, ExtendedApiVersion] => [
+        `olderSupported[${i}]`,
+        v,
+      ]),
+      ['releaseCandidate', versionSet.releaseCandidate],
+      ['unstable', versionSet.unstable],
+    ];
+
+    for (const [type, version] of labeledVersions) {
       const metadata = getVersionMetadata(version);
       console.log(`✅ ${type}: ${version} (${metadata.description})`);
     }
 
-    // Validate version ordering
-    if (versionSet.current <= versionSet.previous) {
-      throw new Error('Current version must be newer than previous');
-    }
-
-    if (versionSet.releaseCandidate <= versionSet.current) {
-      throw new Error('Release candidate version must be newer than current');
+    // Validate version ordering across the full chain:
+    // older[1] < older[0] < previous < current < releaseCandidate
+    for (const { from, to } of getAdjacentVersionPairs(versionSet)) {
+      if (from >= to) {
+        throw new Error(
+          `Version ordering invalid: ${to} must be newer than ${from}`,
+        );
+      }
     }
 
     console.log('✅ Version model validation passed');

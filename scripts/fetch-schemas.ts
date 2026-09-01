@@ -13,6 +13,20 @@ import {
 } from '../src/lib/patterns.js';
 
 /**
+ * Thrown when Shopify serves a different version than requested
+ * (fall-forward), which means the requested version is retired.
+ */
+class VersionRetiredError extends Error {
+  constructor(requested: string, served: string) {
+    super(
+      `Version fell forward: requested ${requested}, Shopify served ${served}. ` +
+        `The requested version is retired.`,
+    );
+    this.name = 'VersionRetiredError';
+  }
+}
+
+/**
  * GraphQL introspection query - single source of truth
  * Standard introspection query that works across all Shopify GraphQL APIs
  */
@@ -169,6 +183,18 @@ async function fetchApiSchema(
       );
     }
 
+    // Guard against Shopify's fall-forward behavior: a request for a retired
+    // version returns 200 with the oldest supported version's schema. The
+    // x-shopify-api-version header reports the version that was served.
+    const servedVersion = response.headers.get('x-shopify-api-version');
+    if (
+      version !== 'unstable' &&
+      servedVersion !== null &&
+      servedVersion !== version
+    ) {
+      throw new VersionRetiredError(version, servedVersion);
+    }
+
     let schemaData: unknown;
 
     if (isCustomerAccount) {
@@ -215,6 +241,33 @@ async function fetchApiSchema(
       throw new Error(`Failed to save schema: ${result.error}`);
     }
   } catch (error) {
+    // Keep the existing repo file ONLY for the explicit fall-forward signal
+    // (version retired on Shopify's side). Every other failure (bad token,
+    // network, outage) must fail loudly - a silent keep would mask real
+    // problems and leave stale schemas.
+    if (error instanceof VersionRetiredError) {
+      const existingPath = path.join(
+        'src',
+        'graphql-schemas',
+        apiType,
+        `${version}.json`,
+      );
+      const existingFile = await fs
+        .stat(existingPath)
+        .then(() => true)
+        .catch(() => false);
+
+      if (existingFile) {
+        console.warn(`⚠ ${error.message} Keeping existing ${existingPath}.`);
+        return;
+      }
+
+      console.error(
+        `✗ ${error.message} No existing schema file at ${existingPath}.`,
+      );
+      throw error;
+    }
+
     if (error instanceof Error) {
       const { category } = classifyFileSystemError(error);
       console.error(
@@ -245,6 +298,7 @@ async function fetchSchemas(): Promise<void> {
   const allVersions: ExtendedApiVersion[] = [
     versionSet.current,
     versionSet.previous,
+    ...versionSet.olderSupported,
     versionSet.releaseCandidate,
     versionSet.unstable,
   ];
@@ -252,6 +306,7 @@ async function fetchSchemas(): Promise<void> {
   console.log(`📋 Fetching schemas for:`);
   console.log(`   Current: ${versionSet.current}`);
   console.log(`   Previous: ${versionSet.previous}`);
+  console.log(`   Older supported: ${versionSet.olderSupported.join(', ')}`);
   console.log(`   Release Candidate: ${versionSet.releaseCandidate}`);
   console.log(`   Unstable: ${versionSet.unstable}\n`);
 

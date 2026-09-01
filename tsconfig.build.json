@@ -5,7 +5,10 @@
     "declarationMap": false,
     "emitDeclarationOnly": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    // Third-party .d.ts conflicts (hoisted @types in parent dirs) are not
+    // actionable here; project code stays fully strict.
+    "skipLibCheck": true
   },
   "include": ["src/index.ts", "src/*/index.ts", "src/*/*/index.ts"],
   "exclude": [

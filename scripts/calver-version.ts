@@ -1,4 +1,7 @@
 import { execSync } from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { match } from 'ts-pattern';
 import { getLatestVersion } from './version-utils.js';
 import { ApiVersionSchema, type ApiVersion } from '../src/lib/zod.js';
@@ -73,31 +76,43 @@ export function detectChangesetTypes(): {
   hasPatches: boolean;
 } {
   try {
-    const output = execSync('npx changeset status --output=json', {
+    // changeset status --output writes to a FILE (it does not print to
+    // stdout), so read the result through a temp file
+    const tmpFile = path.join(
+      os.tmpdir(),
+      `changeset-status-${process.pid}.json`,
+    );
+    execSync(`npx changeset status --output="${tmpFile}"`, {
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'ignore'], // Suppress stderr
     });
+
+    let output = '';
+    try {
+      output = fs.readFileSync(tmpFile, 'utf-8');
+    } finally {
+      fs.rmSync(tmpFile, { force: true });
+    }
 
     // Handle empty output
     if (!output || output.trim() === '') {
       return { hasMajor: false, hasPatches: false };
     }
 
-    const status = JSON.parse(output);
-    const releases = status.releases || [];
+    // Real status JSON shape: { changesets: [{ releases: [{ name, type }] }],
+    // releases: [{ name, type, changesets: [<ids>] }] }
+    const status = JSON.parse(output) as {
+      changesets?: Array<{ releases: Array<{ type: string }> }>;
+    };
+    const changesets = status.changesets ?? [];
 
-    const hasMajor = releases.some(
-      (release: { changesets: Array<{ releases: Array<{ type: string }> }> }) =>
-        release.changesets.some((cs: { releases: Array<{ type: string }> }) =>
-          cs.releases.some((r: { type: string }) => r.type === 'major'),
-        ),
+    const hasMajor = changesets.some((cs) =>
+      cs.releases.some((r) => r.type === 'major'),
     );
 
-    const hasPatches = releases.some(
-      (release: { changesets: Array<{ releases: Array<{ type: string }> }> }) =>
-        release.changesets.some((cs: { releases: Array<{ type: string }> }) =>
-          cs.releases.some((r: { type: string }) => r.type === 'patch'),
-        ),
+    // CalVer treats minor as patch (see CONTRIBUTING.md change type mapping)
+    const hasPatches = changesets.some((cs) =>
+      cs.releases.some((r) => r.type === 'patch' || r.type === 'minor'),
     );
 
     return { hasMajor, hasPatches };

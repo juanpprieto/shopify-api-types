@@ -1015,8 +1015,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -1033,8 +1033,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": true,
@@ -1069,8 +1069,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -1087,8 +1087,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             }
           ],
           "inputFields": null,
@@ -1272,8 +1272,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -1294,8 +1294,8 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             }
           ],
           "inputFields": null,
@@ -1925,7 +1925,7 @@
           "description": "The calculated financial outcome of a return based on the line items requested for return.Includes the monetary values of the line items, along with applicable taxes, discounts, and otherfees on the order. Financial summary may include return fees depending onthe [return rules](https://help.shopify.com/manual/fulfillment/managing-orders/returns/return-rules)at the time the order was placed.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "financialSummary",
               "description": "A breakdown of the monetary values for the calculated return.",
@@ -1943,7 +1943,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnLineItems",
               "description": "A list of line items being processed for a return.",
@@ -2023,7 +2023,7 @@
           "description": "The line item being processed for a return and its calculated monetary values.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "lineItem",
               "description": "The line item being processed for a return.",
@@ -2041,7 +2041,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "quantity",
               "description": "The quantity being returned.",
@@ -2059,7 +2059,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "subtotalSet",
               "description": "The subtotal of the return line item.",
@@ -2077,7 +2077,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "totalTaxSet",
               "description": "The total tax of the return line item.",
@@ -2299,8 +2299,8 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2313,8 +2313,8 @@
                 "name": "AvailableShippingRates",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2331,8 +2331,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2349,8 +2349,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2375,8 +2375,8 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2444,8 +2444,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2458,11 +2458,11 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
-              "isPreAuthAccessible": true,
+              "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "id",
               "description": "A globally-unique ID.",
@@ -2545,8 +2545,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2563,8 +2563,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2577,8 +2577,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2595,8 +2595,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2613,8 +2613,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2631,8 +2631,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2645,8 +2645,8 @@
                 "name": "CustomerMailingAddress",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2671,8 +2671,8 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2685,8 +2685,8 @@
                 "name": "ShippingRate",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2703,8 +2703,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2721,8 +2721,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2739,8 +2739,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2753,8 +2753,8 @@
                 "name": "MoneyV2",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2771,8 +2771,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2789,8 +2789,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2807,8 +2807,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             }
           ],
           "inputFields": null,
@@ -2850,11 +2850,11 @@
                   }
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
-              "isPreAuthAccessible": true,
+              "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "id",
               "description": "A globally-unique ID.",
@@ -2882,8 +2882,8 @@
                 "name": "MoneyV2",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2900,8 +2900,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2918,8 +2918,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2932,8 +2932,8 @@
                 "name": "MoneyV2",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -2946,8 +2946,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             }
           ],
           "inputFields": null,
@@ -3351,7 +3351,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -5508,6 +5508,24 @@
             {
               "isPreAuthAccessible": true,
               "isProtected": false,
+              "name": "marketCurrencyCode",
+              "description": "The currency for the company location's market, derived from the location's shipping address. When the location has no shipping address, or no market currency matches the address, this falls back to the shop's currency. Use it to choose which store credit balance to present as the primary one.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CurrencyCode",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
               "name": "metafield",
               "description": "A metafield found by namespace and key.",
               "args": [
@@ -5552,7 +5570,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -6238,7 +6256,7 @@
         {
           "kind": "OBJECT",
           "name": "Count",
-          "description": "Details for count of elements.",
+          "description": "A numeric count with precision information indicating whether the count is exact or an estimate.",
           "fields": [
             {
               "isPreAuthAccessible": true,
@@ -9463,8 +9481,8 @@
                 "name": "Checkout",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
               "isPreAuthAccessible": false,
@@ -9476,6 +9494,24 @@
                 "kind": "SCALAR",
                 "name": "String",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "marketCurrencyCode",
+              "description": "The currency for the customer's selected country market, derived from the buyer context (set via the `@inContext` directive). When no buyer context is present (no `@inContext` directive) or no market currency matches the context, this falls back to the shop's currency. Use it to choose which store credit balance to present as the primary one.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CurrencyCode",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -9527,7 +9563,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -11909,16 +11945,6 @@
               "defaultValue": null
             },
             {
-              "name": "territoryCode",
-              "description": "The two-letter code for the country of the address.",
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
               "name": "firstName",
               "description": "The first name of the customer.",
               "type": {
@@ -12003,8 +12029,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `smsMarketingConsent.state` instead."
             },
             {
               "isPreAuthAccessible": false,
@@ -13993,8 +14019,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Please use `approximateDiscountedUnitPrice` instead."
             },
             {
               "isPreAuthAccessible": true,
@@ -14124,6 +14150,20 @@
                   "name": "MoneyV2",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "presentmentVariantTitle",
+              "description": "The name of the variant, localized to the buyer's language. Falls back to the variant title when no localized value is stored.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -17175,7 +17215,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -17391,7 +17431,7 @@
         {
           "kind": "SCALAR",
           "name": "ISO8601DateTime",
-          "description": "An ISO 8601-encoded datetime",
+          "description": "An ISO 8601-encoded datetime.",
           "fields": null,
           "inputFields": null,
           "interfaces": null,
@@ -18913,8 +18953,40 @@
             {
               "isPreAuthAccessible": true,
               "isProtected": false,
+              "name": "presentmentName",
+              "description": "The name of the product, localized to the order's language. Falls back to the base name when no localized value is stored.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
               "name": "presentmentTitle",
               "description": "The title of the line item variant.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "presentmentVariantTitle",
+              "description": "The name of the variant, localized to the order's language. Falls back to the variant title when no localized value is stored.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -20937,7 +21009,7 @@
             },
             {
               "name": "type",
-              "description": "The type of data that is stored in the metafield.\nThe type must be one of the [supported types](https://shopify.dev/apps/metafields/types).\nRequired when there is no corresponding definition for the given `namespace`, `key`, and\nowner resource type (derived from `ownerId`).",
+              "description": "The type of data that's stored in the metafield.\nThe type must be one of the [supported types](https://shopify.dev/apps/metafields/types).\nRequired when there's no corresponding definition for the given `namespace`, `key`, and\nowner resource type (derived from `ownerId`).",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -21192,7 +21264,7 @@
         {
           "kind": "OBJECT",
           "name": "MoneyBag",
-          "description": "A collection of monetary values in their respective currencies. Typically used in the context of multi-currency pricing and transactions,\nwhen an amount in the shop's currency is converted to the customer's currency of choice (the presentment currency).",
+          "description": "A collection of monetary values in their respective currencies. Used throughout the API for multi-currency pricing and transactions, when an amount in the shop's currency is converted to the customer's currency of choice. The `presentmentMoney` field contains the amount in the customer's selected currency. The `shopMoney` field contains the equivalent in the shop's base currency.",
           "fields": [
             {
               "isPreAuthAccessible": true,
@@ -21239,7 +21311,7 @@
         {
           "kind": "OBJECT",
           "name": "MoneyV2",
-          "description": "A precise monetary value and its associated currency. For example, 12.99 USD.",
+          "description": "A precise monetary value and its associated currency. Combines a decimal amount with a three-letter currency code to express prices, costs, and other financial values throughout the API. For example, 12.99 USD.",
           "fields": [
             {
               "isPreAuthAccessible": true,
@@ -24263,7 +24335,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -30087,6 +30159,26 @@
                     "ofType": null
                   },
                   "defaultValue": null
+                },
+                {
+                  "name": "configurationRecordId",
+                  "description": "The configuration record ID of the UI extension.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "registrationUuid",
+                  "description": "The registration UUID of the UI extension.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
                 }
               ],
               "type": {
@@ -31880,7 +31972,7 @@
           "description": "The financial breakdown of the return.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "restockingFeeSubtotalSet",
               "description": "The subtotal of all return line items restocking fees.",
@@ -31898,10 +31990,10 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnShippingFeeSubtotalSet",
-              "description": "The subtotal of all return line items shipping fees.",
+              "description": "The subtotal of all return shipping fees.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -31916,7 +32008,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnSubtotalSet",
               "description": "The subtotal of all return line items.",
@@ -31934,7 +32026,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnSubtotalWithCartDiscountSet",
               "description": "The subtotal of all return line items with order level discounts applied.",
@@ -31952,7 +32044,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnTotalSet",
               "description": "The total sum of all return line items, including return line item subtotals, fees and taxes.",
@@ -31970,10 +32062,10 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "returnTotalTaxSet",
-              "description": "The total tax sum of all return line items.",
+              "description": "The total tax sum of all return line items and return shipping fees.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -32318,7 +32410,7 @@
         {
           "kind": "ENUM",
           "name": "ReturnReason",
-          "description": "The reason for returning the item.",
+          "description": "The reason for returning the item.\n\n> **Deprecated**: This enum is deprecated in favor of `ReturnReasonDefinition`.\n> Use `returnReasonDefinitionId` in input objects and `returnReasonDefinition` in return line items instead.\n> This enum will be removed in a future API version.",
           "fields": null,
           "inputFields": null,
           "interfaces": null,
@@ -32703,7 +32795,7 @@
           "description": "A line item with at least one unit that is eligible for return.",
           "fields": [
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "lineItem",
               "description": "The related line item.",
@@ -32721,7 +32813,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "quantity",
               "description": "The quantity of units that can be returned.",
@@ -34580,7 +34672,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "metafields",
-              "description": "The metafields associated with the resource matching the\nsupplied list of namespaces and keys.",
+              "description": "The metafields associated with the resource matching the supplied list of namespaces and keys.",
               "args": [
                 {
                   "name": "identifiers",
@@ -36408,6 +36500,12 @@
               "description": "Tax finalization affected the store credit payment.",
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "RECURRING_PAYMENT",
+              "description": "Store credit was used as payment for a recurring order.",
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "possibleTypes": null
@@ -37531,7 +37629,7 @@
               "deprecationReason": null
             },
             {
-              "isPreAuthAccessible": true,
+              "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "id",
               "description": "A globally-unique ID.",
@@ -39589,16 +39687,6 @@
           "fields": null,
           "inputFields": [
             {
-              "name": "address",
-              "description": "The address to ship to.",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "CustomerMailingAddressInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
               "name": "shippingAddress",
               "description": "The address to ship to.",
               "type": {
@@ -41621,6 +41709,18 @@
             {
               "name": "CA_SK_RESELLER_EXEMPTION",
               "description": "This customer is exempt from specific taxes for holding a valid RESELLER_EXEMPTION in Saskatchewan.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "CA_SK_VPT_RESELLER_EXEMPTION",
+              "description": "This customer is exempt from VPT (Vapour Products Tax) for holding a valid VPT_RESELLER_EXEMPTION in Saskatchewan.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "CA_NL_VPT_RESELLER_EXEMPTION",
+              "description": "This customer is exempt from VPT (Vapour Products Tax) for holding a valid VPT_RESELLER_EXEMPTION in Newfoundland and Labrador.",
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -47152,7 +47252,7 @@
         {
           "kind": "OBJECT",
           "name": "Weight",
-          "description": "A weight, which includes a numeric value and a unit of measurement.",
+          "description": "A weight measurement with its numeric value and unit. Used throughout the API, for example in shipping calculations, delivery conditions, order line items, and inventory measurements.\n\nThe weight combines a decimal value with a standard unit of measurement to ensure consistent weight handling across different regional systems.",
           "fields": [
             {
               "isPreAuthAccessible": false,
@@ -47456,6 +47556,12 @@
               "deprecationReason": null
             },
             {
+              "name": "VARIABLE_DEFINITION",
+              "description": "Location adjacent to a variable definition.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "SCHEMA",
               "description": "Location adjacent to a schema definition.",
               "isDeprecated": false,
@@ -47518,12 +47624,6 @@
             {
               "name": "INPUT_FIELD_DEFINITION",
               "description": "Location adjacent to an input object field definition.",
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "VARIABLE_DEFINITION",
-              "description": "Location adjacent to a variable definition.",
               "isDeprecated": false,
               "deprecationReason": null
             }

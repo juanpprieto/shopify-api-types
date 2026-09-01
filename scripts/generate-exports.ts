@@ -1,7 +1,11 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { match, P } from 'ts-pattern';
-import { getSupportedVersions, getCurrentVersionSet } from './version-utils.js';
+import {
+  getSupportedVersions,
+  getCurrentVersionSet,
+  getAdjacentVersionPairs,
+} from './version-utils.js';
 import {
   ExtendedApiVersionSchema,
   DistPathSchema,
@@ -17,12 +21,7 @@ interface ExportEntry {
   key: string;
   value: string | ExportCondition;
   category:
-    | 'root'
-    | 'api-root'
-    | 'api-version'
-    | 'schema'
-    | 'comparison'
-    | 'version';
+    'root' | 'api-root' | 'api-version' | 'schema' | 'comparison' | 'version';
 }
 
 interface ExportCondition {
@@ -148,8 +147,16 @@ async function generatePackageExports(): Promise<void> {
     });
   });
 
-  // Add comparison exports with conditions
+  // Add comparison exports with conditions: one per adjacent version pair,
+  // plus the current/next semantic aliases
+  const adjacentComparisonExports: Array<[string, string]> =
+    getAdjacentVersionPairs(versionSet).map(({ from, to }) => [
+      `./comparisons/${from}-to-${to}`,
+      `./dist/comparisons/${from}-to-${to}.json`,
+    ]);
+
   const comparisonExports: ReadonlyArray<readonly [string, string]> = [
+    ...adjacentComparisonExports,
     [
       './comparisons/current',
       `./dist/comparisons/${versionSet.previous}-to-${versionSet.current}.json`,

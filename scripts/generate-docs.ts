@@ -46,6 +46,7 @@ type ReadmeInput = {
   versionSet: {
     current: string;
     previous: string;
+    olderSupported: string[];
     releaseCandidate: string;
     unstable: string;
   };
@@ -314,6 +315,15 @@ async function prepareInputData(): Promise<ReadmeInput> {
       description: getVersionMetadata(versionSet.previous).description,
       status: getVersionMetadata(versionSet.previous).status,
     },
+    ...Object.fromEntries(
+      versionSet.olderSupported.map((version) => [
+        version,
+        {
+          description: getVersionMetadata(version).description,
+          status: getVersionMetadata(version).status,
+        },
+      ]),
+    ),
     [versionSet.releaseCandidate]: {
       description: getVersionMetadata(versionSet.releaseCandidate).description,
       status: getVersionMetadata(versionSet.releaseCandidate).status,

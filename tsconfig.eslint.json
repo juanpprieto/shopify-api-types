@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    // Lint-only program: generated version trees are excluded, so the
+    // type-aware ESLint rules never load the multi-megabyte types files.
+    "skipLibCheck": true
+  },
+  "include": ["src/lib/**/*", "tests/**/*", "scripts/**/*"],
+  "exclude": ["node_modules", "dist", "dist/**/*", "tests/e2e/**/*"]
+}

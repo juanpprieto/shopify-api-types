@@ -74,11 +74,16 @@ export const ExportPathSchema = z.enum([
 export type ExportPath = z.infer<typeof ExportPathSchema>;
 
 /**
- * Version set representing all supported versions
+ * Version set representing all supported versions.
+ *
+ * Aligned with Shopify's support window: each stable version is supported
+ * for a minimum of 12 months, so 4 stable quarters are live at any time
+ * (current + previous + 2 older), plus the release candidate and unstable.
  */
 export const VersionSetSchema = z.object({
   current: ApiVersionSchema,
   previous: ApiVersionSchema,
+  olderSupported: z.array(ApiVersionSchema).length(2), // [current-2q, current-3q], newest first
   releaseCandidate: ApiVersionSchema, // Next CalVer version (RC/preview)
   unstable: UnstableApiVersionSchema,
 });
@@ -153,7 +158,7 @@ export const SchemaChangelogSchema = z.object({
   fromVersion: ExtendedApiVersionSchema,
   toVersion: ExtendedApiVersionSchema,
   apiType: ApiTypeSchema,
-  generatedAt: z.string().datetime(),
+  generatedAt: z.iso.datetime(),
   summary: z.object({
     totalChanges: z.number(),
     breakingChanges: z.number(),
@@ -178,7 +183,7 @@ export type SchemaChangelog = z.infer<typeof SchemaChangelogSchema>;
 export const MultiApiChangelogSchema = z.object({
   fromVersion: ExtendedApiVersionSchema,
   toVersion: ExtendedApiVersionSchema,
-  generatedAt: z.string().datetime(),
+  generatedAt: z.iso.datetime(),
   changelogs: z.record(ApiTypeSchema, SchemaChangelogSchema),
   summary: z.object({
     totalApis: z.number(),
@@ -248,7 +253,7 @@ export type Headers = z.infer<typeof HeadersSchema>;
  * Schema fetch options
  */
 export const FetchOptionsSchema = z.object({
-  url: z.string().url(),
+  url: z.url(),
   headers: HeadersSchema,
   apiType: ApiTypeSchema,
   version: ApiVersionSchema,
@@ -297,8 +302,7 @@ export const OperationResultSchema = z.discriminatedUnion('success', [
   }),
 ]);
 export type OperationResult<T = unknown> =
-  | { success: true; data: T }
-  | { success: false; error: string; code?: string };
+  { success: true; data: T } | { success: false; error: string; code?: string };
 
 /**
  * Schema fetch result
@@ -377,7 +381,7 @@ export type BatchValidationResult = z.infer<typeof BatchValidationResultSchema>;
  * Safe parse with detailed error information
  */
 export function safeParse<T>(
-  schema: z.ZodSchema<T>,
+  schema: z.ZodType<T>,
   data: unknown,
 ): OperationResult<T> {
   const result = schema.safeParse(data);
@@ -465,18 +469,16 @@ export const ExportConditionSchema = z.object({
 /**
  * Package.json structure validation
  */
-export const PackageJsonSchema = z
-  .object({
-    name: z.string().min(1),
-    version: z.string().min(1),
-    exports: z
-      .record(z.string(), z.union([z.string(), ExportConditionSchema]))
-      .optional(),
-    typesVersions: z
-      .record(z.string(), z.record(z.string(), z.array(z.string())))
-      .optional(),
-  })
-  .passthrough();
+export const PackageJsonSchema = z.looseObject({
+  name: z.string().min(1),
+  version: z.string().min(1),
+  exports: z
+    .record(z.string(), z.union([z.string(), ExportConditionSchema]))
+    .optional(),
+  typesVersions: z
+    .record(z.string(), z.record(z.string(), z.array(z.string())))
+    .optional(),
+});
 
 // =============================================================================
 // Atomic Operation Result Schemas
@@ -600,7 +602,7 @@ export const ScalarMappingSchema = z.record(
  */
 export const CodeGenPluginSchema = z.union([
   z.string().min(1),
-  z.object({}).passthrough(),
+  z.looseObject({}),
 ]);
 
 /**
@@ -609,7 +611,7 @@ export const CodeGenPluginSchema = z.union([
 export const CodeGenConfigSchema = z.object({
   schema: z.string().min(1),
   plugins: z.array(CodeGenPluginSchema),
-  config: z.object({}).passthrough().optional(),
+  config: z.looseObject({}).optional(),
 });
 
 /**
@@ -628,7 +630,7 @@ export const CodeGenOutputConfigSchema = z.object({
   schema: z.string().min(1),
   plugins: z.array(CodeGenPluginSchema),
   config: z
-    .object({
+    .looseObject({
       skipTypename: z.boolean().optional(),
       enumsAsTypes: z.boolean().optional(),
       scalars: ScalarMappingSchema.optional(),
@@ -636,7 +638,6 @@ export const CodeGenOutputConfigSchema = z.object({
       maybeValue: z.string().min(1).optional(),
       namingConvention: NamingConventionSchema.optional(),
     })
-    .passthrough()
     .optional(),
 });
 
@@ -706,7 +707,7 @@ export const DocsConfigSchema = z.object({
   latestShopifyApiVersion: ApiVersionSchema,
   supportedVersions: z.array(ApiVersionSchema).min(1).max(4),
   representativeTypes: ApiDocsConfigSchema,
-  generatedAt: z.string().datetime(),
+  generatedAt: z.iso.datetime(),
 });
 
 export type DocsConfig = z.infer<typeof DocsConfigSchema>;
@@ -717,7 +718,7 @@ export type DocsConfig = z.infer<typeof DocsConfigSchema>;
 export const PackageReleaseSchema = z.object({
   version: z.string().min(1),
   supportedApiVersions: z.array(ApiVersionSchema).min(1).max(4),
-  releaseDate: z.string().datetime(),
+  releaseDate: z.iso.datetime(),
   status: z.enum(['current', 'previous', 'older', 'oldest']),
 });
 

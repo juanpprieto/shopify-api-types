@@ -10,6 +10,14 @@ export default [
       'node_modules/**',
       '.tsbuildinfo',
       'src/**/types.ts',
+      // Generated version trees and indexes: nothing hand-written in them,
+      // and type-aware linting of them OOMs on CI runners
+      'src/admin/**',
+      'src/customer-account/**',
+      'src/storefront/**',
+      'src/index.ts',
+      // Standalone project with its own tsconfig; linted when built there
+      'tests/e2e/**',
       'demo/**',
     ],
   },
@@ -28,7 +36,7 @@ export default [
 
   // Config for CommonJS files in scripts directory
   {
-    files: ['scripts/**/*.js'],
+    files: ['scripts/**/*.js', 'scripts/**/*.cjs'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'commonjs',
@@ -48,6 +56,7 @@ export default [
     rules: {
       'prettier/prettier': 'error',
       'no-undef': 'off',
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
 
@@ -88,7 +97,7 @@ export default [
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: './tsconfig.eslint.json',
       },
       globals: {
         console: 'readonly',
@@ -127,7 +136,7 @@ export default [
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: './tsconfig.eslint.json',
       },
       globals: {
         console: 'readonly',
