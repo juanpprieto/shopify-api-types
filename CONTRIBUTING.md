@@ -431,6 +431,18 @@ the 2026-09 catch-up releases (see `decisions/011`).
 8. **The e2e test-app never hardcodes versions.** It enumerates every export
    path from the installed package.json at test time, so quarterly version-set
    changes cannot break it.
+9. **No patch releases.** This package releases quarterly majors only, in step
+   with Shopify's API versions. Fixes ride the next quarterly release; they do
+   not get their own npm version.
+10. **PENDING VALIDATION - OIDC trusted publishing (first checked at the
+    2026.10.0 release, ~November 2026).** npm trusted publisher is configured
+    (workflow `release.yml`, environment `main`, action Publish) and `NPM_TOKEN`
+    is removed from the publish env, but no publish has exercised the OIDC path
+    yet. At the next release: check the Release workflow publishes without a
+    token, check the npm version page shows provenance, then remove this pending
+    marker. If OIDC fails, the fallback is a local `npm publish` with OTP (rule
+    4). After the first success, consider the npm setting that disallows token
+    publishing (it retires the local OTP fallback).
 
 ### Complete Release Process (2025.10.0 Template)
 
