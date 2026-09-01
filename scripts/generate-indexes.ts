@@ -28,8 +28,13 @@ const API_INDEX_TEMPLATE = `// Auto-generated API index file
 `;
 
 async function generateIndexFiles(): Promise<void> {
-  // Get only the 4 supported versions
-  const versions = getSupportedVersions();
+  // Deterministic order for generated files: newest stable first,
+  // unstable last. Reduces diff noise across quarterly regenerations.
+  const versions = [...getSupportedVersions()].sort((a, b) => {
+    if (a === 'unstable') return 1;
+    if (b === 'unstable') return -1;
+    return b.localeCompare(a);
+  });
   const pathResolver = createFilePathResolver(process.cwd());
   const apis: Array<{ type: ApiType; dir: string; schemaDir: string }> = [
     { type: 'storefront', dir: 'storefront', schemaDir: 'storefront' },

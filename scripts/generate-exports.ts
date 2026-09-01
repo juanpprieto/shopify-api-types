@@ -21,12 +21,7 @@ interface ExportEntry {
   key: string;
   value: string | ExportCondition;
   category:
-    | 'root'
-    | 'api-root'
-    | 'api-version'
-    | 'schema'
-    | 'comparison'
-    | 'version';
+    'root' | 'api-root' | 'api-version' | 'schema' | 'comparison' | 'version';
 }
 
 interface ExportCondition {

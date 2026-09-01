@@ -36,7 +36,7 @@ export default [
 
   // Config for CommonJS files in scripts directory
   {
-    files: ['scripts/**/*.js'],
+    files: ['scripts/**/*.js', 'scripts/**/*.cjs'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'commonjs',
@@ -56,6 +56,7 @@ export default [
     rules: {
       'prettier/prettier': 'error',
       'no-undef': 'off',
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
 

@@ -13,6 +13,20 @@ import {
 } from '../src/lib/patterns.js';
 
 /**
+ * Thrown when Shopify serves a different version than requested
+ * (fall-forward), which means the requested version is retired.
+ */
+class VersionRetiredError extends Error {
+  constructor(requested: string, served: string) {
+    super(
+      `Version fell forward: requested ${requested}, Shopify served ${served}. ` +
+        `The requested version is retired.`,
+    );
+    this.name = 'VersionRetiredError';
+  }
+}
+
+/**
  * GraphQL introspection query - single source of truth
  * Standard introspection query that works across all Shopify GraphQL APIs
  */
@@ -178,10 +192,7 @@ async function fetchApiSchema(
       servedVersion !== null &&
       servedVersion !== version
     ) {
-      throw new Error(
-        `Version fell forward: requested ${version}, Shopify served ${servedVersion}. ` +
-          `The requested version is retired.`,
-      );
+      throw new VersionRetiredError(version, servedVersion);
     }
 
     let schemaData: unknown;
@@ -230,26 +241,31 @@ async function fetchApiSchema(
       throw new Error(`Failed to save schema: ${result.error}`);
     }
   } catch (error) {
-    // If the version can no longer be fetched (retired on Shopify's side)
-    // but a schema file already exists in the repo, keep the existing file.
-    const existingPath = path.join(
-      'src',
-      'graphql-schemas',
-      apiType,
-      `${version}.json`,
-    );
-    const existingFile = await fs
-      .stat(existingPath)
-      .then(() => true)
-      .catch(() => false);
-
-    if (existingFile) {
-      const reason = error instanceof Error ? error.message : String(error);
-      console.warn(
-        `⚠ Could not fetch ${apiType}/${version} (${reason}). ` +
-          `Keeping existing ${existingPath}.`,
+    // Keep the existing repo file ONLY for the explicit fall-forward signal
+    // (version retired on Shopify's side). Every other failure (bad token,
+    // network, outage) must fail loudly - a silent keep would mask real
+    // problems and leave stale schemas.
+    if (error instanceof VersionRetiredError) {
+      const existingPath = path.join(
+        'src',
+        'graphql-schemas',
+        apiType,
+        `${version}.json`,
       );
-      return;
+      const existingFile = await fs
+        .stat(existingPath)
+        .then(() => true)
+        .catch(() => false);
+
+      if (existingFile) {
+        console.warn(`⚠ ${error.message} Keeping existing ${existingPath}.`);
+        return;
+      }
+
+      console.error(
+        `✗ ${error.message} No existing schema file at ${existingPath}.`,
+      );
+      throw error;
     }
 
     if (error instanceof Error) {

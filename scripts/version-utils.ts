@@ -162,7 +162,9 @@ export function getStableVersions(): ApiVersion[] {
 /**
  * Get the stable versions plus the release candidate, ordered oldest first
  */
-export function getOrderedStableVersions(versionSet?: VersionSet): string[] {
+export function getOrderedStableVersions(
+  versionSet?: VersionSet,
+): ApiVersion[] {
   const vs = versionSet ?? getCurrentVersionSet();
   return [
     ...[...vs.olderSupported].reverse(),
@@ -178,9 +180,9 @@ export function getOrderedStableVersions(versionSet?: VersionSet): string[] {
  */
 export function getAdjacentVersionPairs(
   versionSet?: VersionSet,
-): Array<{ from: string; to: string }> {
+): Array<{ from: ApiVersion; to: ApiVersion }> {
   const ordered = getOrderedStableVersions(versionSet);
-  const pairs: Array<{ from: string; to: string }> = [];
+  const pairs: Array<{ from: ApiVersion; to: ApiVersion }> = [];
 
   for (let i = 1; i < ordered.length; i++) {
     const from = ordered[i - 1];
