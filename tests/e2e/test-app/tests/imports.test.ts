@@ -46,10 +46,16 @@ describe('Shopify API Types Package', () => {
     expect(exportKeys).toContain('./comparisons/next');
   });
 
-  it.each(typeExports)('should import type export %s', async (key) => {
-    const module = await import(toSpecifier(key));
-    expect(module).toBeDefined();
-  });
+  // Generous timeout: the root export transforms every API's multi-MB
+  // declaration tree on first import
+  it.each(typeExports)(
+    'should import type export %s',
+    async (key) => {
+      const module = await import(toSpecifier(key));
+      expect(module).toBeDefined();
+    },
+    60_000,
+  );
 
   it.each(schemaExports)('should import schema export %s', async (key) => {
     const module = await import(toSpecifier(key));

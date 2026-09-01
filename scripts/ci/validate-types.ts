@@ -60,7 +60,9 @@ console.log('✓ All type imports working correctly');
     let typecheckResult: TypecheckResult;
     try {
       const output = execSync(
-        'npx tsc --noEmit temp/type-test.ts --module esnext --moduleResolution bundler --resolveJsonModule --esModuleInterop --allowImportingTsExtensions',
+        // --ignoreConfig: TS 6 refuses CLI file args while a tsconfig.json
+        // exists (TS5112); this check intentionally uses its own flags
+        'npx tsc --noEmit temp/type-test.ts --ignoreConfig --types node --skipLibCheck --module esnext --moduleResolution bundler --resolveJsonModule --esModuleInterop --allowImportingTsExtensions',
         {
           encoding: 'utf-8',
           env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=4096' },
