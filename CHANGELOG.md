@@ -1,5 +1,25 @@
 # @juanpprieto/shopify-api-types
 
+## 2026.4.0
+
+### Major Changes (New API Version: 2026-04)
+
+- New current version 2026-04 for the Storefront, Admin, and Customer Account
+  APIs. Version set: current=2026-04, previous=2026-01, olderSupported=[2025-10,
+  2025-07], next(RC)=2026-07, unstable.
+- Breaking changes from 2026-01 to 2026-04 (Admin only, 18 total):
+  DeliverySetting types removed, fulfillment order userErrors types changed,
+  inventory compareQuantity fields removed, ShopPolicy and
+  ShopifyPaymentsDispute date fields moved from Date to DateTime. Full list in
+  the README and in `comparisons/current`.
+- Type counts: Admin 1,928 / Customer Account 320 / Storefront 268.
+- README is now generated under a strict style gate (no emojis, no filler,
+  verified export paths).
+
+Note: this release was published 2026-09-01 as a catch-up for the 2026-04
+quarter. Its RC (2026-07) and unstable schemas are snapshots from the
+publication date.
+
 ## 2026.1.0
 
 ### Major Changes (New API Version: 2026-01)

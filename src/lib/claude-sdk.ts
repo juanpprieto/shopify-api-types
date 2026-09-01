@@ -53,7 +53,9 @@ export async function callClaude(
 
     const response = await client.messages.create({
       model,
-      max_tokens: 8192,
+      // Adaptive thinking counts toward max_tokens; a low cap can leave
+      // zero room for the visible answer
+      max_tokens: 16000,
       messages: [
         {
           role: 'user',
@@ -66,6 +68,17 @@ export async function callClaude(
       .filter((block) => block.type === 'text')
       .map((block) => ('text' in block ? block.text : ''))
       .join('\n');
+
+    if (content.trim() === '') {
+      return {
+        success: false,
+        error: {
+          message:
+            `Model returned no text (stop_reason: ${response.stop_reason}). ` +
+            `If max_tokens was hit, thinking may have consumed the budget.`,
+        },
+      };
+    }
 
     return { success: true, data: content };
   } catch (error) {

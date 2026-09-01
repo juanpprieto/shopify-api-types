@@ -271,11 +271,18 @@ async function prepareInputData(): Promise<ReadmeInput> {
   const versionSet = getCurrentVersionSet();
 
   // Gather all data in parallel where possible
-  const [exportPaths, currentComparison, nextComparison] = await Promise.all([
-    gatherExportData(),
-    loadComparison('current'),
-    loadComparison('next'),
-  ]);
+  const [exportPaths, rawCurrentComparison, rawNextComparison] =
+    await Promise.all([
+      gatherExportData(),
+      loadComparison('current'),
+      loadComparison('next'),
+    ]);
+
+  // Condense comparisons before prompting: the raw diffs run to hundreds
+  // of KB and overflow the generation budget. The README only needs the
+  // summaries, every breaking change, and a sample of additions.
+  const currentComparison = condenseComparison(rawCurrentComparison);
+  const nextComparison = condenseComparison(rawNextComparison);
 
   // Count types for each API
   const [storefrontCount, adminCount, customerAccountCount] = await Promise.all(
@@ -355,6 +362,55 @@ async function prepareInputData(): Promise<ReadmeInput> {
 }
 
 /**
+ * Reduce a raw comparison to what the README needs: per-API summary
+ * counts, every breaking-change description, and a capped sample of
+ * added type names. Raw diffs run to hundreds of KB.
+ */
+function condenseComparison(comparison: VersionComparison): VersionComparison {
+  const condensed: VersionComparison = {
+    fromVersion: comparison.fromVersion,
+    toVersion: comparison.toVersion,
+  };
+
+  for (const api of ['storefront', 'admin', 'customer-account'] as const) {
+    const data = comparison[api] as
+      | {
+          summary?: unknown;
+          changes?: Record<
+            string,
+            Array<{
+              name?: string;
+              breaking?: boolean;
+              changeType?: string;
+              description?: string;
+            }>
+          >;
+        }
+      | undefined;
+    if (!data) continue;
+
+    const allChanges = Object.values(data.changes ?? {}).flat();
+    const breakingChanges = allChanges
+      .filter((c) => c.breaking)
+      .map((c) => c.description ?? c.name ?? '')
+      .filter((d) => d !== '');
+    const addedNames = allChanges
+      .filter((c) => c.changeType === 'added' && !c.breaking)
+      .map((c) => c.name ?? '')
+      .filter((n) => n !== '')
+      .slice(0, 20);
+
+    condensed[api] = {
+      summary: data.summary,
+      breakingChanges,
+      notableAdditions: addedNames,
+    };
+  }
+
+  return condensed;
+}
+
+/**
  * README generation prompt. The style contract enforces the anti-slop
  * rules from the human-writer audit protocol; validateReadmeStyle()
  * gate-checks the output against the same rules.
@@ -363,7 +419,8 @@ const README_PROMPT = `Write the complete README.md for this npm package from th
 Output ONLY the raw markdown, no preamble and no code fence around the document.
 
 Content requirements:
-- Title, npm version + MIT license shields.io badges, one-paragraph description.
+- H1 title is the full scoped package name. npm version + MIT license shields.io badges. One-paragraph description.
+- The document ends with a "## License" section containing the single line "MIT".
 - Supported versions table with semantic aliases (current/previous/next/unstable).
 - Install and usage examples for versioned type imports, alias imports, schema imports, and comparison imports.
 - API overview table with type counts.
@@ -393,6 +450,20 @@ Style contract (strict):
  */
 function validateReadmeStyle(content: string): void {
   const violations: string[] = [];
+
+  // An empty or skeletal document must never pass the gate
+  if (content.trim().length < 1500) {
+    violations.push(
+      `content too short (${content.trim().length} chars) - generation likely failed`,
+    );
+  }
+
+  // Truncation check: the prompt requires a closing License section
+  if (!/## License\s+MIT\s*$/i.test(content.trim())) {
+    violations.push(
+      'document does not end with the License section - output may be truncated',
+    );
+  }
 
   const emojiPattern = /\p{Extended_Pictographic}/u;
   if (emojiPattern.test(content)) {
