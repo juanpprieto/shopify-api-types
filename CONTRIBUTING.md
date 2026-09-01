@@ -421,11 +421,11 @@ the 2026-09 catch-up releases (see `decisions/011`).
    and `RELEASE_DATE` if back-dated) → tag → push → GitHub release. Pushing an
    unpublished version first makes the CI release workflow publish it via
    `NPM_TOKEN`, which bypasses the local verification flow.
-5. **Paid doc generation runs last.** `npm run docs` calls the Anthropic API and
-   costs tokens. Run it only after `npm run validate`, `ci:validate-build`, and
-   the export smoke test all pass. The same gate exists in the quarterly
-   `api-version-check` workflow. Model: `claude-sonnet-5` (override with
-   `ANTHROPIC_MODEL`).
+5. **Paid doc generation runs last, with a style gate.** `npm run docs` calls
+   the Anthropic API and costs tokens. Run it only after `npm run validate`,
+   `ci:validate-build`, and the export smoke test all pass. The same gate exists
+   in the quarterly `api-version-check` workflow. Model: `claude-sonnet-5`
+   (override with `ANTHROPIC_MODEL`).
 6. **Changesets on release.** A release consumes the pending changeset files
    together with the manual CalVer version bump. Close any bot-opened "Version
    Packages" PR that a release supersedes.

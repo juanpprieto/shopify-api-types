@@ -224,7 +224,7 @@ function generateApiExamples(
     .slice(0, 2)
     .map(
       (version) =>
-        `import { ${typeExamples} } from '@juanpprieto/shopify-api-types/${api}${version}';`,
+        `import { ${typeExamples} } from '@juanpprieto/shopify-api-types/${api}/${version}';`,
     );
 }
 
@@ -355,6 +355,78 @@ async function prepareInputData(): Promise<ReadmeInput> {
 }
 
 /**
+ * README generation prompt. The style contract enforces the anti-slop
+ * rules from the human-writer audit protocol; validateReadmeStyle()
+ * gate-checks the output against the same rules.
+ */
+const README_PROMPT = `Write the complete README.md for this npm package from the JSON input data below.
+Output ONLY the raw markdown, no preamble and no code fence around the document.
+
+Content requirements:
+- Title, npm version + MIT license shields.io badges, one-paragraph description.
+- Supported versions table with semantic aliases (current/previous/next/unstable).
+- Install and usage examples for versioned type imports, alias imports, schema imports, and comparison imports.
+- API overview table with type counts.
+- A section on what changed between previous and current version (use the comparison data, list every breaking change).
+- A short preview section for the release candidate comparison.
+- Package exports reference tree.
+
+Correctness requirements:
+- Every import path MUST match a key of the exports map in the input data exactly.
+  Export keys use slashes: "@juanpprieto/shopify-api-types/sfapi/2026-01", "/sfapi/current", "/schemas/admin/2026-01", "/comparisons/current".
+- Use only version numbers, counts, and change details present in the input data. Invent nothing.
+
+Style contract (strict):
+- Zero emojis anywhere, including headings.
+- Zero em dashes. Use commas, parentheses, or periods.
+- No marketing adjectives: comprehensive, robust, seamless, powerful, cutting-edge, innovative, extensive, rich.
+- No filler phrases: "it is important to note", "a testament to", "in today's", "at the forefront", "serves as".
+- No words: delve, leverage, utilize, facilitate, streamline, holistic, ecosystem, landscape, myriad, moreover, furthermore.
+- No meta-commentary ("let's explore", "in this section") and no closing summary section.
+- Plain declarative sentences. Vary sentence length. Prefer tables and code blocks over prose.
+- Headings are plain text, sentence case, no decorations.`;
+
+/**
+ * Hard style gate for generated READMEs (anti-slop + verbosity rules).
+ * Throws when the output violates the style contract, so a bad
+ * generation fails loudly instead of shipping.
+ */
+function validateReadmeStyle(content: string): void {
+  const violations: string[] = [];
+
+  const emojiPattern = /\p{Extended_Pictographic}/u;
+  if (emojiPattern.test(content)) {
+    violations.push('contains emojis');
+  }
+
+  const emDashes = (content.match(/—/g) ?? []).length;
+  if (emDashes > 0) {
+    violations.push(`contains ${emDashes} em dash(es)`);
+  }
+
+  const slopWords =
+    /\b(delve|tapestry|multifaceted|leverage|utilize|facilitate|streamline|holistic|myriad|moreover|furthermore|seamless|cutting-edge|comprehensive)\b/i;
+  const slopMatch = content.match(slopWords);
+  if (slopMatch) {
+    violations.push(`contains slop vocabulary ("${slopMatch[0]}")`);
+  }
+
+  const slopPhrases =
+    /it is important to note|a testament to|in today.s|at the forefront|serves as a|let.s (explore|dive)/i;
+  const phraseMatch = content.match(slopPhrases);
+  if (phraseMatch) {
+    violations.push(`contains slop phrase ("${phraseMatch[0]}")`);
+  }
+
+  if (violations.length > 0) {
+    throw new Error(
+      `Generated README failed the style gate: ${violations.join('; ')}. ` +
+        `Regenerate or edit before shipping.`,
+    );
+  }
+}
+
+/**
  * Generate README using AI or fallback
  */
 async function generateDocs(): Promise<void> {
@@ -391,7 +463,7 @@ async function generateDocs(): Promise<void> {
     }
 
     // Use Claude to generate README
-    const claudeResult = await callClaude('generate-readme', inputData);
+    const claudeResult = await callClaude(README_PROMPT, inputData);
 
     if (!claudeResult.success) {
       throw new Error(`AI generation failed: ${claudeResult.error.message}`);
@@ -399,6 +471,10 @@ async function generateDocs(): Promise<void> {
 
     console.log('   ✓ README generated successfully with AI\n');
     const readmeContent = claudeResult.data;
+
+    // Gate-check the output against the style contract before writing
+    validateReadmeStyle(readmeContent);
+    console.log('   ✓ README passed the style gate (no emojis, no slop)\n');
 
     // Step 3: Write README file
     console.log('📝 Writing README.md...');
