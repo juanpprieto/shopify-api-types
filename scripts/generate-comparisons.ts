@@ -1,6 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { getCurrentVersionSet } from './version-utils.js';
+import {
+  getCurrentVersionSet,
+  getAdjacentVersionPairs,
+} from './version-utils.js';
 import { generateComparisonData } from './generate-changelog.js';
 
 /**
@@ -15,53 +18,30 @@ async function generateComparisonFiles(): Promise<void> {
   // Ensure output directory exists
   await fs.mkdir(outputDir, { recursive: true });
 
+  // All adjacent version pairs, oldest first:
+  // older[1] → older[0] → previous → current → releaseCandidate
+  const pairs = getAdjacentVersionPairs(versionSet);
+
   console.log(`📋 Generating comparisons:`);
-  console.log(
-    `   Previous → Current: ${versionSet.previous} → ${versionSet.current}`,
-  );
-  console.log(
-    `   Current → Next: ${versionSet.current} → ${versionSet.releaseCandidate}`,
-  );
+  pairs.forEach(({ from, to }) => console.log(`   ${from} → ${to}`));
   console.log(`   Output: ${outputDir}\n`);
 
   try {
-    // Generate previous → current comparison (what's new in latest release)
-    console.log('🔍 Generating current release comparison...');
-    const currentComparisons = await generateComparisonData(
-      versionSet.previous,
-      versionSet.current,
-    );
+    for (const { from, to } of pairs) {
+      console.log(`🔍 Generating comparison ${from} → ${to}...`);
+      const comparison = await generateComparisonData(from, to);
 
-    const currentPath = path.join(
-      outputDir,
-      `${versionSet.previous}-to-${versionSet.current}.json`,
-    );
-    await fs.writeFile(
-      currentPath,
-      JSON.stringify(currentComparisons, null, 2),
-      'utf-8',
-    );
-    console.log(`✅ Saved: ${currentPath}`);
+      const filePath = path.join(outputDir, `${from}-to-${to}.json`);
+      await fs.writeFile(
+        filePath,
+        JSON.stringify(comparison, null, 2),
+        'utf-8',
+      );
+      console.log(`✅ Saved: ${filePath}`);
+    }
 
-    // Generate current → next comparison (what's coming in RC)
-    console.log('🔍 Generating next release comparison...');
-    const nextComparisons = await generateComparisonData(
-      versionSet.current,
-      versionSet.releaseCandidate,
-    );
-
-    const nextPath = path.join(
-      outputDir,
-      `${versionSet.current}-to-${versionSet.releaseCandidate}.json`,
-    );
-    await fs.writeFile(
-      nextPath,
-      JSON.stringify(nextComparisons, null, 2),
-      'utf-8',
-    );
-    console.log(`✅ Saved: ${nextPath}`);
-
-    // Generate comparison manifest
+    // Generate comparison manifest: every adjacent pair, plus the
+    // current/next semantic aliases
     const manifest = {
       generatedAt: new Date().toISOString(),
       versionSet,
@@ -76,6 +56,11 @@ async function generateComparisonFiles(): Promise<void> {
           to: versionSet.releaseCandidate,
           file: `${versionSet.current}-to-${versionSet.releaseCandidate}.json`,
         },
+        adjacent: pairs.map(({ from, to }) => ({
+          from,
+          to,
+          file: `${from}-to-${to}.json`,
+        })),
       },
     };
 

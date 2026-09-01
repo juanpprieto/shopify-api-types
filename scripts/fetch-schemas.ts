@@ -169,6 +169,21 @@ async function fetchApiSchema(
       );
     }
 
+    // Guard against Shopify's fall-forward behavior: a request for a retired
+    // version returns 200 with the oldest supported version's schema. The
+    // x-shopify-api-version header reports the version that was served.
+    const servedVersion = response.headers.get('x-shopify-api-version');
+    if (
+      version !== 'unstable' &&
+      servedVersion !== null &&
+      servedVersion !== version
+    ) {
+      throw new Error(
+        `Version fell forward: requested ${version}, Shopify served ${servedVersion}. ` +
+          `The requested version is retired.`,
+      );
+    }
+
     let schemaData: unknown;
 
     if (isCustomerAccount) {
@@ -215,6 +230,28 @@ async function fetchApiSchema(
       throw new Error(`Failed to save schema: ${result.error}`);
     }
   } catch (error) {
+    // If the version can no longer be fetched (retired on Shopify's side)
+    // but a schema file already exists in the repo, keep the existing file.
+    const existingPath = path.join(
+      'src',
+      'graphql-schemas',
+      apiType,
+      `${version}.json`,
+    );
+    const existingFile = await fs
+      .stat(existingPath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (existingFile) {
+      const reason = error instanceof Error ? error.message : String(error);
+      console.warn(
+        `⚠ Could not fetch ${apiType}/${version} (${reason}). ` +
+          `Keeping existing ${existingPath}.`,
+      );
+      return;
+    }
+
     if (error instanceof Error) {
       const { category } = classifyFileSystemError(error);
       console.error(
@@ -245,6 +282,7 @@ async function fetchSchemas(): Promise<void> {
   const allVersions: ExtendedApiVersion[] = [
     versionSet.current,
     versionSet.previous,
+    ...versionSet.olderSupported,
     versionSet.releaseCandidate,
     versionSet.unstable,
   ];
@@ -252,6 +290,7 @@ async function fetchSchemas(): Promise<void> {
   console.log(`📋 Fetching schemas for:`);
   console.log(`   Current: ${versionSet.current}`);
   console.log(`   Previous: ${versionSet.previous}`);
+  console.log(`   Older supported: ${versionSet.olderSupported.join(', ')}`);
   console.log(`   Release Candidate: ${versionSet.releaseCandidate}`);
   console.log(`   Unstable: ${versionSet.unstable}\n`);
 

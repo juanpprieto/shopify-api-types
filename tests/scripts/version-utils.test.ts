@@ -18,14 +18,14 @@ describe('version-utils', () => {
   });
 
   describe('getSupportedVersions', () => {
-    it('should return 4 supported versions including unstable', () => {
+    it('should return 6 supported versions including unstable', () => {
       const versions = getSupportedVersions();
 
-      expect(versions).toHaveLength(4);
+      expect(versions).toHaveLength(6);
       expect(versions).toContain('unstable');
 
-      // First 3 should be valid API versions
-      versions.slice(0, 3).forEach((version) => {
+      // First 5 should be valid API versions
+      versions.slice(0, 5).forEach((version) => {
         expect(version).toMatch(/^\d{4}-(01|04|07|10)$/);
       });
     });
@@ -36,8 +36,10 @@ describe('version-utils', () => {
 
       expect(versions[0]).toBe(versionSet.current);
       expect(versions[1]).toBe(versionSet.previous);
-      expect(versions[2]).toBe(versionSet.releaseCandidate);
-      expect(versions[3]).toBe(versionSet.unstable);
+      expect(versions[2]).toBe(versionSet.olderSupported[0]);
+      expect(versions[3]).toBe(versionSet.olderSupported[1]);
+      expect(versions[4]).toBe(versionSet.releaseCandidate);
+      expect(versions[5]).toBe(versionSet.unstable);
     });
 
     it('should always include unstable as last version', () => {
@@ -90,13 +92,15 @@ describe('version-utils', () => {
   });
 
   describe('getStableVersions', () => {
-    it('should return only current and previous versions', () => {
+    it('should return current, previous, and older supported versions', () => {
       const stableVersions = getStableVersions();
       const versionSet = getCurrentVersionSet();
 
-      expect(stableVersions).toHaveLength(2);
+      expect(stableVersions).toHaveLength(4);
       expect(stableVersions[0]).toBe(versionSet.current);
       expect(stableVersions[1]).toBe(versionSet.previous);
+      expect(stableVersions[2]).toBe(versionSet.olderSupported[0]);
+      expect(stableVersions[3]).toBe(versionSet.olderSupported[1]);
     });
   });
 

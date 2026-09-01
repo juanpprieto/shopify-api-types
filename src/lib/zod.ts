@@ -74,11 +74,16 @@ export const ExportPathSchema = z.enum([
 export type ExportPath = z.infer<typeof ExportPathSchema>;
 
 /**
- * Version set representing all supported versions
+ * Version set representing all supported versions.
+ *
+ * Aligned with Shopify's support window: each stable version is supported
+ * for a minimum of 12 months, so 4 stable quarters are live at any time
+ * (current + previous + 2 older), plus the release candidate and unstable.
  */
 export const VersionSetSchema = z.object({
   current: ApiVersionSchema,
   previous: ApiVersionSchema,
+  olderSupported: z.array(ApiVersionSchema).length(2), // [current-2q, current-3q], newest first
   releaseCandidate: ApiVersionSchema, // Next CalVer version (RC/preview)
   unstable: UnstableApiVersionSchema,
 });
