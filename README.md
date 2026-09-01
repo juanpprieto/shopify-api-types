@@ -1,5 +1,8 @@
 # @juanpprieto/shopify-api-types
 
+[![CI](https://github.com/juanpprieto/shopify-api-types/actions/workflows/ci.yml/badge.svg)](https://github.com/juanpprieto/shopify-api-types/actions/workflows/ci.yml)
+[![Release](https://github.com/juanpprieto/shopify-api-types/actions/workflows/release.yml/badge.svg)](https://github.com/juanpprieto/shopify-api-types/actions/workflows/release.yml)
+
 ![npm version](https://img.shields.io/npm/v/@juanpprieto/shopify-api-types)
 ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
