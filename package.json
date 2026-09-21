@@ -443,7 +443,7 @@
     "@graphql-codegen/typescript-operations": "^6.1.6",
     "@graphql-inspector/core": "^8.0.0",
     "@vitest/coverage-v8": "^4.1.11",
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.0",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
