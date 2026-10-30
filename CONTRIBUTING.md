@@ -244,7 +244,7 @@ section.
 | 12 (dry run)                     | Correct the problem in a PR to `main`. Then do step 12 again                            |
 | 13, before the upload            | Correct the problem. Then do step 12 and step 13 again                                  |
 | 13, after the upload             | Do not publish again. Check the version on npm, then create the tag and release by hand |
-| 13, npm refuses the OIDC publish | Use the local fallback in release rule 2                                                |
+| 13, npm refuses the OIDC publish | Check release rule 11 first. Then use the local fallback in release rule 2              |
 
 ## Release rules
 
@@ -288,9 +288,10 @@ the 2026-09 catch-up releases (see `decisions/011`).
 9. **The e2e app never hardcodes versions.** It reads every export path from the
    installed `package.json` at test time. A new version set cannot break it.
 10. **No emojis in any file.** A CI step fails when a tracked file has one.
-11. **Open: the first OIDC publish.** The 2026.10.0 release is the first one
-    through trusted publishing. After it passes, remove this rule. Then consider
-    the npm setting that blocks token publishing.
+11. **The npm trusted publisher must allow "npm publish".** With only "npm stage
+    publish", npm refuses the upload with E404 after the provenance signing. The
+    entry has the values `juanpprieto/shopify-api-types`, `release.yml`, and
+    `main`. The first publish through it was 2026.10.0.
 
 ## Pull requests
 
