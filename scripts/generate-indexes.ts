@@ -7,12 +7,12 @@ import {
   TemplateContentSchema,
   type ApiType,
   type CategorizedFileResult,
-} from '../src/lib/zod.js';
+} from './lib/zod.js';
 import {
   createFileOperationHandler,
   createFilePathResolver,
   createApiIndexPath,
-} from '../src/lib/patterns.js';
+} from './lib/patterns.js';
 
 const INDEX_TEMPLATE = `// Auto-generated index file
 export * from './types.js';
@@ -115,7 +115,7 @@ async function generateIndexFiles(): Promise<void> {
 
       if (result.success) {
         console.log(
-          `✓ Generated index: ${api.dir}/${version}/index.ts (${result.data.size} bytes)`,
+          `Generated index: ${api.dir}/${version}/index.ts (${result.data.size} bytes)`,
         );
         results.push({
           filePath: indexPath,
@@ -129,7 +129,7 @@ async function generateIndexFiles(): Promise<void> {
         );
       } else {
         console.error(
-          `✗ Failed to generate ${api.dir}/${version}/index.ts:`,
+          `Failed to generate ${api.dir}/${version}/index.ts:`,
           result.error,
         );
         results.push({
@@ -161,7 +161,7 @@ async function generateIndexFiles(): Promise<void> {
 
       await fs.writeFile(apiIndexPath, apiIndexContent, 'utf-8');
 
-      console.log(`✓ Generated API index: ${api.dir}/index.ts`);
+      console.log(`Generated API index: ${api.dir}/index.ts`);
       results.push({ filePath: apiIndexPath, success: true, category: 'api' });
     } catch (error) {
       const errorMessage =
@@ -171,7 +171,7 @@ async function generateIndexFiles(): Promise<void> {
         api.type,
         'source',
       );
-      console.error(`✗ Failed to generate ${api.dir}/index.ts:`, errorMessage);
+      console.error(`Failed to generate ${api.dir}/index.ts:`, errorMessage);
       results.push({
         filePath: apiIndexPath,
         success: false,
@@ -198,12 +198,12 @@ export * as admin from './admin/index.js';
     const rootIndexPath = path.join(process.cwd(), 'src', 'index.ts');
     await fs.writeFile(rootIndexPath, rootIndexContent, 'utf-8');
 
-    console.log('✓ Generated root index: src/index.ts');
+    console.log('Generated root index: src/index.ts');
     results.push({ filePath: rootIndexPath, success: true, category: 'root' });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     const rootIndexPath = path.join(process.cwd(), 'src', 'index.ts');
-    console.error('✗ Failed to generate src/index.ts:', errorMessage);
+    console.error('Failed to generate src/index.ts:', errorMessage);
     results.push({
       filePath: rootIndexPath,
       success: false,

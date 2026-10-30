@@ -32,19 +32,19 @@ const commands: Record<Command, CommandHandler> = {
   all: {
     description: 'Run all generation tasks in sequence',
     run: async () => {
-      console.log('🔄 Running all generation tasks...\n');
+      console.log('Running all generation tasks...\n');
 
       // Run in the correct order
-      console.log('1️⃣  Generating indexes...');
+      console.log('1. Generating indexes...');
       await generateIndexFiles();
 
-      console.log('\n2️⃣  Generating exports...');
+      console.log('\n2. Generating exports...');
       await generatePackageExports();
 
-      console.log('\n3️⃣  Generating comparisons...');
+      console.log('\n3. Generating comparisons...');
       await generateComparisonFiles();
 
-      console.log('\n✅ All generation tasks completed!');
+      console.log('\nAll generation tasks completed!');
     },
   },
 };
@@ -80,19 +80,19 @@ async function main(): Promise<void> {
       (cmd): cmd is Command => cmd in commands,
       async (cmd) => {
         const command = commands[cmd];
-        console.log(`🚀 Running: ${command.description}\n`);
+        console.log(`Running: ${command.description}\n`);
 
         try {
           await command.run();
           process.exit(0);
         } catch (error) {
-          console.error('❌ Generation failed:', error);
+          console.error('Generation failed:', error);
           process.exit(1);
         }
       },
     )
     .otherwise(() => {
-      console.error(`❌ Unknown command: ${commandName}`);
+      console.error(`Unknown command: ${commandName}`);
       showHelp();
       process.exit(1);
     });

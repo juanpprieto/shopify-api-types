@@ -11,11 +11,8 @@ import {
   DistPathSchema,
   PackageJsonSchema,
   type ApiType,
-} from '../src/lib/zod.js';
-import {
-  createFilePathResolver,
-  createApiIndexPath,
-} from '../src/lib/patterns.js';
+} from './lib/zod.js';
+import { createFilePathResolver, createApiIndexPath } from './lib/patterns.js';
 
 interface ExportEntry {
   key: string;
@@ -305,7 +302,7 @@ async function generatePackageExports(): Promise<void> {
   );
 
   console.log(
-    '✓ Updated package.json exports with NodeNext-compatible conditions for versions:',
+    'Updated package.json exports with NodeNext-compatible conditions for versions:',
     versions.join(', '),
   );
   console.log(
@@ -327,7 +324,7 @@ async function generatePackageExports(): Promise<void> {
   );
 
   console.log(
-    '\n✅ NodeNext Support: Export conditions added for better module resolution compatibility',
+    '\nNodeNext Support: Export conditions added for better module resolution compatibility',
   );
 }
 

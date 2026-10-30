@@ -1,16 +1,15 @@
-import 'dotenv/config';
 import fs from 'fs/promises';
 import path from 'path';
 import { match } from 'ts-pattern';
 import { getCurrentVersionSet } from './version-utils.js';
-import type { ApiType, ExtendedApiVersion } from '../src/lib/zod.js';
+import type { ApiType, ExtendedApiVersion } from './lib/zod.js';
 import {
   matchApiEndpoint,
   matchAuthHeaders,
   validateEnvironment,
   classifyFileSystemError,
   createFileOperationHandler,
-} from '../src/lib/patterns.js';
+} from './lib/patterns.js';
 
 /**
  * Thrown when Shopify serves a different version than requested
@@ -235,7 +234,7 @@ async function fetchApiSchema(
 
     if (result.success) {
       console.log(
-        `✓ Saved ${apiType}/${version}.json (${result.data.size} bytes)`,
+        `Saved ${apiType}/${version}.json (${result.data.size} bytes)`,
       );
     } else {
       throw new Error(`Failed to save schema: ${result.error}`);
@@ -258,12 +257,12 @@ async function fetchApiSchema(
         .catch(() => false);
 
       if (existingFile) {
-        console.warn(`⚠ ${error.message} Keeping existing ${existingPath}.`);
+        console.warn(`${error.message} Keeping existing ${existingPath}.`);
         return;
       }
 
       console.error(
-        `✗ ${error.message} No existing schema file at ${existingPath}.`,
+        `${error.message} No existing schema file at ${existingPath}.`,
       );
       throw error;
     }
@@ -271,11 +270,11 @@ async function fetchApiSchema(
     if (error instanceof Error) {
       const { category } = classifyFileSystemError(error);
       console.error(
-        `✗ Failed to fetch ${apiType}/${version} (${category}):`,
+        `Failed to fetch ${apiType}/${version} (${category}):`,
         error.message,
       );
     } else {
-      console.error(`✗ Failed to fetch ${apiType}/${version}:`, String(error));
+      console.error(`Failed to fetch ${apiType}/${version}:`, String(error));
     }
     throw error;
   }
@@ -292,7 +291,7 @@ async function fetchSchemas(): Promise<void> {
     process.exit(1);
   }
 
-  console.log('🔄 Fetching GraphQL schemas for all version types...\n');
+  console.log('Fetching GraphQL schemas for all version types...\n');
 
   const versionSet = getCurrentVersionSet();
   const allVersions: ExtendedApiVersion[] = [
@@ -303,7 +302,7 @@ async function fetchSchemas(): Promise<void> {
     versionSet.unstable,
   ];
 
-  console.log(`📋 Fetching schemas for:`);
+  console.log(`Fetching schemas for:`);
   console.log(`   Current: ${versionSet.current}`);
   console.log(`   Previous: ${versionSet.previous}`);
   console.log(`   Older supported: ${versionSet.olderSupported.join(', ')}`);
@@ -394,13 +393,13 @@ async function fetchSchemas(): Promise<void> {
       if (backup !== undefined && backup !== olderContent) {
         await fs.writeFile(filePath, backup, 'utf-8');
         console.warn(
-          `⚠ ${api}/${older} content is identical to ${duplicateOf} (fall-forward). ` +
+          `${api}/${older} content is identical to ${duplicateOf} (fall-forward). ` +
             `Restored the previous ${filePath}.`,
         );
         restoredCount++;
       } else if (backup === undefined) {
         console.error(
-          `✗ ${api}/${older} content is identical to ${duplicateOf} (fall-forward) ` +
+          `${api}/${older} content is identical to ${duplicateOf} (fall-forward) ` +
             `and no previous file exists to restore.`,
         );
         process.exit(1);

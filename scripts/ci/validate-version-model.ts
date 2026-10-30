@@ -3,14 +3,14 @@ import {
   getVersionMetadata,
   getAdjacentVersionPairs,
 } from '../version-utils.js';
-import type { ExtendedApiVersion } from '../../src/lib/zod.js';
+import type { ExtendedApiVersion } from '../lib/zod.js';
 
 /**
  * Validate the version model and ensure all versions are properly configured
  */
 function validateVersionModel(): void {
   try {
-    console.log('🔍 Validating version model...');
+    console.log('Validating version model...');
 
     const versionSet = getCurrentVersionSet();
     console.log('Current version set:', JSON.stringify(versionSet, null, 2));
@@ -29,7 +29,7 @@ function validateVersionModel(): void {
 
     for (const [type, version] of labeledVersions) {
       const metadata = getVersionMetadata(version);
-      console.log(`✅ ${type}: ${version} (${metadata.description})`);
+      console.log(`${type}: ${version} (${metadata.description})`);
     }
 
     // Validate version ordering across the full chain:
@@ -42,10 +42,10 @@ function validateVersionModel(): void {
       }
     }
 
-    console.log('✅ Version model validation passed');
+    console.log('Version model validation passed');
   } catch (error) {
     console.error(
-      '❌ Version model validation failed:',
+      'Version model validation failed:',
       error instanceof Error ? error.message : error,
     );
     process.exit(1);

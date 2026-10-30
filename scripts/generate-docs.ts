@@ -1,15 +1,11 @@
 import fs from 'fs/promises';
 import { match, P } from 'ts-pattern';
-import { config } from 'dotenv';
 import { getCurrentVersionSet, getVersionMetadata } from './version-utils.js';
-import { callClaude, isClaudeAvailable } from '../src/lib/claude-sdk.js';
+import { generateText } from './lib/opencode-go.js';
 import {
   createFileOperationHandler,
   handleOperationResult,
-} from '../src/lib/patterns.js';
-
-// Load environment variables
-config();
+} from './lib/patterns.js';
 
 // =============================================================================
 // Type Definitions (previously in readme-types.ts)
@@ -410,6 +406,17 @@ function condenseComparison(comparison: VersionComparison): VersionComparison {
   return condensed;
 }
 
+// Fixed README header. The script adds it, so a model can never drop
+// or change the title and badges.
+const README_HEADER = `# @juanpprieto/shopify-api-types
+
+[![CI](https://github.com/juanpprieto/shopify-api-types/actions/workflows/ci.yml/badge.svg)](https://github.com/juanpprieto/shopify-api-types/actions/workflows/ci.yml)
+[![Release](https://github.com/juanpprieto/shopify-api-types/actions/workflows/release.yml/badge.svg)](https://github.com/juanpprieto/shopify-api-types/actions/workflows/release.yml)
+[![npm version](https://img.shields.io/npm/v/@juanpprieto/shopify-api-types)](https://www.npmjs.com/package/@juanpprieto/shopify-api-types)
+![license](https://img.shields.io/badge/license-MIT-blue.svg)
+
+`;
+
 /**
  * README generation prompt. The style contract enforces the anti-slop
  * rules from the human-writer audit protocol; validateReadmeStyle()
@@ -419,7 +426,7 @@ const README_PROMPT = `Write the complete README.md for this npm package from th
 Output ONLY the raw markdown, no preamble and no code fence around the document.
 
 Content requirements:
-- H1 title is the full scoped package name. npm version + MIT license shields.io badges. One-paragraph description.
+- Start with a one-paragraph description. Do not write a title or badges; the script adds them.
 - The document ends with a "## License" section containing the single line "MIT".
 - Supported versions table with semantic aliases (current/previous/next/unstable).
 - Install and usage examples for versioned type imports, alias imports, schema imports, and comparison imports.
@@ -438,6 +445,14 @@ Readability requirements:
 - Breaking-change bullets follow the pattern: \`Identifier\` - what changed. When there are more than 6, group them under short bold labels by kind (removed types, field type changes, input changes).
 - For additions, do NOT list every name. State the total count, name the feature area, and give at most 8 representative type names in backticks.
 - Short paragraphs. No sentence over 25 words in prose sections.
+
+Simplified Technical English (ASD-STE100):
+- Active voice. Name the actor: "The package exports", not "is exported by".
+- Simple tenses only: simple present, simple past, simple future, imperative. No perfect tenses.
+- Imperative for instructions: "Install the package", not "You should install".
+- One instruction per sentence. Instructions have at most 20 words.
+- Standard verbs: check, make sure, start, stop, use, show, find, change, remove, need.
+  Never: verify, ensure, initiate, utilize, display, locate, modify, require.
 
 Style contract (strict):
 - Zero emojis anywhere, including headings.
@@ -488,6 +503,27 @@ function validateReadmeStyle(content: string): void {
     violations.push(`contains slop vocabulary ("${slopMatch[0]}")`);
   }
 
+  // STE: no prose sentence over 25 words (code, tables, and headings excluded)
+  const prose = content
+    .replace(/```[\s\S]*?```/g, '')
+    .split('\n')
+    .filter((line) => !/^\s*(\||#|!\[|\[!\[)/.test(line))
+    .join(' ');
+  const longSentence = prose
+    .split(/(?<=[.!?])\s+/)
+    .find((sentence) => sentence.split(/\s+/).filter(Boolean).length > 25);
+  if (longSentence) {
+    violations.push(
+      `has a sentence over 25 words ("${longSentence.slice(0, 60)}...")`,
+    );
+  }
+
+  const steVerbs = /\b(verify|ensure|initiate|utilize|locate)\b/i;
+  const steMatch = content.match(steVerbs);
+  if (steMatch) {
+    violations.push(`uses a non-STE verb ("${steMatch[0]}")`);
+  }
+
   const slopPhrases =
     /it is important to note|a testament to|in today.s|at the forefront|serves as a|let.s (explore|dive)/i;
   const phraseMatch = content.match(slopPhrases);
@@ -507,54 +543,42 @@ function validateReadmeStyle(content: string): void {
  * Generate README using AI or fallback
  */
 async function generateDocs(): Promise<void> {
-  console.log('🔄 Generating README documentation...\n');
+  console.log('Generating README documentation...\n');
 
   const readmePath = './README.md';
   const fileHandler = createFileOperationHandler();
 
   try {
     // Step 1: Gather all required data
-    console.log('📊 Gathering data for README generation...');
+    console.log('Gathering data for README generation...');
     const inputData = await prepareInputData();
 
     console.log(
-      `   ✓ Package: ${inputData.packageMetadata.name} v${inputData.packageMetadata.version}`,
+      `   Package: ${inputData.packageMetadata.name} v${inputData.packageMetadata.version}`,
     );
-    console.log(`   ✓ Current version: ${inputData.versionSet.current}`);
+    console.log(`   Current version: ${inputData.versionSet.current}`);
     console.log(
-      `   ✓ APIs documented: ${Object.keys(inputData.apiStats).length}`,
+      `   APIs documented: ${Object.keys(inputData.apiStats).length}`,
     );
     console.log(
-      `   ✓ Export paths: ${Object.keys(inputData.exports).length} categories\n`,
+      `   Export paths: ${Object.keys(inputData.exports).length} categories\n`,
     );
 
     // Step 2: Generate README content
-    console.log('🤖 Generating README content...');
+    console.log('Generating README content...');
 
-    // Check if Claude is available
-    const claudeAvailable = await isClaudeAvailable();
-    if (!claudeAvailable) {
-      throw new Error(
-        'Claude API not available. Please set ANTHROPIC_API_KEY environment variable.',
-      );
-    }
-
-    // Use Claude to generate README
-    const claudeResult = await callClaude(README_PROMPT, inputData);
-
-    if (!claudeResult.success) {
-      throw new Error(`AI generation failed: ${claudeResult.error.message}`);
-    }
-
-    console.log('   ✓ README generated successfully with AI\n');
-    const readmeContent = claudeResult.data;
+    const readmeContent =
+      README_HEADER +
+      (await generateText(README_PROMPT, inputData)).trim() +
+      '\n';
+    console.log('   README generated successfully with AI\n');
 
     // Gate-check the output against the style contract before writing
     validateReadmeStyle(readmeContent);
-    console.log('   ✓ README passed the style gate (no emojis, no slop)\n');
+    console.log('   README passed the style gate (no emojis, no slop)\n');
 
     // Step 3: Write README file
-    console.log('📝 Writing README.md...');
+    console.log('Writing README.md...');
 
     const writeResult = await fileHandler(
       {
@@ -569,15 +593,15 @@ async function generateDocs(): Promise<void> {
 
     handleOperationResult(writeResult, {
       onSuccess: (data) => {
-        console.log(`   ✓ README written to ${data.path}\n`);
-        console.log('✅ Documentation generation complete!');
+        console.log(`   README written to ${data.path}\n`);
+        console.log('Documentation generation complete!');
       },
       onError: (error) => {
         throw new Error(`Failed to write README: ${error}`);
       },
     });
   } catch (error) {
-    console.error('❌ Documentation generation failed:', error);
+    console.error('Documentation generation failed:', error);
     process.exit(1);
   }
 }
@@ -587,4 +611,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   generateDocs();
 }
 
-export { generateDocs };
+export { generateDocs, validateReadmeStyle };

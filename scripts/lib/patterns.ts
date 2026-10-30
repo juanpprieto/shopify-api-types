@@ -105,12 +105,12 @@ export function processValidationResults(
   }
 
   console.error(
-    `\n❌ Validation failed: ${failures.length}/${totalChecks} checks failed\n`,
+    `\nValidation failed: ${failures.length}/${totalChecks} checks failed\n`,
   );
 
   failures.forEach((validation) => {
     console.error(
-      `  ❌ ${validation.apiType}/${validation.version}: ${validation.error || 'Invalid'}`,
+      `  ${validation.apiType}/${validation.version}: ${validation.error || 'Invalid'}`,
     );
   });
 

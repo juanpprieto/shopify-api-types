@@ -8,8 +8,8 @@ import {
   BuildValidationResultSchema,
   type BuildValidationResult,
   SUPPORTED_APIS,
-} from '../../src/lib/zod.js';
-import { classifyBuildError } from '../../src/lib/patterns.js';
+} from '../lib/zod.js';
+import { classifyBuildError } from '../lib/patterns.js';
 
 interface FileCheckResult {
   path: string;
@@ -54,7 +54,7 @@ async function validateBuild(): Promise<BuildValidationResult> {
     if (!exists) {
       errors.push(`Missing root file: ${file}`);
     } else {
-      console.log(`✓ Found root file: ${file}`);
+      console.log(`Found root file: ${file}`);
     }
   }
 
@@ -76,7 +76,7 @@ async function validateBuild(): Promise<BuildValidationResult> {
       if (!exists) {
         errors.push(`Missing ${api} root file: ${file}`);
       } else {
-        console.log(`  ✓ Found ${api}/${file}`);
+        console.log(`  Found ${api}/${file}`);
       }
     }
 
@@ -97,7 +97,7 @@ async function validateBuild(): Promise<BuildValidationResult> {
         if (!exists) {
           errors.push(`Missing: ${api}/${version}/${file}`);
         } else {
-          console.log(`  ✓ Found ${api}/${version}/${file}`);
+          console.log(`  Found ${api}/${version}/${file}`);
         }
       }
     }
@@ -118,7 +118,7 @@ async function validateBuild(): Promise<BuildValidationResult> {
       if (!exists) {
         errors.push(`Missing schema: ${api}/${version}.json`);
       } else {
-        console.log(`  ✓ Found schema: ${api}/${version}.json`);
+        console.log(`  Found schema: ${api}/${version}.json`);
       }
     }
   }
@@ -154,15 +154,15 @@ async function validateBuild(): Promise<BuildValidationResult> {
     },
   );
 
-  console.log('\n✓ Types-only build validation complete');
+  console.log('\nTypes-only build validation complete');
   console.log(
     `Files found: ${fileAnalysis.rootFiles} root, ${fileAnalysis.apiFiles} API, ${fileAnalysis.versionFiles} version, ${fileAnalysis.schemaFiles} schema`,
   );
 
   if (errors.length === 0) {
-    console.log('\n✅ Build validation passed!');
+    console.log('\nBuild validation passed!');
   } else {
-    console.error('\n❌ Build validation failed:');
+    console.error('\nBuild validation failed:');
 
     // Group errors by category
     Object.entries(errorAnalysis).forEach(([category, count]) => {

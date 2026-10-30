@@ -47,20 +47,20 @@ async function fixJsExtensions(dir: string): Promise<void> {
 
       if (content !== originalContent) {
         await writeFile(fullPath, content, 'utf-8');
-        console.log(`✅ Fixed: ${relative(process.cwd(), fullPath)}`);
+        console.log(`Fixed: ${relative(process.cwd(), fullPath)}`);
       }
     }
   }
 }
 
 async function main(): Promise<void> {
-  console.log('🔧 Fixing .js extensions in declaration files...\n');
+  console.log('Fixing .js extensions in declaration files...\n');
 
   try {
     await fixJsExtensions('./dist');
-    console.log('\n✅ All .js extensions fixed successfully!');
+    console.log('\nAll .js extensions fixed successfully!');
   } catch (error) {
-    console.error('❌ Error fixing extensions:', error);
+    console.error('Error fixing extensions:', error);
     process.exit(1);
   }
 }

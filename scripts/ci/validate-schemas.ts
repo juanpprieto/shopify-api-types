@@ -7,8 +7,8 @@ import {
   type ValidationResult,
   GraphQLSchemaSchema,
   SUPPORTED_APIS,
-} from '../../src/lib/zod.js';
-import { processValidationResults } from '../../src/lib/patterns.js';
+} from '../lib/zod.js';
+import { processValidationResults } from '../lib/patterns.js';
 
 const APIS = SUPPORTED_APIS;
 
@@ -16,12 +16,20 @@ async function validateSingleSchema(
   apiType: ApiType,
   version: string,
 ): Promise<ValidationResult> {
-  const filePath = path.join('src', 'schemas', apiType, `${version}.json`);
+  const filePath = path.join(
+    'src',
+    'graphql-schemas',
+    apiType,
+    `${version}.json`,
+  );
 
   try {
     const content = await fs.readFile(filePath, 'utf-8');
     const json = JSON.parse(content);
-    const schemaValidation = GraphQLSchemaSchema.safeParse(json);
+    // Customer Account files wrap the schema in a "data" object
+    const schemaValidation = GraphQLSchemaSchema.safeParse(
+      json.data?.__schema ? json.data : json,
+    );
 
     if (!schemaValidation.success) {
       return {

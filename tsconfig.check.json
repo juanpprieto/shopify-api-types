@@ -4,7 +4,9 @@
     "noEmit": true,
     // Third-party .d.ts conflicts (hoisted @types in parent dirs) are not
     // actionable here; project code stays fully strict.
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // TS 6 defaults "types" to []; scripts and tests run on Node
+    "types": ["node"]
   },
   "include": ["src/**/*", "tests/**/*", "scripts/**/*"],
   "exclude": [

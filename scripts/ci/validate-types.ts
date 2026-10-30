@@ -1,11 +1,11 @@
 import { execSync } from 'child_process';
 import fs from 'fs/promises';
 import { match } from 'ts-pattern';
-import { TypeValidationResultSchema } from '../../src/lib/zod.js';
+import { TypeValidationResultSchema } from '../lib/zod.js';
 import {
   classifyTypeScriptError,
   classifyFileSystemError,
-} from '../../src/lib/patterns.js';
+} from '../lib/patterns.js';
 
 interface TypecheckResult {
   success: boolean;
@@ -49,7 +49,7 @@ if (typeof Admin !== 'object') {
 }
 
 // eslint-disable-next-line no-console -- CLI output for success feedback
-console.log('✓ All type imports working correctly');
+console.log('All type imports working correctly');
 `;
 
     // Write test file
@@ -90,21 +90,21 @@ console.log('✓ All type imports working correctly');
     // Process results based on success/failure
     const result = match(typecheckResult)
       .with({ success: true }, () => {
-        console.log('\n✅ Type validation passed!');
+        console.log('\nType validation passed!');
         return { valid: true, errors: [] };
       })
       .with({ success: false, errorType: 'import' }, (r) => {
-        console.error('\n❌ Import errors detected:');
+        console.error('\nImport errors detected:');
         console.error(r.output);
         return { valid: false, errors: ['Import resolution failed'] };
       })
       .with({ success: false, errorType: 'compilation' }, (r) => {
-        console.error('\n❌ Type compilation errors:');
+        console.error('\nType compilation errors:');
         console.error(r.output);
         return { valid: false, errors: ['Type compilation failed'] };
       })
       .with({ success: false }, (r) => {
-        console.error('\n❌ Type validation failed:', r.output);
+        console.error('\nType validation failed:', r.output);
         return { valid: false, errors: ['Unknown validation error'] };
       })
       .exhaustive();
@@ -120,12 +120,9 @@ console.log('✓ All type imports working correctly');
     // Use shared file system error categorization
     if (error instanceof Error) {
       const { category } = classifyFileSystemError(error);
-      console.error(`\n❌ Type validation setup failed (${category}):`, error);
+      console.error(`\nType validation setup failed (${category}):`, error);
     } else {
-      console.error(
-        '\n❌ Type validation setup failed (unknown error):',
-        error,
-      );
+      console.error('\nType validation setup failed (unknown error):', error);
     }
 
     // Clean up on error

@@ -1,50 +1,21 @@
 import type { KnipConfig } from 'knip';
 
 export default {
-  // Production entry points
-  entry: [
-    'src/**/*.ts!', // All source files are entry points for a library
-  ],
+  // src/ holds only the shipped type entry points; build code is in scripts/
+  entry: ['src/**/*.ts!'],
 
-  // Project files (production marked with !)
-  project: [
-    'src/**/*.{ts,tsx,js,jsx}!',
-    'tests/**/*.{ts,tsx,js,jsx}',
-    'scripts/**/*.{ts,tsx}',
-    '!src/**/*.test.{ts,tsx}',
-    '!src/**/*.spec.{ts,tsx}',
-    '!src/**/__tests__/**',
-    '!src/**/__mocks__/**',
-  ],
+  project: ['src/**/*.ts!', 'tests/**/*.ts', 'scripts/**/*.ts'],
 
-  // Ignore patterns for false positives
-  ignore: [
-    // Generated files
-    'dist/**',
-    'build/**',
-    '**/*.d.ts',
+  ignore: ['tests/**'],
 
-    // Development utilities
-    'tests/**',
-
-    // Generated GraphQL types will go here
-    'src/**/types.ts',
-  ],
-
-  // Ignore unused exports (they're part of the public API)
+  // Exports used in the same file are part of the public API
   ignoreExportsUsedInFile: true,
 
-  // Dependencies to be used in later phases
+  // Codegen loads these plugins by name from scripts/codegen.ts
   ignoreDependencies: [
-    '@graphql-codegen/typescript', // TypeScript output - Phase 3
-    '@graphql-codegen/introspection', // Schema introspection - Phase 3
-    '@graphql-codegen/typescript-operations', // Operations - Phase 3
-    '@vitest/coverage-v8', // Coverage reporting for Vitest
-    // Build-time only (schema comparisons); devDependency by design, but
-    // src/lib counts as production in this config
-    '@graphql-inspector/core',
+    '@graphql-codegen/introspection',
+    '@graphql-codegen/typescript-operations',
   ],
 
-  // Don't report issues with barrel exports
   includeEntryExports: false,
 } satisfies KnipConfig;

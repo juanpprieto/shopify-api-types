@@ -1,11 +1,11 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { getSupportedVersions } from './version-utils.js';
-import { type FileOperationResult, SUPPORTED_APIS } from '../src/lib/zod.js';
+import { type FileOperationResult, SUPPORTED_APIS } from './lib/zod.js';
 import {
   createFileOperationHandler,
   analyzeFileOperations,
-} from '../src/lib/patterns.js';
+} from './lib/patterns.js';
 
 /**
  * Copy a single schema file using the enhanced file operation handler
@@ -71,23 +71,23 @@ async function copySchemas(): Promise<void> {
   const failed = allResults.filter((r) => !r.success);
 
   if (allResults.length === 0) {
-    console.warn('\n⚠️  No schemas to copy');
+    console.warn('\nNo schemas to copy');
   } else if (failed.length === 0) {
-    console.log('\n✅ All schema files copied successfully');
+    console.log('\nAll schema files copied successfully');
   } else if (successful.length > 0) {
     console.log(
-      `\n⚠️  Copied ${successful.length} files, ${failed.length} skipped (source not found)`,
+      `\nCopied ${successful.length} files, ${failed.length} skipped (source not found)`,
     );
     failed.forEach((f) =>
       console.log(
-        `  ⏭ Skipped ${f.filePath}: ${f.error || 'Source file not found'}`,
+        `  Skipped ${f.filePath}: ${f.error || 'Source file not found'}`,
       ),
     );
   } else {
-    console.log('\n❌ No schema files found to copy');
+    console.log('\nNo schema files found to copy');
     failed.forEach((f) =>
       console.log(
-        `  ⏭ Skipped ${f.filePath}: ${f.error || 'Source file not found'}`,
+        `  Skipped ${f.filePath}: ${f.error || 'Source file not found'}`,
       ),
     );
   }

@@ -11,7 +11,7 @@ export function validateComparisons(): void {
 
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
 
-    console.log('📋 Validating comparison manifest...');
+    console.log('Validating comparison manifest...');
     console.log('Generated at:', manifest.generatedAt);
     console.log('Version set:', JSON.stringify(manifest.versionSet));
     console.log(
@@ -49,21 +49,17 @@ export function validateComparisons(): void {
         unknown
       >;
       const apiCount = Object.keys(data).filter((k) => data[k] !== null).length;
-      console.log(
-        '✅ ' + key + ': ' + apiCount + ' APIs in ' + comparison.file,
-      );
+      console.log('' + key + ': ' + apiCount + ' APIs in ' + comparison.file);
       totalApis += apiCount;
     }
 
     console.log(
-      '✅ All comparison files validated, ' +
-        totalApis +
-        ' API comparisons total',
+      'All comparison files validated, ' + totalApis + ' API comparisons total',
     );
     // Success - no return needed for void function
   } catch (error) {
     console.error(
-      '❌ Comparison validation failed:',
+      'Comparison validation failed:',
       error instanceof Error ? error.message : String(error),
     );
     process.exit(1);

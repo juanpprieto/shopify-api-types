@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { getSupportedVersions } from './version-utils.js';
-import { SUPPORTED_APIS } from '../src/lib/zod.js';
+import { SUPPORTED_APIS } from './lib/zod.js';
 
 /**
  * Remove dist version dirs that are outside the current version set.
@@ -30,21 +30,21 @@ async function pruneDist(): Promise<void> {
         recursive: true,
         force: true,
       });
-      console.log(`✂ Pruned dist/${api}/${entry.name} (outside version set)`);
+      console.log(`Pruned dist/${api}/${entry.name} (outside version set)`);
       pruned++;
     }
   }
 
   console.log(
     pruned > 0
-      ? `✅ Pruned ${pruned} out-of-window dist dir(s)`
-      : '✅ dist contains only the supported version set',
+      ? `Pruned ${pruned} out-of-window dist dir(s)`
+      : 'dist contains only the supported version set',
   );
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   pruneDist().catch((error) => {
-    console.error('❌ dist prune failed:', error);
+    console.error('dist prune failed:', error);
     process.exit(1);
   });
 }
