@@ -37,6 +37,12 @@ jobs:
       RELEASE_DRY_RUN: ${{ inputs.dry_run }}
       TARBALL: /tmp/juanpprieto-shopify-api-types-${{ inputs.version }}.tgz
     steps:
+      # Only the owner may release; re-runs by others also stop here
+      - name: Check the user
+        if: github.triggering_actor != 'juanpprieto'
+        run: |
+          echo "Only juanpprieto can start a release."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -46,11 +52,13 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
-      - name: Check version, branch and CI
+      - name: Check version, README stamp, branch and CI
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           node -e 'require("node:assert/strict").equal(require("./package.json").version, process.env.RELEASE_VERSION, "Requested version must match package.json")'
+          # npm run docs writes this stamp; a missing one means the Docs step was skipped
+          grep -qxF "<!-- generated for $RELEASE_VERSION -->" README.md || { echo "README.md is not generated for $RELEASE_VERSION. Run the Docs workflow first."; exit 1; }
           if [[ "$RELEASE_DRY_RUN" != "true" && "$GITHUB_REF" != "refs/heads/main" ]]; then
             echo "Publication is only allowed from main."
             exit 1

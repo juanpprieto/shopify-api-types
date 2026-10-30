@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  buildReadme,
   validateReadmeStyle,
   validateChangelogDraft,
 } from '../../scripts/generate-docs.js';
@@ -89,5 +90,14 @@ describe('validateChangelogDraft', () => {
     expect(() => validateChangelogDraft(`## 2026.10.0\n\n${draft}`)).toThrow(
       /the script adds it/,
     );
+  });
+});
+
+describe('buildReadme', () => {
+  it('starts with the version stamp that the Release workflow checks', () => {
+    const lines = buildReadme('2026.10.0', valid).split('\n');
+    expect(lines[0]).toBe('<!-- generated for 2026.10.0 -->');
+    expect(lines[1]).toBe('# @juanpprieto/shopify-api-types');
+    expect(() => validateReadmeStyle(lines.join('\n'))).not.toThrow();
   });
 });

@@ -424,6 +424,15 @@ const README_HEADER = `# @juanpprieto/shopify-api-types
 `;
 
 /**
+ * Assemble README.md. The first line is a hidden version stamp: the
+ * Release workflow stops when it does not match the version it publishes,
+ * so a skipped Docs step cannot ship an old README.
+ */
+function buildReadme(version: string, body: string): string {
+  return `<!-- generated for ${version} -->\n${README_HEADER}${body.trim()}\n`;
+}
+
+/**
  * README prompt. The shared writing contract carries the clarity and STE
  * rules; validateReadmeStyle() checks the output.
  */
@@ -580,7 +589,7 @@ async function generateDocs(): Promise<void> {
       generateText(CHANGELOG_PROMPT, changelogInput),
     ]);
 
-    const readme = README_HEADER + readmeBody.trim() + '\n';
+    const readme = buildReadme(version, readmeBody);
     validateReadmeStyle(readme);
     validateChangelogDraft(changelogBody);
     console.log('   Both texts passed the style gates\n');
@@ -612,4 +621,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   generateDocs();
 }
 
-export { generateDocs, validateReadmeStyle, validateChangelogDraft };
+export {
+  buildReadme,
+  generateDocs,
+  validateReadmeStyle,
+  validateChangelogDraft,
+};

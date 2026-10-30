@@ -107,75 +107,144 @@ and October. Every Monday, the `API Version Check` workflow compares the
 packaged version with Shopify's current version. When the package is behind, the
 workflow opens one issue.
 
-Do these steps on a branch named `release/<version>`, for example
-`release/2026.10.0`.
+Only the repository owner (`juanpprieto`) can start the `Release` workflow. It
+stops at once for any other user.
 
-1. Set the new version. Use the year and the first month of the quarter.
+### Before you start
+
+- `.env` has the 4 Shopify tokens and `OPENCODE_GO_API_KEY`.
+- The `gh` CLI is logged in as `juanpprieto`.
+- The repository is public. npm makes provenance only for public repositories.
+
+The examples use `2026.10.0`. Use the year and the first month of the quarter.
+
+### Prepare the release branch
+
+1. Start a release branch from `main`.
+
+   ```bash
+   git switch main && git pull && git switch -c release/2026.10.0
+   ```
+
+2. Set the new version.
 
    ```bash
    npm version 2026.10.0 --no-git-tag-version
    ```
 
-2. Fetch the schemas. Then check them.
+   You should see: `v2026.10.0`.
+
+3. Fetch the schemas. Then check them.
 
    ```bash
-   npm run fetch-schemas
-   npm run ci:validate-schemas
+   npm run fetch-schemas && npm run ci:validate-schemas
    ```
 
-3. Generate the types and the exports.
+   You should see: `18/18 schemas valid`.
+
+4. Generate the types and the exports.
 
    ```bash
-   npm run generate-types
-   npm run generate:exports
+   npm run generate-types && npm run generate:exports
    ```
 
-4. Build. Then run all checks.
+5. Build. Then run all checks.
 
    ```bash
-   npm run build
-   npm run ci:validate-build
-   npm run ci:validate-types
-   npm run validate
+   npm run build && npm run ci:validate-build && npm run ci:validate-types && npm run validate
    ```
 
-5. Commit. Push the branch. Then start the `Docs` workflow on that branch.
+   You should see: no failed check.
 
-6. Read the PR that the `Docs` workflow opens. It has the new README and a draft
-   of the `## 2026.10.0` section in `CHANGELOG.md`. Replace the `[TK]` marker
-   under "Package changes" with the package changes of this release. Then merge
-   the PR into the release branch.
+6. Commit. Then push the branch. The pre-push hook runs the tests and the build.
 
-7. Open a PR from the release branch to `main`. Merge it when CI is green.
+   ```bash
+   git add -A && git commit -m "feat: release 2026.10.0 with 2026-10 API support" && git push -u origin release/2026.10.0
+   ```
 
-8. Start the `Release` workflow on `main`. Set `version` to `2026.10.0` and keep
-   `dry_run` on. Make sure that the run passes.
+### Write the README and the CHANGELOG section
 
-9. Start the `Release` workflow again with `dry_run` off.
+7. Start the `Docs` workflow on the release branch. It takes about 15 minutes.
 
-10. Check the result on npm. The version page must show the provenance
-    statement.
+   ```bash
+   gh workflow run docs.yml --ref release/2026.10.0
+   ```
+
+   You should see: a new PR "docs: regenerate README and draft CHANGELOG
+   section".
+
+8. Read both texts in that PR. Then do these changes:
+   - Replace the `[TK]` marker under "Package changes" in `CHANGELOG.md`.
+   - Correct any text that is wrong or not clear.
+
+9. Merge the Docs PR into the release branch.
+
+### Merge into main
+
+10. Open a PR from the release branch to `main`.
+
+    ```bash
+    gh pr create --base main --head release/2026.10.0 --fill
+    ```
+
+11. Merge the PR when CI is green.
+
+### Publish (owner only)
+
+12. Start a dry run of the `Release` workflow on `main`. Then watch it.
+
+    ```bash
+    gh workflow run release.yml --ref main -f version=2026.10.0 -f dry_run=true && sleep 5 && gh run watch
+    ```
+
+    You should see: all steps pass. The publish step shows `(dry-run)`.
+
+13. Start the real publish.
+
+    ```bash
+    gh workflow run release.yml --ref main -f version=2026.10.0 -f dry_run=false && sleep 5 && gh run watch
+    ```
+
+    You should see: "Checked integrity and provenance for 2026.10.0".
+
+14. Check the provenance on npm.
 
     ```bash
     npm view @juanpprieto/shopify-api-types@2026.10.0 dist.attestations
     ```
 
-11. Close the issue from the `API Version Check` workflow.
+    You should see: a `provenance` entry.
 
-The Release workflow does these steps in this order:
+15. Close the issue from the `API Version Check` workflow.
 
-- It stops if the version does not match `package.json`, or if CI did not pass
-  for the commit.
-- It stops if the `CHANGELOG.md` section is missing, has an open `[TK]` marker,
-  or breaks the writing contract
-  (`npm run check:prose -- --changelog <version>`).
-- It builds once, packs one tarball, and tests that tarball in
-  `tests/e2e/test-app`.
-- It publishes that exact tarball with `--provenance` through npm trusted
-  publishing (OIDC). The workflow uses no npm token.
-- It checks that the registry integrity hash equals the tarball hash, and that
-  npm shows a provenance attestation.
-- It creates the tag `v2026.10.0` and the GitHub release.
+### What the Release workflow checks
+
+The workflow stops before it publishes when one of these is true:
+
+- A user other than `juanpprieto` started it.
+- The `version` input does not match `package.json`.
+- The first line of `README.md` is not `<!-- generated for 2026.10.0 -->`. The
+  `Docs` workflow writes this stamp, so a skipped step 7 stops the release.
+- CI did not pass for the commit.
+- The `CHANGELOG.md` section is missing, has an open `[TK]` marker, or breaks
+  the writing contract (`npm run check:prose -- --changelog <version>`).
+- The packed tarball fails the e2e tests in `tests/e2e/test-app`.
+
+Then it publishes that exact tarball with `--provenance` through npm trusted
+publishing (OIDC), without an npm token. It checks that the registry integrity
+hash equals the tarball hash and that npm shows the provenance attestation.
+Last, it creates the tag `v2026.10.0` and the GitHub release from the CHANGELOG
+section.
+
+### If a step fails
+
+| Step                             | Action                                                                                  |
+| -------------------------------- | --------------------------------------------------------------------------------------- |
+| 1 to 11                          | Correct the problem on the release branch. Then do the step again                       |
+| 12 (dry run)                     | Correct the problem in a PR to `main`. Then do step 12 again                            |
+| 13, before the upload            | Correct the problem. Then do step 12 and step 13 again                                  |
+| 13, after the upload             | Do not publish again. Check the version on npm, then create the tag and release by hand |
+| 13, npm refuses the OIDC publish | Use the local fallback in release rule 2                                                |
 
 ## Release rules
 
