@@ -2,240 +2,104 @@ name: CI
 
 on:
   push:
-    branches: [main, first-release]
+    branches: [main]
   pull_request:
-    branches: [main, first-release]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  CI: true
-  NODE_ENV: test
-
 jobs:
-  # Code quality checks
   quality:
     name: Code Quality
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '26'
           cache: 'npm'
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run deadcode
+      - name: Docs follow the writing contract
+        run:
+          npm run check:prose -- README.md CONTRIBUTING.md scripts/ci/README.md
+          tests/e2e/README.md demo/README.md
+      - name: No emojis in tracked files
+        run: |
+          # shellcheck disable=SC2016 # Perl code, not shell
+          git ls-files -z | xargs -0 perl -CSD -ne 'if (/\p{Extended_Pictographic}|[\x{2713}\x{2717}\x{FE0F}\x{20E3}]/) { print "$ARGV:$.: $_"; $bad = 1 } close ARGV if eof; END { exit($bad ? 1 : 0) }'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Type check
-        run: npm run type-check
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Format check
-        run: npm run format:check
-
-      - name: Check for unused exports
-        run: npm run deadcode
-
-  # Tests across Node.js versions and platforms
   test:
     name: Test (Node ${{ matrix.node }} on ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        node: ['20', '22', '24']
+        node: ['22', '24', '26']
         os: [ubuntu-latest, macos-latest, windows-latest]
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm test
-
-      - name: Generate coverage report
-        if: matrix.node == '20' && matrix.os == 'ubuntu-latest'
+      - run: npm ci
+      - run: npm test
+      - name: Coverage
+        if: matrix.node == '26' && matrix.os == 'ubuntu-latest'
         run: npm run test:coverage
 
-  # Build and validation
+  # Build, validate, then install the packed tarball into a consumer app
   build:
-    name: Build & Validate
+    name: Build and E2E (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24', '26']
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node }}
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
+      - run: npm ci
       - name: Derive RELEASE_DATE from package version
         run:
           echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>
-          $GITHUB_ENV
-
-      - name: Build package
-        run: npm run build:ci
-
-      - name: Validate build output
-        run: npm run ci:validate-build
-
-      - name: Validate generated types
-        run: npm run ci:validate-types
-
-      - name: Generate schema comparisons
-        run: npm run generate:comparisons
-
-      - name: Validate schema comparisons
-        run: npm run ci:validate-comparisons
-
-      - name: Test package installation
+          "$GITHUB_ENV"
+      # postbuild also generates and validates the schema comparisons
+      - run: npm run build:ci
+      - run: npm run ci:validate-build
+      - run: npm run ci:validate-types
+      - run: npm pack
+      - name: E2E consumer test
+        working-directory: tests/e2e/test-app
         run: |
-          npm pack
-          TARBALL=$(ls juanpprieto-shopify-api-types-*.tgz)
-          mkdir test-install
-          cd test-install
-          npm init -y
-          npm install "../$TARBALL"
-          node -e "console.log('✅ Package installation test passed')"
+          npm install
+          npm install --no-save ../../../juanpprieto-shopify-api-types-*.tgz
+          npm run typecheck
+          npm test
 
-  # Schema and type analysis
-  schema-analysis:
-    name: Schema Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Derive RELEASE_DATE from package version
-        run:
-          echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>
-          $GITHUB_ENV
-
-      - name: Build
-        run: npm run build:ci
-
-      - name: Analyze schema types
-        run: npm run count-types
-
-      - name: Validate version model
-        run: npm run ci:validate-version-model
-
-      - name: Validate CalVer format
-        run: |
-          version=$(node -p "require('./package.json').version")
-          npm run version:test validate "$version"
-
-  # Security scanning
   security:
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '26'
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run npm audit
-        run: npm audit --audit-level=moderate
-
-      - name: Check for high-severity vulnerabilities
+      - run: npm ci
+      - run: npm audit --audit-level=moderate
+      - name: Check for committed tokens
         run: |
-          if npm audit --audit-level=high 2>/dev/null; then
-            echo "No high-severity vulnerabilities found"
-          else
-            echo "High-severity vulnerabilities detected"
-            npm audit --audit-level=high
+          if grep -r -E "(SHOPIFY.*ACCESS.*TOKEN|OPENCODE_GO_API_KEY).*=.*['\"]?[A-Za-z0-9+/_-]{20,}" . --exclude-dir=node_modules --exclude=".env*" --exclude="*.md"; then
+            echo "Potential secret detected"
             exit 1
           fi
-
-      - name: Check for sensitive files
-        run: |
-          if grep -r -E "SHOPIFY.*ACCESS.*TOKEN.*=.*['\"]?[A-Za-z0-9+/_-]{20,}" . --exclude-dir=node_modules --exclude=".env*" --exclude="*.md" --exclude=".env"; then
-            echo "❌ Potential sensitive information detected"
-            exit 1
-          else
-            echo "✅ No sensitive information detected"
-          fi
-
-  # Changeset validation for PRs
-  changeset-validation:
-    name: Changeset Validation
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Derive RELEASE_DATE from package version
-        run:
-          echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>
-          $GITHUB_ENV
-
-      - name: Check for changesets
-        run: |
-          # Check if this is a major first release PR
-          if [[ "${{ github.head_ref }}" == "first-release" ]] || [[ "${{ github.ref_name }}" == "first-release" ]]; then
-            echo "✅ First release PR - changesets not required"
-            exit 0
-          fi
-
-          # For regular PRs, require changesets
-          if [ -n "$(ls .changeset/*.md 2>/dev/null | grep -v README.md | grep -v example-)" ]; then
-            echo "✅ Changeset found"
-          else
-            echo "❌ No changeset found. Please run 'npm run changeset' to describe your changes."
-            exit 1
-          fi
-
-      - name: Validate changeset format
-        run: npm run release:dry

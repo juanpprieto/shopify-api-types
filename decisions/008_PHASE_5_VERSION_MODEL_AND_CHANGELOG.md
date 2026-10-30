@@ -358,10 +358,10 @@ export function generateEnhancedReleaseTable(
 
 | Version | Status | API Version | Key Changes |
 |---------|--------|-------------|-------------|
-| **Current** | ✅ Stable | ${versionSet.current} | ${changelog ? summarizeChanges(changelog) : 'Latest stable release'} |
-| **Previous** | 🔧 Maintenance | ${versionSet.previous} | Security patches only |
-| **Next** | 🚀 Release Candidate | ${versionSet.next} | [Preview upcoming changes](#changelog) |
-| **Unstable** | ⚡ Development | ${versionSet.unstable} | Bleeding edge, subject to change |
+| **Current** | Stable | ${versionSet.current} | ${changelog ? summarizeChanges(changelog) : 'Latest stable release'} |
+| **Previous** | Maintenance | ${versionSet.previous} | Security patches only |
+| **Next** | Release Candidate | ${versionSet.next} | [Preview upcoming changes](#changelog) |
+| **Unstable** | Development | ${versionSet.unstable} | Bleeding edge, subject to change |
 
 ### Version Support Policy
 
@@ -384,9 +384,9 @@ function summarizeChanges(changelog: SchemaChangelog): string {
   if (summary.additions > 0) parts.push(`+${summary.additions} additions`);
   if (summary.removals > 0) parts.push(`-${summary.removals} removals`);
   if (summary.deprecations > 0)
-    parts.push(`⚠️ ${summary.deprecations} deprecations`);
+    parts.push(`${summary.deprecations} deprecations`);
   if (summary.breakingChanges > 0)
-    parts.push(`💥 ${summary.breakingChanges} breaking`);
+    parts.push(`${summary.breakingChanges} breaking`);
 
   return parts.join(', ') || 'No changes';
 }
@@ -395,13 +395,13 @@ function formatDetailedChangelog(changelog: SchemaChangelog): string {
   return match(changelog.summary)
     .when(
       (s) => s.totalChanges === 0,
-      () => '✅ No breaking changes in this release',
+      () => 'No breaking changes in this release',
     )
     .otherwise(({ summary, changes }) => {
       const sections: string[] = [];
 
       if (changes.queries.filter((q) => q.changeType === 'added').length > 0) {
-        sections.push(`#### 🆕 New Queries
+        sections.push(`#### New Queries
 ${changes.queries
   .filter((q) => q.changeType === 'added')
   .map((q) => `- \`${q.name}\`: ${q.description || 'New query added'}`)
@@ -411,7 +411,7 @@ ${changes.queries
       if (
         changes.mutations.filter((m) => m.changeType === 'added').length > 0
       ) {
-        sections.push(`#### 🆕 New Mutations
+        sections.push(`#### New Mutations
 ${changes.mutations
   .filter((m) => m.changeType === 'added')
   .map((m) => `- \`${m.name}\`: ${m.description || 'New mutation added'}`)
@@ -419,7 +419,7 @@ ${changes.mutations
       }
 
       if (summary.deprecations > 0) {
-        sections.push(`#### ⚠️ Deprecations
+        sections.push(`#### Deprecations
 ${[...changes.queries, ...changes.mutations]
   .filter((f) => f.changeType === 'deprecated')
   .map((f) => `- \`${f.name}\`: ${f.deprecationReason || 'Deprecated'}`)
@@ -427,7 +427,7 @@ ${[...changes.queries, ...changes.mutations]
       }
 
       if (summary.breakingChanges > 0) {
-        sections.push(`#### 💥 Breaking Changes
+        sections.push(`#### Breaking Changes
 ${[...changes.types, ...changes.queries, ...changes.mutations]
   .filter((c) => c.breaking)
   .map((c) => `- ${c.name}: ${c.changeType}`)

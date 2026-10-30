@@ -30,7 +30,7 @@ function App() {
               fontWeight: 'bold',
             }}
           >
-            🛍️ Storefront API
+            Storefront API
           </button>
           <button
             onClick={() => setActiveAPI('admin')}
@@ -44,7 +44,7 @@ function App() {
               fontWeight: 'bold',
             }}
           >
-            ⚙️ Admin API
+            Admin API
           </button>
         </div>
 

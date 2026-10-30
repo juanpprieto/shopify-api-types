@@ -1,36 +1,28 @@
-# End-to-End Testing
+# End-to-end tests
 
-E2E tests that simulate real npm package usage.
+`test-app/` is a small consumer project. It installs the packed tarball the same
+way that a user installs the package from npm, then type-checks and runs its
+tests.
 
-## Structure
+The tests read every export path from the installed `package.json` and import
+each one. They also check that every API has the `current`, `previous`, `next`,
+and `unstable` aliases. No version is hardcoded. A new quarter cannot break
+them.
 
-```
-test-app/
-├── src/           # Test files
-├── tests/         # Test runner
-├── package.json
-└── tsconfig.json
-```
+## Run the tests
 
-## Running Tests
+From the repository root:
 
 ```bash
-# Build and pack
 npm run build
 npm pack
-
-# Install and test
 cd tests/e2e/test-app
 npm install
-npm install ../../../juanpprieto-shopify-api-types-*.tgz
+npm install --no-save ../../../juanpprieto-shopify-api-types-*.tgz
+npm run typecheck
 npm test
 ```
 
-## Coverage
-
-- Package installation
-- Import resolution
-- TypeScript compilation
-- Version aliases
-- Tree shaking
-- NodeNext compatibility
+CI runs these steps on Node 22, 24, and 26. The `Release` workflow runs them on
+the exact tarball that it then publishes to npm, so a broken archive never
+reaches users.

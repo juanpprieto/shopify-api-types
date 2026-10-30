@@ -6,7 +6,7 @@ import {
   isVersionSupported,
   getVersionMetadata,
 } from '../../scripts/version-utils.js';
-import type { VersionSet, ExtendedApiVersion } from '../../src/lib/zod.js';
+import type { VersionSet, ExtendedApiVersion } from '../../scripts/lib/zod.js';
 
 describe('Support-Window Version Model', () => {
   beforeEach(() => {

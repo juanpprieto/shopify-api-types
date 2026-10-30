@@ -5,10 +5,9 @@ import {
   VersionSetSchema,
   type VersionSet,
   type VersionCategory,
-  type ExportPath,
   VersionToExportPathSchema,
   type VersionToExportPath,
-} from '../src/lib/zod.js';
+} from './lib/zod.js';
 import { match } from 'ts-pattern';
 
 // Helper to get the latest stable version
@@ -323,47 +322,12 @@ export function getVersionToExportPathMapping(): VersionToExportPath {
 }
 
 /**
- * Get export path for a given API version
+ * The RELEASE_DATE (YYYY-MM-15) that matches a CalVer package version, so
+ * the version set derives from the committed version and not the clock.
+ * Returns null when the version is not CalVer (2026.7.0 -> 2026-07-15).
  */
-export function getExportPathForVersion(
-  apiVersion: ExtendedApiVersion,
-): ExportPath {
-  const mapping = getVersionToExportPathMapping();
-
-  return match(apiVersion)
-    .when(
-      (v) => v === mapping.current.apiVersion,
-      () => mapping.current.exportPath,
-    )
-    .when(
-      (v) => v === mapping.previous.apiVersion,
-      () => mapping.previous.exportPath,
-    )
-    .when(
-      (v) => v === mapping.releaseCandidate.apiVersion,
-      () => mapping.releaseCandidate.exportPath,
-    )
-    .when(
-      (v) => v === mapping.unstable.apiVersion,
-      () => mapping.unstable.exportPath,
-    )
-    .otherwise(() => {
-      throw new Error(`No export path defined for API version: ${apiVersion}`);
-    });
-}
-
-/**
- * Get API version for a given export path
- */
-export function getApiVersionForExportPath(
-  exportPath: ExportPath,
-): ExtendedApiVersion {
-  const mapping = getVersionToExportPathMapping();
-
-  return match(exportPath)
-    .with('current', () => mapping.current.apiVersion)
-    .with('previous', () => mapping.previous.apiVersion)
-    .with('next', () => mapping.releaseCandidate.apiVersion)
-    .with('unstable', () => mapping.unstable.apiVersion)
-    .exhaustive();
+export function releaseDateFromPackageVersion(version: string): string | null {
+  const match = version.match(/^(\d{4})\.(1|4|7|10)\.\d+$/);
+  if (!match || match[1] === undefined || match[2] === undefined) return null;
+  return `${match[1]}-${match[2].padStart(2, '0')}-15`;
 }

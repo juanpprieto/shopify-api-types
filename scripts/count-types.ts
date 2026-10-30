@@ -9,12 +9,12 @@ import {
   type ApiVersion,
   type GraphQLSchema,
   SUPPORTED_APIS,
-} from '../src/lib/zod.js';
+} from './lib/zod.js';
 import {
   createFileOperationHandler,
   createFilePathResolver,
   handleOperationResult,
-} from '../src/lib/patterns.js';
+} from './lib/patterns.js';
 
 interface TypeCount {
   api: ApiType;
@@ -169,7 +169,7 @@ async function countTypes(): Promise<TypeAnalysis> {
               GraphQLSchemaSchema.safeParse(normalizedSchema);
 
             if (!schemaValidation.success) {
-              console.warn(`⚠️  Invalid schema format: ${api}/${version}`);
+              console.warn(`Invalid schema format: ${api}/${version}`);
               return;
             }
 
@@ -182,19 +182,17 @@ async function countTypes(): Promise<TypeAnalysis> {
             totalCounts.push(typeCounts);
 
             console.log(
-              `  ✓ ${api}/${version}: ${typeCounts.types} types, ${typeCounts.queries} queries, ${typeCounts.mutations} mutations`,
+              `  ${api}/${version}: ${typeCounts.types} types, ${typeCounts.queries} queries, ${typeCounts.mutations} mutations`,
             );
           },
           onError: (error) => {
-            console.warn(
-              `⚠️  Could not read schema ${api}/${version}: ${error}`,
-            );
+            console.warn(`Could not read schema ${api}/${version}: ${error}`);
           },
         });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        console.warn(`⚠️  Error processing ${api}/${version}: ${errorMessage}`);
+        console.warn(`Error processing ${api}/${version}: ${errorMessage}`);
       }
     }
   }
@@ -243,7 +241,7 @@ async function countTypes(): Promise<TypeAnalysis> {
  * Display type analysis results
  */
 function displayResults(analysis: TypeAnalysis): void {
-  console.log('\n📊 Type Analysis Results');
+  console.log('\nType Analysis Results');
   console.log('========================\n');
 
   console.log(
@@ -308,7 +306,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       if (api) {
         // Filter and display only for specific API
         const latestCount = analysis.summary.latestVersionCounts[api];
-        console.log(`\n📊 Type count for ${api} API`);
+        console.log(`\nType count for ${api} API`);
         console.log(`Total: ${latestCount}`);
       } else {
         // Default behavior - display all
@@ -316,7 +314,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       }
     })
     .catch((error) => {
-      console.error('❌ Type counting failed:', error);
+      console.error('Type counting failed:', error);
       process.exit(1);
     });
 }

@@ -1,6 +1,6 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 import { getSupportedVersions } from './version-utils.js';
-import { SUPPORTED_APIS, SHOPIFY_SCALARS } from '../src/lib/zod.js';
+import { SUPPORTED_APIS, SHOPIFY_SCALARS } from './lib/zod.js';
 
 /**
  * Create CodeGen configuration for all APIs and versions
@@ -35,7 +35,7 @@ function createCodegenConfig(): CodegenConfig {
     });
   });
 
-  console.log(`📊 CodeGen Configuration:`);
+  console.log(`CodeGen Configuration:`);
   console.log(`   Total outputs: ${Object.keys(generates).length}`);
   console.log(`   APIs: ${SUPPORTED_APIS.join(', ')}`);
   console.log(`   Versions: ${versions.join(', ')}`);

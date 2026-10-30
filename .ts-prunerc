@@ -1,5 +1,0 @@
-{
-  "ignore": ".*\\.(test|spec|stories)\\.(ts|tsx)$|.*\\.d\\.ts$|dist/.*|build/.*",
-  "skip": ".*\\.(test|spec)\\.tsx?$",
-  "error": true
-}

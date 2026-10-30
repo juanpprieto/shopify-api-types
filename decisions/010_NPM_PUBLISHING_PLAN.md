@@ -44,7 +44,7 @@ support.
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    // ✅ Verify all export paths match actual files
+    // Verify all export paths match actual files
     "./admin": {
       "import": {
         "types": "./dist/admin/index.d.ts",

@@ -4,8 +4,10 @@
     "noEmit": true,
     // Lint-only program: generated version trees are excluded, so the
     // type-aware ESLint rules never load the multi-megabyte types files.
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // TS 6 defaults "types" to []; scripts and tests run on Node
+    "types": ["node"]
   },
-  "include": ["src/lib/**/*", "tests/**/*", "scripts/**/*"],
+  "include": ["tests/**/*", "scripts/**/*"],
   "exclude": ["node_modules", "dist", "dist/**/*", "tests/e2e/**/*"]
 }

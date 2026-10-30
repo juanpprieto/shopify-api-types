@@ -6,14 +6,12 @@ import { createAdminApiClient } from '@shopify/admin-api-client';
 import type {
   QueryRoot,
   Mutation,
+  Product,
   Customer,
   Order,
   ProductInput,
   CustomerInput,
 } from '@juanpprieto/shopify-api-types/admin/current';
-
-// Alternative import pattern - specific version
-import type { Product } from '@juanpprieto/shopify-api-types/admin/2025-07';
 
 // Type definitions using built-in Shopify Admin types
 type ProductsQueryResponse = Pick<QueryRoot, 'products'>;
@@ -188,7 +186,7 @@ export const AdminDemo: React.FC = () => {
   // Example Admin API client setup
   const adminClient = createAdminApiClient({
     storeDomain: 'your-store.myshopify.com',
-    apiVersion: '2025-07',
+    apiVersion: __SHOPIFY_API_VERSION__,
     accessToken: 'your-admin-access-token-here',
   });
 
@@ -353,7 +351,7 @@ export const AdminDemo: React.FC = () => {
 
   return (
     <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
-      <h2>⚙️ Admin API Demo</h2>
+      <h2>Admin API Demo</h2>
 
       <div style={{ marginBottom: '20px' }}>
         <h3>Type Import Examples</h3>
@@ -363,14 +361,14 @@ export const AdminDemo: React.FC = () => {
           {`// Admin API types with full type safety
 import type { QueryRoot, Mutation, ProductInput } from '@juanpprieto/shopify-api-types/admin/current';
 
-// Alternative import pattern - specific version
-import type { Product } from '@juanpprieto/shopify-api-types/admin/2025-07';
+// Alternative import pattern - previous stable version
+import type { Product } from '@juanpprieto/shopify-api-types/admin/previous';
 
 // Storefront API types
-import type { Cart } from '@juanpprieto/shopify-api-types/sfapi/2025-07';
+import type { Cart } from '@juanpprieto/shopify-api-types/sfapi/previous';
 
 // Customer Account API types  
-import type { Customer } from '@juanpprieto/shopify-api-types/caapi/2025-07';
+import type { Customer } from '@juanpprieto/shopify-api-types/caapi/previous';
 
 // Use Pick<> for targeted Admin operations
 type ProductsQuery = Pick<QueryRoot, 'products'>;
@@ -456,7 +454,7 @@ const response = await adminClient.request<ProductsQuery>(query);`}
       {/* Products Tab Content */}
       {activeTab === 'products' && products.length > 0 && (
         <div>
-          <h3>🛍️ Products ({products.length})</h3>
+          <h3>Products ({products.length})</h3>
           <div style={{ display: 'grid', gap: '15px' }}>
             {products.map((product) => (
               <div
@@ -524,7 +522,7 @@ const response = await adminClient.request<ProductsQuery>(query);`}
       {/* Customers Tab Content */}
       {activeTab === 'customers' && customers.length > 0 && (
         <div>
-          <h3>👥 Customers ({customers.length})</h3>
+          <h3>Customers ({customers.length})</h3>
           <div style={{ display: 'grid', gap: '15px' }}>
             {customers.map((customer) => (
               <div
@@ -577,7 +575,7 @@ const response = await adminClient.request<ProductsQuery>(query);`}
       {/* Orders Tab Content */}
       {activeTab === 'orders' && orders.length > 0 && (
         <div>
-          <h3>📋 Orders ({orders.length})</h3>
+          <h3>Orders ({orders.length})</h3>
           <div style={{ display: 'grid', gap: '15px' }}>
             {orders.map((order) => (
               <div
@@ -641,7 +639,7 @@ const response = await adminClient.request<ProductsQuery>(query);`}
       <div
         style={{ marginTop: '30px', padding: '15px', background: '#f9f9f9' }}
       >
-        <h3>⚙️ Admin API Type Safety Benefits</h3>
+        <h3>Admin API Type Safety Benefits</h3>
         <ul>
           <li>
             <strong>Complete Admin Coverage:</strong> Products, Customers,

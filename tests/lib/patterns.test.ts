@@ -3,7 +3,7 @@ import {
   matchApiEndpoint,
   matchAuthHeaders,
   validateEnvironment,
-} from '../../src/lib/patterns.js';
+} from '../../scripts/lib/patterns.js';
 
 describe('patterns', () => {
   describe('matchApiEndpoint', () => {
