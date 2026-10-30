@@ -1,34 +1,41 @@
+<!-- generated for 2026.10.0 -->
+
 # @juanpprieto/shopify-api-types
 
 [![CI](https://github.com/juanpprieto/shopify-api-types/actions/workflows/ci.yml/badge.svg)](https://github.com/juanpprieto/shopify-api-types/actions/workflows/ci.yml)
 [![Release](https://github.com/juanpprieto/shopify-api-types/actions/workflows/release.yml/badge.svg)](https://github.com/juanpprieto/shopify-api-types/actions/workflows/release.yml)
-
-![npm version](https://img.shields.io/npm/v/@juanpprieto/shopify-api-types)
+[![npm version](https://img.shields.io/npm/v/@juanpprieto/shopify-api-types)](https://www.npmjs.com/package/@juanpprieto/shopify-api-types)
 ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
-TypeScript type definitions and raw GraphQL schemas for Shopify's Storefront,
-Admin, and Customer Account APIs. Types are published per Shopify API release,
-with semantic aliases and generated comparison reports between versions.
+`@juanpprieto/shopify-api-types` exports TypeScript types for three Shopify
+GraphQL APIs: Storefront (`sfapi`), Admin (`admin`), and Customer Account
+(`caapi`). Each API has one type export per supported version, from `2026-01`
+through the `2027-01` release candidate, plus the `unstable` development
+version. The aliases `current`, `previous`, `next`, and `unstable` point to a
+version, so an import needs no version number. The package also exports the
+schema for each version, and JSON comparison files that list the changes between
+adjacent versions. The generator built version `2026.10.0` on 2026-10-30.
 
 ## Supported versions
 
-| Alias    | Version  | Status       | Description                                        |
-| -------- | -------- | ------------ | -------------------------------------------------- |
-| current  | 2026-07  | stable       | Current stable release with full support           |
-| previous | 2026-04  | stable       | Previous stable release with security patches only |
-| next     | 2026-10  | preview      | Release candidate for next API version             |
-| unstable | unstable | experimental | Unstable development version, APIs may change      |
+| Version    | Alias      | Status       | Description                                        |
+| ---------- | ---------- | ------------ | -------------------------------------------------- |
+| `2026-10`  | `current`  | stable       | Current stable release with full support           |
+| `2026-07`  | `previous` | stable       | Previous stable release with security patches only |
+| `2026-04`  | none       | stable       | Previous stable release with security patches only |
+| `2026-01`  | none       | stable       | Previous stable release with security patches only |
+| `2027-01`  | `next`     | preview      | Release candidate for next API version             |
+| `unstable` | `unstable` | experimental | Unstable development version, APIs may change      |
 
-Additional supported versions, no alias:
-
-| Version | Status | Description                                        |
-| ------- | ------ | -------------------------------------------------- |
-| 2026-01 | stable | Previous stable release with security patches only |
-| 2025-10 | stable | Previous stable release with security patches only |
+Type exports accept all four aliases. Comparison exports accept `current` and
+`next`. Schema exports accept no aliases. APIs in the `unstable` version may
+change.
 
 ## Install
 
-```sh
+Add the package to your project:
+
+```bash
 npm install @juanpprieto/shopify-api-types
 ```
 
@@ -36,204 +43,308 @@ npm install @juanpprieto/shopify-api-types
 
 ### Versioned type imports
 
+Pin an import to one API version. The path contains the API prefix and the
+version.
+
 ```ts
 import {
   Product,
   Cart,
   Checkout,
-} from '@juanpprieto/shopify-api-types/sfapi/2026-01';
+} from '@juanpprieto/shopify-api-types/sfapi/2026-10';
 import {
   Shop,
   Webhook,
   InventoryLevel,
-} from '@juanpprieto/shopify-api-types/admin/2026-01';
+} from '@juanpprieto/shopify-api-types/admin/2026-10';
 import {
   Customer,
   Order,
   MailingAddress,
-} from '@juanpprieto/shopify-api-types/caapi/2026-01';
+} from '@juanpprieto/shopify-api-types/caapi/2026-10';
 ```
-
-Any of `2025-10`, `2026-01`, `2026-04`, `2026-07`, `2026-10` works for `sfapi`,
-`admin`, and `caapi`.
 
 ### Alias imports
 
+An alias replaces the version number in a type import path. In this release,
+`current` points to `2026-10`, `previous` points to `2026-07`, `next` points to
+`2027-01`, and `unstable` points to the unstable development version.
+
 ```ts
-import type { Product } from '@juanpprieto/shopify-api-types/sfapi/current';
-import type { Shop } from '@juanpprieto/shopify-api-types/admin/previous';
-import type { AnalyticsAnnotation } from '@juanpprieto/shopify-api-types/admin/next';
-import type { Customer } from '@juanpprieto/shopify-api-types/caapi/unstable';
+import { Product } from '@juanpprieto/shopify-api-types/sfapi/current';
+import { Shop } from '@juanpprieto/shopify-api-types/admin/previous';
+import { Customer } from '@juanpprieto/shopify-api-types/caapi/next';
 ```
 
 ### Schema imports
 
-```ts
-import sfapiSchema from '@juanpprieto/shopify-api-types/schemas/sfapi/2026-07';
-import adminSchema from '@juanpprieto/shopify-api-types/schemas/admin/2026-01';
-import caapiSchema from '@juanpprieto/shopify-api-types/schemas/caapi/unstable';
-```
+A schema path contains the `schemas` prefix, the API name, and the version.
+Schema exports accept no aliases.
 
-Schema exports cover `2025-10`, `2026-01`, `2026-04`, `2026-07`, `2026-10`, and
-`unstable`. They do not expose `current`, `previous`, or `next` aliases.
+```ts
+import storefrontSchema from '@juanpprieto/shopify-api-types/schemas/sfapi/2026-10';
+import adminSchema from '@juanpprieto/shopify-api-types/schemas/admin/2026-10';
+import customerAccountSchema from '@juanpprieto/shopify-api-types/schemas/caapi/2026-10';
+```
 
 ### Comparison imports
 
+Each comparison export is one JSON file with the changes between two versions.
+The file contains summary counts, breaking changes, and notable additions.
+
 ```ts
-import current from '@juanpprieto/shopify-api-types/comparisons/current';
-import next from '@juanpprieto/shopify-api-types/comparisons/next';
-import explicit from '@juanpprieto/shopify-api-types/comparisons/2026-04-to-2026-07';
+import currentComparison from '@juanpprieto/shopify-api-types/comparisons/current';
+import nextComparison from '@juanpprieto/shopify-api-types/comparisons/next';
+import pinnedComparison from '@juanpprieto/shopify-api-types/comparisons/2026-07-to-2026-10';
 ```
 
-Comparisons are plain JSON documents describing type differences between two
-adjacent versions.
+The comparison keys are `2026-01-to-2026-04`, `2026-04-to-2026-07`,
+`2026-07-to-2026-10`, `2026-10-to-2027-01`, `current`, and `next`.
 
 ## API overview
 
-| API              | Export prefix | Description                                       | Type count |
-| ---------------- | ------------- | ------------------------------------------------- | ---------- |
-| Storefront       | `sfapi`       | Product catalog, cart, checkout, and others       | 271        |
-| Admin            | `admin`       | Store management, webhooks, analytics, and others | 2041       |
-| Customer Account | `caapi`       | Customer profiles, orders, addresses, and others  | 323        |
+The three APIs cover different Shopify areas.
 
-## What changed from 2026-04 to 2026-07
+| API                  | Prefix  | Types | Covers                                            |
+| -------------------- | ------- | ----- | ------------------------------------------------- |
+| Storefront API       | `sfapi` | 272   | Product catalog, cart, checkout, and others       |
+| Admin API            | `admin` | 2123  | Store management, webhooks, analytics, and others |
+| Customer Account API | `caapi` | 339   | Customer profiles, orders, addresses, and others  |
 
-This is the `comparisons/current` report, covering the move from `previous`
-(2026-04) to `current` (2026-07).
+## What changed from 2026-07 to 2026-10
 
-| API              | Total changes | Breaking | Deprecations | Additions | Removals | Modifications |
-| ---------------- | ------------- | -------- | ------------ | --------- | -------- | ------------- |
-| Storefront       | 89            | 0        | 0            | 4         | 0        | 18            |
-| Admin            | 3369          | 12       | 0            | 290       | 7        | 1857          |
-| Customer Account | 63            | 0        | 0            | 9         | 0        | 30            |
+The `current` comparison export contains the data below.
 
-### Breaking changes
+| API                  | Total changes | Breaking | Deprecations | Additions | Removals | Modifications |
+| -------------------- | ------------- | -------- | ------------ | --------- | -------- | ------------- |
+| Storefront API       | 9             | 2        | 0            | 1         | 0        | 3             |
+| Admin API            | 2234          | 28       | 0            | 201       | 23       | 1031          |
+| Customer Account API | 306           | 13       | 0            | 33        | 8        | 91            |
 
-Storefront and Customer Account have no breaking changes in this release. Admin
-has 12, grouped below.
+### Storefront API
 
-**Removed types**
+Shopify made these breaking changes:
 
-- `InventoryScheduledChangeInput` was removed.
-- `InventoryScheduledChangeItemInput` was removed.
-- `InventorySetScheduledChangesInput` was removed.
-- `InventorySetScheduledChangesPayload` was removed.
-- `InventorySetScheduledChangesUserError` was removed.
-- `InventorySetScheduledChangesUserErrorCode` was removed.
+- `ShopPayPaymentRequestSession.paymentRequest` - Shopify changed the field type
+  from `ShopPayPaymentRequest!` to `ShopPayPaymentRequest`. The field can now
+  return `null`.
+- `Mutation.shopPayPaymentRequestSessionCreate` - Shopify removed the argument
+  `paymentRequest: ShopPayPaymentRequestInput!`.
 
-**Input field type changes**
+Shopify adds one type to the Storefront API: `ShopPayPaymentRequestShopUser`.
 
-- `RemoteAuthorizeNetCustomerPaymentProfileInput.customerPaymentProfileId`
-  changed from `String` to `String!`.
-- `RemoteBraintreePaymentMethodInput.paymentMethodToken` changed from `String`
-  to `String!`.
-- `RemoteStripePaymentMethodInput.paymentMethodId` changed from `String` to
-  `String!`.
+### Admin API
 
-**Field and argument removals**
+Shopify made these breaking changes:
 
-- `Mutation.inventorySetScheduledChanges` (deprecated) was removed.
-- Argument `input: CollectionInput!` was removed from
-  `Mutation.collectionCreate`.
-- Argument `input: CollectionInput!` was removed from
-  `Mutation.collectionUpdate`.
+#### Removed types
 
-### Additions
+- `PriceRule` - Shopify removed the type.
+- `PriceRuleAllocationMethod` - Shopify removed the type.
+- `PriceRuleCustomerSelection` - Shopify removed the type.
+- `PriceRuleDiscountCode` - Shopify removed the type.
+- `PriceRuleDiscountCodeConnection` - Shopify removed the type.
+- `PriceRuleDiscountCodeEdge` - Shopify removed the type.
+- `PriceRuleEntitlementToPrerequisiteQuantityRatio` - Shopify removed the type.
+- `PriceRuleFeature` - Shopify removed the type.
+- `PriceRuleFixedAmountValue` - Shopify removed the type.
+- `PriceRuleItemEntitlements` - Shopify removed the type.
+- `PriceRuleLineItemPrerequisites` - Shopify removed the type.
+- `PriceRuleMoneyRange` - Shopify removed the type.
+- `PriceRulePercentValue` - Shopify removed the type.
+- `PriceRulePrerequisiteToEntitlementQuantityRatio` - Shopify removed the type.
+- `PriceRuleQuantityRange` - Shopify removed the type.
+- `PriceRuleShareableUrl` - Shopify removed the type.
+- `PriceRuleShareableUrlTargetType` - Shopify removed the type.
+- `PriceRuleShippingLineEntitlements` - Shopify removed the type.
+- `PriceRuleStatus` - Shopify removed the type.
+- `PriceRuleTarget` - Shopify removed the type.
+- `PriceRuleTrait` - Shopify removed the type.
+- `PriceRuleValidityPeriod` - Shopify removed the type.
+- `PriceRuleValue` - Shopify removed the type.
 
-Storefront adds 4 types for cart discount applications, including
-`BaseCartDiscountApplication`, `CartAutomaticDiscountApplication`,
-`CartCodeDiscountApplication`, and `CartCustomDiscountApplication`.
+#### Removed enum values
 
-Admin adds 290 types across collection conditions and rule-based collection
-sources, including `CollectionConditionsSource`,
-`CollectionConditionBasicMetafieldDefinition`, `CollectionConditionMatchType`,
-`CollectionCreateConditionsSourceInput`, `B2BType`, `ChannelsCondition`,
-`CollectionConditionsSourceConnection`, and `CollectionConditionsSourcesByApp`.
+- `ITEM_NOT_STOCKED_AT_LOCATION` - Shopify removed the value from
+  `InventoryAdjustQuantitiesUserErrorCode`.
+- `ITEM_NOT_STOCKED_AT_LOCATION` - Shopify removed the value from
+  `InventoryMoveQuantitiesUserErrorCode`.
+- `ITEM_NOT_STOCKED_AT_LOCATION` - Shopify removed the value from
+  `InventorySetOnHandQuantitiesUserErrorCode`.
+- `ITEM_NOT_STOCKED_AT_LOCATION` - Shopify removed the value from
+  `InventorySetQuantitiesUserErrorCode`.
 
-Customer Account adds 9 types for marketing consent, including
-`CustomerMarketingConsent`, `CustomerWhatsAppMarketingConsent`,
-`CustomerWhatsAppMarketingConsentUpdateInput`, `MarketingConsentState`,
-`UserErrorsCustomerMarketingConsentError`, and
-`customerWhatsAppMarketingConsentUpdate`.
+Shopify adds 201 types to the Admin API. Notable additions include types for
+analytics annotations and analytics targets: `AnalyticsAnnotation`,
+`AnalyticsAnnotationCreateInput`, `AnalyticsAnnotationCreatePayload`,
+`AnalyticsAnnotationDeletePayload`, `AnalyticsTarget`,
+`AnalyticsTargetCreateInput`, `AnalyticsTargetConnection`,
+`AnalyticsAnnotationSortKeys`.
 
-## Release candidate preview
+### Customer Account API
 
-This is a short preview of `comparisons/next`, covering 2026-07 to 2026-10 (the
-`2026-10` release candidate).
+Shopify made these breaking changes:
 
-| API              | Total changes | Breaking | Additions | Removals | Modifications |
-| ---------------- | ------------- | -------- | --------- | -------- | ------------- |
-| Storefront       | 9             | 2        | 1         | 0        | 3             |
-| Admin            | 1203          | 28       | 113       | 23       | 649           |
-| Customer Account | 19            | 12       | 1         | 8        | 4             |
+#### Removed types
 
-Notable signals for planning ahead:
+- `AppliedGiftCard` - Shopify removed the type.
+- `AvailableShippingRates` - Shopify removed the type.
+- `Checkout` - Shopify removed the type.
+- `CheckoutLineItem` - Shopify removed the type.
+- `CheckoutLineItemConnection` - Shopify removed the type.
+- `CheckoutLineItemEdge` - Shopify removed the type.
+- `CustomerMailingAddress` - Shopify removed the type.
+- `ShippingRate` - Shopify removed the type.
 
-- Admin removes the entire `PriceRule` type family, including `PriceRule`,
-  `PriceRuleDiscountCode`, and `PriceRuleValidityPeriod`.
-- Customer Account removes legacy checkout types, including `Checkout`,
-  `CheckoutLineItem`, and `CustomerMailingAddress`.
-- Storefront changes `ShopPayPaymentRequestSession.paymentRequest` from
-  `ShopPayPaymentRequest!` to `ShopPayPaymentRequest`.
+#### Input and argument changes
 
-Treat this data as a preview. The release candidate schema may still change
-before it becomes `current`.
+- `CustomerAddressInput.territoryCode` - Shopify removed the input field.
+- `SubscriptionDeliveryMethodLocalDeliveryInput.address` - Shopify removed the
+  input field.
+- `Mutation.subscriptionContractFetchDeliveryOptions` - Shopify removed the
+  argument `deliveryAddress: CustomerMailingAddressInput`.
 
-## Exports reference
+Shopify adds 33 types to the Customer Account API. Notable additions include
+types for requested order edits, line item eligibility, and SMS marketing
+consent: `RequestedOrderEdit`, `CalculatedRequestedOrderEdit`,
+`CalculateRequestedOrderEditInput`, `EditableLineItem`, `IneligibleLineItem`,
+`IneligibleReason`, `OrderRequestEditPayload`, `CustomerSmsMarketingConsent`.
 
-```
+### What to do
+
+The `2026-10` type exports no longer contain the removed types, so imports of
+them fail. The `2026-10` input types no longer contain the removed arguments and
+input fields.
+
+- Remove the import of each removed type, or import it from the `2026-07` export
+  during migration:
+  `import { Checkout } from '@juanpprieto/shopify-api-types/caapi/2026-07';`
+- Make sure code that reads `ShopPayPaymentRequestSession.paymentRequest`
+  handles `null`.
+- Remove `paymentRequest` from inputs to
+  `Mutation.shopPayPaymentRequestSessionCreate`.
+- Remove `territoryCode` from `CustomerAddressInput` values.
+- Remove `address` from `SubscriptionDeliveryMethodLocalDeliveryInput` values.
+- Remove `deliveryAddress` from calls to
+  `Mutation.subscriptionContractFetchDeliveryOptions`.
+- Stop matching `ITEM_NOT_STOCKED_AT_LOCATION` in the four inventory error
+  enums.
+- Check the `2026-10` schema exports when you need the current arguments and
+  input fields.
+- Use `@juanpprieto/shopify-api-types/comparisons/current` to check the change
+  data for every API.
+
+The `2026-07` version receives security patches only.
+
+The `current` comparison export does not name replacements:
+
+- [TK: which types replace the removed `PriceRule` types?]
+- [TK: which types replace the removed `Checkout` types?]
+- [TK: which input replaces the `paymentRequest` argument on
+  `Mutation.shopPayPaymentRequestSessionCreate`?]
+- [TK: which argument replaces `deliveryAddress` on
+  `Mutation.subscriptionContractFetchDeliveryOptions`?]
+- [TK: which fields replace `territoryCode` on `CustomerAddressInput` and
+  `address` on `SubscriptionDeliveryMethodLocalDeliveryInput`?]
+
+## Release candidate preview (2026-10 to 2027-01)
+
+Import the `2027-01` types from a `next` export, for example
+`@juanpprieto/shopify-api-types/admin/next`. The `next` comparison export
+contains the data below.
+
+| API                  | Total changes | Breaking | Deprecations | Additions | Removals | Modifications |
+| -------------------- | ------------- | -------- | ------------ | --------- | -------- | ------------- |
+| Storefront API       | 25            | 0        | 0            | 2         | 0        | 15            |
+| Admin API            | 617           | 16       | 0            | 45        | 10       | 295           |
+| Customer Account API | 124           | 0        | 0            | 9         | 0        | 15            |
+
+The Storefront API and the Customer Account API show no breaking changes. In the
+`2027-01` Admin API, Shopify removes types such as
+`MarketCurrencySettingsUpdatePayload`, `MarketCurrencySettingsUserError`,
+`DiscountAutomaticConnection`, and
+`CollectionSourceInclusionConditionMetafieldInteger`. Shopify removes the
+deprecated field `marketCurrencySettingsUpdate` from `Mutation`. Shopify removes
+the deprecated values `PRIVATE` and `PUBLIC_READ` from `MetaobjectAdminAccess`.
+Shopify removes the input field `metafieldInteger` from
+`CollectionSourceInclusionConditionInput` and
+`CollectionSourceInclusionConditionUpdateInput`.
+
+Shopify adds 45 types to the Admin API. Notable additions include types for
+analytics schemas, for example `AnalyticsSchema`, `AnalyticsSchemaField`, and
+`AnalyticsSchemaJoin`. Shopify adds
+`ShopPayPaymentRequestSessionBusinessEntityUpdatePayload` and
+`shopPayPaymentRequestSessionBusinessEntityUpdate` to the Storefront API.
+Shopify adds types for fees, duties, and subscription lines to the Customer
+Account API, for example `FeeLine`, `FeeTarget`, `Duty`, and
+`SubscriptionGroupedLine`.
+
+## Package exports
+
+The tree shows every export in the package. Each import path runs from the root
+to a leaf, for example `@juanpprieto/shopify-api-types/sfapi/current`. For an
+alias key, the text in parentheses shows its target.
+
+```text
 @juanpprieto/shopify-api-types
-├── /sfapi/2025-10
-├── /sfapi/2026-01
-├── /sfapi/2026-04
-├── /sfapi/2026-07
-├── /sfapi/2026-10
-├── /sfapi/current
-├── /sfapi/previous
-├── /sfapi/next
-├── /sfapi/unstable
-├── /admin/2025-10
-├── /admin/2026-01
-├── /admin/2026-04
-├── /admin/2026-07
-├── /admin/2026-10
-├── /admin/current
-├── /admin/previous
-├── /admin/next
-├── /admin/unstable
-├── /caapi/2025-10
-├── /caapi/2026-01
-├── /caapi/2026-04
-├── /caapi/2026-07
-├── /caapi/2026-10
-├── /caapi/current
-├── /caapi/previous
-├── /caapi/next
-├── /caapi/unstable
-├── /schemas/sfapi/2025-10
-├── /schemas/sfapi/2026-01
-├── /schemas/sfapi/2026-04
-├── /schemas/sfapi/2026-07
-├── /schemas/sfapi/2026-10
-├── /schemas/sfapi/unstable
-├── /schemas/admin/2025-10
-├── /schemas/admin/2026-01
-├── /schemas/admin/2026-04
-├── /schemas/admin/2026-07
-├── /schemas/admin/2026-10
-├── /schemas/admin/unstable
-├── /schemas/caapi/2025-10
-├── /schemas/caapi/2026-01
-├── /schemas/caapi/2026-04
-├── /schemas/caapi/2026-07
-├── /schemas/caapi/2026-10
-├── /schemas/caapi/unstable
-├── /comparisons/2025-10-to-2026-01
-├── /comparisons/2026-01-to-2026-04
-├── /comparisons/2026-04-to-2026-07
-├── /comparisons/2026-07-to-2026-10
-├── /comparisons/current
-└── /comparisons/next
+├── sfapi            Storefront types
+│   ├── 2026-01
+│   ├── 2026-04
+│   ├── 2026-07
+│   ├── 2026-10
+│   ├── 2027-01
+│   ├── current       (2026-10)
+│   ├── next          (2027-01)
+│   ├── previous      (2026-07)
+│   └── unstable
+├── admin            Admin types
+│   ├── 2026-01
+│   ├── 2026-04
+│   ├── 2026-07
+│   ├── 2026-10
+│   ├── 2027-01
+│   ├── current       (2026-10)
+│   ├── next          (2027-01)
+│   ├── previous      (2026-07)
+│   └── unstable
+├── caapi            Customer Account types
+│   ├── 2026-01
+│   ├── 2026-04
+│   ├── 2026-07
+│   ├── 2026-10
+│   ├── 2027-01
+│   ├── current       (2026-10)
+│   ├── next          (2027-01)
+│   ├── previous      (2026-07)
+│   └── unstable
+├── schemas/sfapi    Storefront schema
+│   ├── 2026-01
+│   ├── 2026-04
+│   ├── 2026-07
+│   ├── 2026-10
+│   ├── 2027-01
+│   └── unstable
+├── schemas/admin    Admin schema
+│   ├── 2026-01
+│   ├── 2026-04
+│   ├── 2026-07
+│   ├── 2026-10
+│   ├── 2027-01
+│   └── unstable
+├── schemas/caapi    Customer Account schema
+│   ├── 2026-01
+│   ├── 2026-04
+│   ├── 2026-07
+│   ├── 2026-10
+│   ├── 2027-01
+│   └── unstable
+└── comparisons      JSON comparison files
+    ├── 2026-01-to-2026-04
+    ├── 2026-04-to-2026-07
+    ├── 2026-07-to-2026-10
+    ├── 2026-10-to-2027-01
+    ├── current       (2026-07-to-2026-10)
+    └── next          (2026-10-to-2027-01)
 ```
 
 ## License
