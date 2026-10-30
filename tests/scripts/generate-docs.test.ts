@@ -27,6 +27,14 @@ describe('validateReadmeStyle', () => {
     expect(() => validateReadmeStyle(valid)).not.toThrow();
   });
 
+  it('reads each list item as its own sentence', () => {
+    const bullets = Array.from(
+      { length: 6 },
+      (_, i) => `- \`Type${i}\` - the field type changed to a non-null list`,
+    ).join('\n');
+    expect(() => validateReadmeStyle(`${bullets}\n\n${valid}`)).not.toThrow();
+  });
+
   it('fails a prose sentence over 25 words', () => {
     const long =
       'This sentence has far too many words in it because it keeps going on and on about the package and its many export paths and aliases.';

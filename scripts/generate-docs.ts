@@ -504,13 +504,20 @@ function validateReadmeStyle(content: string): void {
   }
 
   // STE: no prose sentence over 25 words (code, tables, and headings excluded)
-  const prose = content
+  // Paragraphs join their wrapped lines; each list item counts on its own
+  const units = content
     .replace(/```[\s\S]*?```/g, '')
-    .split('\n')
-    .filter((line) => !/^\s*(\||#|!\[|\[!\[)/.test(line))
-    .join(' ');
-  const longSentence = prose
-    .split(/(?<=[.!?])\s+/)
+    .split(/\n\s*\n/)
+    .flatMap((block) => {
+      const lines = block
+        .split('\n')
+        .filter((line) => !/^\s*(\||#|!\[|\[!\[)/.test(line));
+      return lines.some((line) => /^\s*([-*+]|\d+\.)\s/.test(line))
+        ? lines
+        : [lines.join(' ')];
+    });
+  const longSentence = units
+    .flatMap((unit) => unit.split(/(?<=[.!?])\s+/))
     .find((sentence) => sentence.split(/\s+/).filter(Boolean).length > 25);
   if (longSentence) {
     violations.push(
