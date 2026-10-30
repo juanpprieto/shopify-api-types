@@ -2022,6 +2022,8 @@ export type ArticleCreateUserErrorCode =
   | 'TAKEN'
   /** The input value is too long. */
   | 'TOO_LONG'
+  /** The input value is too short. */
+  | 'TOO_SHORT'
   /** Image upload failed. */
   | 'UPLOAD_FAILED';
 
@@ -2693,6 +2695,8 @@ export type BlogCreateUserError = DisplayableError & {
 
 /** Possible error codes that can be returned by `BlogCreateUserError`. */
 export type BlogCreateUserErrorCode =
+  /** The input value is blank. */
+  | 'BLANK'
   /** The input value isn't included in the list. */
   | 'INCLUSION'
   /** The input value is invalid. */
@@ -3090,6 +3094,8 @@ export type BusinessCustomerErrorCode =
   | 'INVALID_INPUT'
   /** The number of resources exceeded the limit. */
   | 'LIMIT_REACHED'
+  /** This company location is managed by an app and can only be edited by that app. */
+  | 'MANAGED_BY_APP'
   /** The input is empty. */
   | 'NO_INPUT'
   /** Missing a required field. */
@@ -3839,6 +3845,8 @@ export type CardPaymentDetails = BasePaymentDetails & {
   bin?: Maybe<Scalars['String']['output']>;
   /** The name of the company that issued the customer's credit card. */
   company?: Maybe<Scalars['String']['output']>;
+  /** The date and time when the card payment details were created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The response code from the credit card company indicating whether the customer entered the card security code, or card verification value, correctly. The code is a single letter or empty string. */
   cvvResultCode?: Maybe<Scalars['String']['output']>;
   /** The month in which the used credit card expires. */
@@ -4278,6 +4286,8 @@ export type CashTrackingSessionsSortKeys =
   | 'CLOSING_TIME_ASC'
   /** Sort by the `closing_time_desc` value. */
   | 'CLOSING_TIME_DESC'
+  /** Sort by the `created_at` value. */
+  | 'CREATED_AT'
   /** Sort by the `id` value. */
   | 'ID'
   /** Sort by the `opening_time_asc` value. */
@@ -5622,13 +5632,13 @@ export type CheckoutBrandingFooterAlignment =
 
 /** The footer content customizations. */
 export type CheckoutBrandingFooterContent = {
-  /** The visibility settings for footer content. */
+  /** The visibility of the footer content. Shopify reserves the right to add required legal notices to the footer and prevent them from being modified or hidden. This setting doesn't control the visibility of those notices. */
   visibility?: Maybe<CheckoutBrandingVisibility>;
 };
 
 /** The input fields for footer content customizations. */
 export type CheckoutBrandingFooterContentInput = {
-  /** The visibility settings for footer content. */
+  /** The visibility of the footer content. Shopify reserves the right to add required legal notices to the footer and prevent them from being modified or hidden. This setting doesn't control the visibility of those notices. */
   visibility?: InputMaybe<CheckoutBrandingVisibility>;
 };
 
@@ -6396,6 +6406,8 @@ export type Collection = HasEvents & HasMetafieldDefinitions & HasMetafields & H
    * [feedback errors](https://shopify.dev/docs/api/admin-graphql/latest/objects/ResourceFeedback).
    */
   availablePublicationsCount?: Maybe<Count>;
+  /** The date and time when the collection was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** A single-line, text-only description of the collection, stripped of any HTML tags and formatting that were included in the description. */
   description: Scalars['String']['output'];
   /** The description of the collection, including any HTML tags and formatting. This content is typically displayed to customers, such as on an online store, depending on the theme. */
@@ -8838,7 +8850,7 @@ export type CompanyLocation = CommentEventSubject & HasEvents & HasMetafieldDefi
   /** The preferred locale of the company location. */
   locale?: Maybe<Scalars['String']['output']>;
   /**
-   * The market that includes the location's shipping address. If the shipping address is empty, then the value is the shop's primary market.
+   * The market that applies to the location's shipping address country. In cases where multiple markets match, this returns the most-specific country region market. If the shipping address is empty, then the value is the shop's backup region market.
    * @deprecated This `market` field will be removed in a future version of the API.
    */
   market: Market;
@@ -10441,6 +10453,8 @@ export type CurrencyCode =
   | 'XAF'
   /** East Caribbean Dollar (XCD). */
   | 'XCD'
+  /** Caribbean Guilder (XCG). */
+  | 'XCG'
   /** West African CFA franc (XOF). */
   | 'XOF'
   /** CFP Franc (XPF). */
@@ -10605,7 +10619,7 @@ export type Customer = CommentEventSubject & HasEvents & HasMetafieldDefinitions
   /** The customer's locale. */
   locale: Scalars['String']['output'];
   /**
-   * The market that includes the customer’s default address.
+   * The market that applies to the customer’s default address country. In cases where multiple markets match, this returns the most-specific country region market.
    * @deprecated This `market` field will be removed in a future version of the API.
    */
   market?: Maybe<Market>;
@@ -12873,7 +12887,7 @@ export type DeliveryBrandedPromise = {
  * Your app's request to create a carrier service will fail unless the store installing your carrier service meets one of the following requirements:
  * * It's on the Advanced Shopify plan or higher.
  * * It's on the Shopify plan with yearly billing, or the carrier service feature has been added to the store for a monthly fee. For more information, contact [Shopify Support](https://help.shopify.com/questions).
- * * It's a development store.
+ * * It's a development store that isn't on the Basic plan.
  *
  * > Note:
  * > If a store changes its Shopify plan, then the store's association with a carrier service is deactivated if the store no long meets one of the requirements above.
@@ -13043,7 +13057,7 @@ export type DeliveryBrandedPromise = {
  * * destination address
  * * item weights and signatures
  *
- * If any of these fields differ, or if the cache has expired since the original request, then new shipping rates are requested. The cache expires 15 minutes after rates are successfully returned. If an error occurs, then the cache expires after 30 seconds.
+ * If any of these fields differ, or if the cache has expired since the original request, then new shipping rates are requested. The cache expires 15 minutes after rates are successfully returned. If an error occurs, then the cache expires after 30 seconds. The fields and cache duration are subject to change without notice.
  */
 export type DeliveryCarrierService = Node & {
   /** Whether the carrier service is active. */
@@ -13052,6 +13066,8 @@ export type DeliveryCarrierService = Node & {
   availableServicesForCountries: Array<DeliveryAvailableService>;
   /** The URL endpoint that Shopify needs to retrieve shipping rates. */
   callbackUrl?: Maybe<Scalars['URL']['output']>;
+  /** The date and time when the carrier service was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The properly formatted name of the shipping service provider, ready to display. */
   formattedName?: Maybe<Scalars['String']['output']>;
   /** The logo of the service provider. */
@@ -13076,7 +13092,7 @@ export type DeliveryCarrierService = Node & {
  * Your app's request to create a carrier service will fail unless the store installing your carrier service meets one of the following requirements:
  * * It's on the Advanced Shopify plan or higher.
  * * It's on the Shopify plan with yearly billing, or the carrier service feature has been added to the store for a monthly fee. For more information, contact [Shopify Support](https://help.shopify.com/questions).
- * * It's a development store.
+ * * It's a development store that isn't on the Basic plan.
  *
  * > Note:
  * > If a store changes its Shopify plan, then the store's association with a carrier service is deactivated if the store no long meets one of the requirements above.
@@ -13246,7 +13262,7 @@ export type DeliveryCarrierService = Node & {
  * * destination address
  * * item weights and signatures
  *
- * If any of these fields differ, or if the cache has expired since the original request, then new shipping rates are requested. The cache expires 15 minutes after rates are successfully returned. If an error occurs, then the cache expires after 30 seconds.
+ * If any of these fields differ, or if the cache has expired since the original request, then new shipping rates are requested. The cache expires 15 minutes after rates are successfully returned. If an error occurs, then the cache expires after 30 seconds. The fields and cache duration are subject to change without notice.
  */
 export type DeliveryCarrierServiceAvailableServicesForCountriesArgs = {
   countryCodes?: InputMaybe<Array<CountryCode>>;
@@ -13922,6 +13938,8 @@ export type DeliveryProductVariantsCount = {
 export type DeliveryProfile = Node & {
   /** The number of active shipping rates for the profile. */
   activeMethodDefinitionsCount: Scalars['Int']['output'];
+  /** The date and time when the delivery profile was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** Whether this is the default profile. */
   default: Scalars['Boolean']['output'];
   /** A globally-unique ID. */
@@ -16680,7 +16698,10 @@ export type DiscountContextInput = {
 export type DiscountCountries = {
   /** The codes for the countries where the discount can be applied. */
   countries: Array<CountryCode>;
-  /** Whether the discount is applicable to countries that haven't been defined in the shop's shipping zones. */
+  /**
+   * Whether the discount is applicable to countries that haven't been defined in the shop's shipping zones.
+   * @deprecated This field is being retired. Discounts that set `includeRestOfWorld: true` will be converted to an explicit list of countries, and `countries` will then return every country where the discount applies.
+   */
   includeRestOfWorld: Scalars['Boolean']['output'];
 };
 
@@ -17241,6 +17262,8 @@ export type DiscountRedeemCode = {
   asyncUsageCount: Scalars['Int']['output'];
   /** The code that a customer can use at checkout to receive a discount. */
   code: Scalars['String']['output'];
+  /** The date and time when the discount redeem code was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The application that created the discount redeem code. */
   createdBy?: Maybe<App>;
   /** A globally-unique ID of the discount redeem code. */
@@ -17472,6 +17495,8 @@ export type DisputeEvidenceUpdateUserErrorCode =
   | 'EVIDENCE_ALREADY_ACCEPTED'
   /** Evidence past due date. */
   | 'EVIDENCE_PAST_DUE_DATE'
+  /** The provider is reviewing the dispute. */
+  | 'EVIDENCE_UNDER_REVIEW'
   /** Combined files size is too large. */
   | 'FILES_SIZE_EXCEEDED_LIMIT'
   /** File upload failed. Please try again. */
@@ -17515,6 +17540,8 @@ export type DistanceUnit =
 
 /** A unique string that represents the address of a Shopify store on the Internet. */
 export type Domain = Node & {
+  /** The date and time when the domain was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The host name of the domain. For example, `example.com`. */
   host: Scalars['String']['output'];
   /** A globally-unique ID. */
@@ -18147,8 +18174,6 @@ export type DraftOrderInput = {
    * The list of product variant or custom line item.
    * Each draft order must include at least one line item.
    * Accepts a maximum of 499 line items.
-   *
-   * NOTE: Draft orders don't currently support subscriptions.
    */
   lineItems?: InputMaybe<Array<DraftOrderLineItemInput>>;
   /** The localization extensions attached to the draft order. For example, Tax IDs. */
@@ -19956,6 +19981,8 @@ export type FulfillmentEventInput = {
 
 /** The set of valid sort keys for the FulfillmentEvent query. */
 export type FulfillmentEventSortKeys =
+  /** Sort by the `created_at` value. */
+  | 'CREATED_AT'
   /** Sort by the `happened_at` value. */
   | 'HAPPENED_AT'
   /** Sort by the `id` value. */
@@ -20055,6 +20082,8 @@ export type FulfillmentInput = {
  * > Note: The discounted total excludes order-level discounts, showing only line-item specific discount amounts.
  */
 export type FulfillmentLineItem = Node & {
+  /** The date and time when the fulfillment line item was created. */
+  createdAt: Scalars['DateTime']['output'];
   /**
    * The total price after discounts are applied.
    * @deprecated Use `discountedTotalSet` instead.
@@ -22199,6 +22228,8 @@ export type FulfillmentService = {
    *     [fulfillment and cancellation requests](https://shopify.dev/apps/build/orders-fulfillment/fulfillment-service-apps/build-for-fulfillment-services#step-9-optional-enable-tracking-support).
    */
   callbackUrl?: Maybe<Scalars['URL']['output']>;
+  /** The date and time when the fulfillment service was created. */
+  createdAt: Scalars['DateTime']['output'];
   /**
    * Whether the fulfillment service uses the [fulfillment order based workflow](https://shopify.dev/apps/fulfillment/fulfillment-service-apps/manage-fulfillments) for managing fulfillments.
    *
@@ -22298,11 +22329,11 @@ export type FulfillmentTrackingInfo = {
    *
    * For tracking company names from the list below
    * Shopify will automatically build tracking URLs for all provided tracking numbers,
-   * which will make the tracking numbers clickable in the interface.
+   * which will make the tracking numbers clickable in the interface. This doesn't mean
+   * that Shopify automatically updates the fulfillment's `shipment_status` field in Admin.
    *
-   * Additionally, for the tracking companies listed on the
-   * [Shipping Carriers help page](https://help.shopify.com/manual/shipping/understanding-shipping/shipping-carriers#integrated-shipping-carriers)
-   * Shopify will automatically update the fulfillment's `shipment_status` field during the fulfillment process.
+   * For tracking companies whose `shipment_status` field is updated automatically, see
+   * [Tracking companies with automatic tracking updates](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#tracking-companies-with-automatic-tracking-updates).
    *
    * ### Supported tracking companies
    *
@@ -22320,6 +22351,7 @@ export type FulfillmentTrackingInfo = {
    *   * Bonshaw
    *   * BPost
    *   * BPost International
+   *   * Better Trucks
    *   * Canada Post
    *   * Canpar
    *   * CDL Last Mile
@@ -22348,11 +22380,13 @@ export type FulfillmentTrackingInfo = {
    *   * Estes
    *   * Evri
    *   * FedEx
+   *   * FedEx Freight
    *   * First Global Logistics
    *   * First Line
    *   * FSC
    *   * Fulfilla
    *   * GLS
+   *   * GOFO
    *   * Guangdong Weisuyi Information Technology (WSE)
    *   * Heppner Internationale Spedition GmbH & Co.
    *   * Iceland Post
@@ -22368,6 +22402,7 @@ export type FulfillmentTrackingInfo = {
    *   * Logisters
    *   * Lone Star Overnight
    *   * M3 Logistics
+   *   * Mayple
    *   * Meteor Space
    *   * Mondial Relay
    *   * New Zealand Post
@@ -22398,6 +22433,7 @@ export type FulfillmentTrackingInfo = {
    *   * SHREE NANDAN COURIER
    *   * Singapore Post
    *   * Southwest Air Cargo
+   *   * SpeedX
    *   * StarTrack
    *   * Step Forward Freight
    *   * Swiss Post
@@ -22406,8 +22442,10 @@ export type FulfillmentTrackingInfo = {
    *   * TNT
    *   * Toll IPEC
    *   * United Delivery Service
+   *   * Uni Uni
    *   * UPS
    *   * USPS
+   *   * Veho
    *   * Venipak
    *   * We Post
    *   * Whistl
@@ -22444,6 +22482,33 @@ export type FulfillmentTrackingInfo = {
    *   * **Turkey**: PTT, Yurtiçi Kargo, Aras Kargo, Sürat Kargo
    *   * **United States**: GLS, Alliance Air Freight, Pilot Freight, LSO, Old Dominion, Pandion, R+L Carriers, Southwest Air Cargo
    *   * **South Africa**: Fastway, Skynet.
+   *
+   * ### Tracking companies with automatic tracking updates
+   *
+   * Shopify receives tracking updates for the following tracking companies and automatically updates
+   * the fulfillment's `shipment_status` field:
+   *
+   *   * Australia Post
+   *   * Better Trucks
+   *   * Canada Post
+   *   * CDL Last Mile
+   *   * Deutsche Post
+   *   * DHL eCommerce
+   *   * DHL Express
+   *   * FedEx
+   *   * GLS
+   *   * GOFO
+   *   * Lasership
+   *   * Lone Star Overnight
+   *   * Mayple
+   *   * OnTrac
+   *   * Royal Mail
+   *   * ShipBob
+   *   * TForce Final Mile
+   *   * United Delivery Service
+   *   * UPS
+   *   * USPS
+   *   * Veho.
    */
   company?: Maybe<Scalars['String']['output']>;
   /**
@@ -22507,12 +22572,12 @@ export type FulfillmentTrackingInput = {
    * If you specify a tracking company name from
    * [the list](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies),
    * Shopify will automatically build tracking URLs for all provided tracking numbers,
-   * which will make the tracking numbers clickable in the interface.
+   * which will make the tracking numbers clickable in the interface. This doesn't mean
+   * that Shopify automatically updates the fulfillment's `shipment_status` field in Admin.
    * The same tracking company will be applied to all tracking numbers specified.
    *
-   * Additionally, for the tracking companies listed on the
-   * [Shipping Carriers help page](https://help.shopify.com/manual/shipping/understanding-shipping/shipping-carriers#integrated-shipping-carriers)
-   * Shopify will automatically update the fulfillment's `shipment_status` field during the fulfillment process.
+   * For tracking companies whose `shipment_status` field is updated automatically, see
+   * [Tracking companies with automatic tracking updates](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#tracking-companies-with-automatic-tracking-updates).
    *
    * > Note:
    * > Send the tracking company name exactly as written in
@@ -22675,7 +22740,7 @@ export type GiftCard = Node & {
   balance: MoneyV2;
   /** The date and time at which the gift card was created. */
   createdAt: Scalars['DateTime']['output'];
-  /** The customer who will receive the gift card. */
+  /** The customer that the gift card was sold or issued to, as opposed to the gift recipient. This customer can be reassigned. */
   customer?: Maybe<Customer>;
   /** The date and time at which the gift card was deactivated. */
   deactivatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -22695,7 +22760,7 @@ export type GiftCard = Node & {
   note?: Maybe<Scalars['String']['output']>;
   /** The order associated with the gift card. This value is `null` if the gift card was issued manually. */
   order?: Maybe<Order>;
-  /** The recipient who will receive the gift card. */
+  /** The recipient of the gift card and the details sent with it: preferred name, message, and send time. */
   recipientAttributes?: Maybe<GiftCardRecipient>;
   /** The theme template used to render the gift card online. */
   templateSuffix?: Maybe<Scalars['String']['output']>;
@@ -22746,7 +22811,7 @@ export type GiftCardCreateInput = {
    * It isn't case sensitive. If not provided, then a random code will be generated.
    */
   code?: InputMaybe<Scalars['String']['input']>;
-  /** The ID of the customer who will receive the gift card. Requires `write_customers` access_scope. */
+  /** The ID of the customer the gift card is issued to, as opposed to the gift recipient. Requires `write_customers` access_scope. */
   customerId?: InputMaybe<Scalars['ID']['input']>;
   /** The date at which the gift card will expire. If not provided, then the gift card will never expire. */
   expiresOn?: InputMaybe<Scalars['Date']['input']>;
@@ -22947,6 +23012,8 @@ export type GiftCardErrorCode =
   | 'RECIPIENT_NOT_FOUND'
   /** The input value is already taken. */
   | 'TAKEN'
+  /** The input value is too big. */
+  | 'TOO_BIG'
   /** The input value is too long. */
   | 'TOO_LONG'
   /** The input value is too short. */
@@ -23168,7 +23235,7 @@ export type GiftCardTransactionUserErrorCode =
 
 /** The input fields to update a gift card. */
 export type GiftCardUpdateInput = {
-  /** The ID of the customer who will receive the gift card. The ID can't be changed if the gift card already has an assigned customer ID. */
+  /** The ID of the customer the gift card is issued to, as opposed to the gift recipient. Replaces the current customer, if any. Requires `write_customers` access_scope. */
   customerId?: InputMaybe<Scalars['ID']['input']>;
   /** The date at which the gift card will expire. If set to `null`, then the gift card will never expire. */
   expiresOn?: InputMaybe<Scalars['Date']['input']>;
@@ -23699,7 +23766,7 @@ export type InventoryAdjustmentGroup = Node & {
   /**
    * A freeform URI that represents why the inventory change happened. This can be the entity adjusting inventory
    * quantities or the Shopify resource that's associated with the inventory adjustment. For example, a unit in a
-   * draft order might have been previously reserved, and a merchant later creates an order from the draft order.
+   * draft order might have been previously committed, and a merchant later creates an order from the draft order.
    * In this case, the `referenceDocumentUri` for the inventory adjustment is a URI referencing the order ID.
    */
   referenceDocumentUri?: Maybe<Scalars['String']['output']>;
@@ -23852,7 +23919,9 @@ export type InventoryDeactivatePayload = {
 };
 
 /**
- * A [product variant's](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant) inventory information across all locations. The inventory item connects the product variant to its [inventory levels](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) at different locations, tracking stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information for the product.
+ * An inventory item represents the inventory for a [product variant](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant). It holds the stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information.
+ *
+ * Use the [`inventoryLevels`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryItem#field-InventoryItem.fields.inventoryLevels) field to get the [inventory level](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) for each location that stocks the item, and the level's [`quantities`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel#field-InventoryLevel.fields.quantities) field to read its inventory quantities by name. Quantity names represent the [inventory states](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps#inventory-states) that merchants use to track inventory.
  *
  * Learn more about [inventory object relationships](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps/manage-quantities-states#inventory-object-relationships).
  */
@@ -23883,7 +23952,7 @@ export type InventoryItem = LegacyInteroperability & Node & {
   measurement: InventoryItemMeasurement;
   /** The ISO 3166-2 alpha-2 province code of where the item originated from. */
   provinceCodeOfOrigin?: Maybe<Scalars['String']['output']>;
-  /** Whether the inventory item requires shipping. */
+  /** Whether a customer needs to provide a shipping address when placing an order containing the inventory item. */
   requiresShipping: Scalars['Boolean']['output'];
   /** Inventory item SKU. Case-sensitive string. */
   sku?: Maybe<Scalars['String']['output']>;
@@ -23891,7 +23960,7 @@ export type InventoryItem = LegacyInteroperability & Node & {
   tracked: Scalars['Boolean']['output'];
   /** Whether the value of the `tracked` field for the inventory item can be changed. */
   trackedEditable: EditableProperty;
-  /** Unit cost associated with the inventory item. Note: the user must have "View product costs" permission granted in order to access this field once product granular permissions are enabled. */
+  /** Unit cost associated with the inventory item. The shop's currency is used. Note: the user must have "View product costs" permission granted in order to access this field once product granular permissions are enabled. */
   unitCost?: Maybe<MoneyV2>;
   /** The date and time when the inventory item was updated. */
   updatedAt: Scalars['DateTime']['output'];
@@ -23906,7 +23975,9 @@ export type InventoryItem = LegacyInteroperability & Node & {
 
 
 /**
- * A [product variant's](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant) inventory information across all locations. The inventory item connects the product variant to its [inventory levels](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) at different locations, tracking stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information for the product.
+ * An inventory item represents the inventory for a [product variant](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant). It holds the stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information.
+ *
+ * Use the [`inventoryLevels`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryItem#field-InventoryItem.fields.inventoryLevels) field to get the [inventory level](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) for each location that stocks the item, and the level's [`quantities`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel#field-InventoryLevel.fields.quantities) field to read its inventory quantities by name. Quantity names represent the [inventory states](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps#inventory-states) that merchants use to track inventory.
  *
  * Learn more about [inventory object relationships](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps/manage-quantities-states#inventory-object-relationships).
  */
@@ -23920,7 +23991,9 @@ export type InventoryItemCountryHarmonizedSystemCodesArgs = {
 
 
 /**
- * A [product variant's](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant) inventory information across all locations. The inventory item connects the product variant to its [inventory levels](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) at different locations, tracking stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information for the product.
+ * An inventory item represents the inventory for a [product variant](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant). It holds the stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information.
+ *
+ * Use the [`inventoryLevels`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryItem#field-InventoryItem.fields.inventoryLevels) field to get the [inventory level](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) for each location that stocks the item, and the level's [`quantities`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel#field-InventoryLevel.fields.quantities) field to read its inventory quantities by name. Quantity names represent the [inventory states](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps#inventory-states) that merchants use to track inventory.
  *
  * Learn more about [inventory object relationships](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps/manage-quantities-states#inventory-object-relationships).
  */
@@ -23930,7 +24003,9 @@ export type InventoryItemInventoryLevelArgs = {
 
 
 /**
- * A [product variant's](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant) inventory information across all locations. The inventory item connects the product variant to its [inventory levels](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) at different locations, tracking stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information for the product.
+ * An inventory item represents the inventory for a [product variant](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant). It holds the stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information.
+ *
+ * Use the [`inventoryLevels`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryItem#field-InventoryItem.fields.inventoryLevels) field to get the [inventory level](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) for each location that stocks the item, and the level's [`quantities`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel#field-InventoryLevel.fields.quantities) field to read its inventory quantities by name. Quantity names represent the [inventory states](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps#inventory-states) that merchants use to track inventory.
  *
  * Learn more about [inventory object relationships](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps/manage-quantities-states#inventory-object-relationships).
  */
@@ -23945,7 +24020,9 @@ export type InventoryItemInventoryLevelsArgs = {
 
 
 /**
- * A [product variant's](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant) inventory information across all locations. The inventory item connects the product variant to its [inventory levels](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) at different locations, tracking stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information for the product.
+ * An inventory item represents the inventory for a [product variant](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant). It holds the stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information.
+ *
+ * Use the [`inventoryLevels`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryItem#field-InventoryItem.fields.inventoryLevels) field to get the [inventory level](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) for each location that stocks the item, and the level's [`quantities`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel#field-InventoryLevel.fields.quantities) field to read its inventory quantities by name. Quantity names represent the [inventory states](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps#inventory-states) that merchants use to track inventory.
  *
  * Learn more about [inventory object relationships](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps/manage-quantities-states#inventory-object-relationships).
  */
@@ -24259,7 +24336,7 @@ export type InventoryProperties = {
 
 /**
  * The `InventoryQuantity` object lets you manage and track inventory quantities for specific [states](https://shopify.dev/docs/apps/fulfillment/inventory-management-apps#inventory-states).
- * Inventory quantities represent different states of items such as available for purchase, committed to orders, reserved for drafts, incoming from suppliers, or set aside for quality control or safety stock.
+ * Inventory quantities represent different states of items such as available for purchase, committed to orders, draft orders, transfers, or shipments, reserved by the merchant, incoming from suppliers, or set aside for quality control or safety stock.
  *
  * You can use [inventory levels](https://shopify.dev/docs/api/admin-graphql/latest/objects/inventorylevel) to manage where inventory items are stocked. You can also [make inventory adjustments](https://shopify.dev/docs/api/admin-graphql/latest/mutations/inventoryAdjustQuantities) to apply changes to inventory quantities.
  *
@@ -24797,6 +24874,10 @@ export type InventoryShipmentCreateInTransitUserError = DisplayableError & {
 
 /** Possible error codes that can be returned by `InventoryShipmentCreateInTransitUserError`. */
 export type InventoryShipmentCreateInTransitUserErrorCode =
+  /** This barcode is already assigned to another shipment. */
+  | 'BARCODE_DUPLICATE'
+  /** Barcode must be 255 characters or less. */
+  | 'BARCODE_TOO_LONG'
   /** A single item can't be listed twice. */
   | 'DUPLICATE_ITEM'
   /** The shipment input cannot be empty. */
@@ -25097,6 +25178,8 @@ export type InventoryShipmentRemoveItemsUserError = DisplayableError & {
 export type InventoryShipmentRemoveItemsUserErrorCode =
   /** Unexpected internal error happened. */
   | 'INTERNAL_ERROR'
+  /** The quantity is invalid. */
+  | 'INVALID_QUANTITY'
   /** Current shipment status does not support this operation. */
   | 'INVALID_SHIPMENT_STATUS'
   /** The item was not found. */
@@ -26282,6 +26365,8 @@ export type LineItem = Node & {
   canRestock: Scalars['Boolean']['output'];
   /** The subscription contract associated with this line item. */
   contract?: Maybe<SubscriptionContract>;
+  /** The date and time when the line item was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The number of units ordered, excluding refunded and removed units. */
   currentQuantity: Scalars['Int']['output'];
   /** A list of attributes that represent custom features or special requests. */
@@ -27271,12 +27356,16 @@ export type LocationDeactivateUserErrorCode =
   | 'FAILED_TO_RELOCATE_ACTIVE_INVENTORIES'
   /** Failed to relocate incoming movements to the destination location. */
   | 'FAILED_TO_RELOCATE_INCOMING_MOVEMENTS'
+  /** Failed to relocate incoming transfers to the destination location. */
+  | 'FAILED_TO_RELOCATE_INCOMING_TRANSFERS'
   /** Failed to relocate open purchase orders to the destination location. */
   | 'FAILED_TO_RELOCATE_OPEN_PURCHASE_ORDERS'
   /** Location could not be deactivated without specifying where to relocate inventory at the location. */
   | 'HAS_ACTIVE_INVENTORY_ERROR'
   /** Location needs to be removed from Shopify POS for Retail subscription in Point of Sale channel. */
   | 'HAS_ACTIVE_RETAIL_SUBSCRIPTIONS'
+  /** Location could not be deactivated because it has active inventory transfers. */
+  | 'HAS_ACTIVE_TRANSFERS_ERROR'
   /** Location could not be deactivated because it has pending orders. */
   | 'HAS_FULFILLMENT_ORDERS_ERROR'
   /**
@@ -29366,13 +29455,16 @@ export type MarketingChannel =
   /** Social media. */
   | 'SOCIAL';
 
-/** Marketing engagement represents customer activity taken on a marketing activity or a marketing channel. */
+/** Marketing engagement represents customer activity taken on a marketing activity. */
 export type MarketingEngagement = {
   /** The total ad spend for the marketing content. Recurring weekly, monthly, or yearly spend needs to be divided into daily amounts. */
   adSpend?: Maybe<MoneyV2>;
   /** The number of all conversions from the marketing content. This field supports ad platforms that track conversions beyond traditional sales metrics. All conversions include both primary and secondary conversion goals as defined by the ad platform, such as purchases, add-to-carts, page views, and sign-ups. */
   allConversions?: Maybe<Scalars['Decimal']['output']>;
-  /** The unique string identifier of the channel to which the engagement metrics are being provided. This should be set when and only when providing channel-level engagements. This should be nil when providing activity-level engagements. For the correct handle for your channel, contact your partner manager. */
+  /**
+   * The unique string identifier of the channel to which the engagement metrics are being provided.
+   * @deprecated Channel-level engagements are deprecated. Provide engagement metrics on a marketing activity using `marketingActivityId` or `remoteId` instead.
+   */
   channelHandle?: Maybe<Scalars['String']['output']>;
   /** The total number of interactions, such as a button press or a screen touch, that occurred on the marketing content. */
   clicksCount?: Maybe<Scalars['Int']['output']>;
@@ -29425,7 +29517,7 @@ export type MarketingEngagement = {
 
 /** Return type for `marketingEngagementCreate` mutation. */
 export type MarketingEngagementCreatePayload = {
-  /** The marketing engagement that was created. This represents customer activity taken on a marketing activity or a marketing channel. */
+  /** The marketing engagement that was created. This represents customer activity taken on a marketing activity. */
   marketingEngagement?: Maybe<MarketingEngagement>;
   /** The list of errors that occurred from executing the mutation. */
   userErrors: Array<MarketingActivityUserError>;
@@ -29563,6 +29655,8 @@ export type MarketingEventEdge = {
 
 /** The set of valid sort keys for the MarketingEvent query. */
 export type MarketingEventSortKeys =
+  /** Sort by the `created_at` value. */
+  | 'CREATED_AT'
   /** Sort by the `id` value. */
   | 'ID'
   /** Sort by the `started_at` value. */
@@ -30134,6 +30228,8 @@ export type MediaWarningCode =
  * Each menu contains menu items that can link to various resource types. This flexibility lets merchants create navigation experiences that guide customers through their store.
  */
 export type Menu = HasPublishedTranslations & Node & {
+  /** The date and time when the menu was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The menu's handle. */
   handle: Scalars['String']['output'];
   /** A globally-unique ID. */
@@ -30435,7 +30531,7 @@ export type Metafield = HasCompareDigest & LegacyInteroperability & Node & {
   id: Scalars['ID']['output'];
   /** The data stored in the metafield in JSON format. */
   jsonValue: Scalars['JSON']['output'];
-  /** The unique identifier for the metafield within its namespace. */
+  /** The unique identifier for the metafield within its namespace. If the metafield was requested with a combined `namespace.key` value, such as through the `keys` argument, this field returns the combined value. */
   key: Scalars['String']['output'];
   /** The ID of the corresponding resource in the REST Admin API. */
   legacyResourceId: Scalars['UnsignedInt64']['output'];
@@ -31267,7 +31363,7 @@ export type MetafieldDefinitionUpdateUserErrorCode =
  * For example, for a metafield definition of `number_integer` type, you can set a validation with the name `max`
  * and a value of `15`. This validation will ensure that the value of the metafield is a number less than or equal to 15.
  *
- * Refer to the [list of supported validations](https://shopify.dev/api/admin/graphql/reference/common-objects/metafieldDefinitionTypes#examples-Fetch_all_metafield_definition_types).
+ * Refer to the [list of supported validations](https://shopify.dev/docs/apps/build/metafields/list-of-validation-options).
  */
 export type MetafieldDefinitionValidation = {
   /** The validation name. */
@@ -31284,7 +31380,7 @@ export type MetafieldDefinitionValidation = {
  * For example, for a metafield definition of `single_line_text_field` type, you can set a validation with the name `min` and a value of `10`.
  * This validation will ensure that the value of the metafield is at least 10 characters.
  *
- * Refer to the [list of supported validations](https://shopify.dev/apps/build/custom-data/metafields/list-of-validation-options).
+ * Refer to the [list of supported validations](https://shopify.dev/docs/apps/build/metafields/list-of-validation-options).
  */
 export type MetafieldDefinitionValidationInput = {
   /** The name for the metafield definition validation. */
@@ -33853,7 +33949,7 @@ export type Mutation = {
    * - Select a specific payment gateway.
    *
    * > Note:
-   * > When completing a draft order, inventory is [reserved](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps#inventory-states)
+   * > When completing a draft order, inventory is [committed](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps#inventory-states)
    * for the items in the order. This means the items will no longer be available for other customers to purchase.
    * Make sure to verify inventory availability before completing the draft order.
    */
@@ -34281,7 +34377,17 @@ export type Mutation = {
   giftCardDeactivate?: Maybe<GiftCardDeactivatePayload>;
   /** Removes funds from a gift card, decreasing its available balance. Use this for manual balance adjustments — for example, correcting an accidental over-credit or applying a fee. */
   giftCardDebit?: Maybe<GiftCardDebitPayload>;
-  /** Sends a notification to the customer who purchased a gift card, including the gift card details and code. The notification is delivered using the customer's available contact method. Use this to resend the purchase confirmation or remind the purchaser about a gift card they bought. */
+  /**
+   * Sends a gift card notification. If the gift card has a designated recipient,
+   * a purchase confirmation is sent instead. Both default email templates include the gift card code.
+   *
+   * By default, gift card notifications use the linked order's contact details, with the assigned customer's
+   * details as a fallback. Purchase confirmations use the assigned customer's contact details.
+   *
+   * The gift card must have an assigned customer with an email address or phone number.
+   * Returns an error without sending if the selected contact source has no contact information.
+   * When both an email address and a phone number are available, the notification is sent by email.
+   */
   giftCardSendNotificationToCustomer?: Maybe<GiftCardSendNotificationToCustomerPayload>;
   /** Sends a notification to the designated recipient of a gift card, delivering the gift card code and redemption instructions. The notification is delivered using the recipient's available contact method. Use this to deliver or re-deliver the gift card to the intended recipient. */
   giftCardSendNotificationToRecipient?: Maybe<GiftCardSendNotificationToRecipientPayload>;
@@ -34349,8 +34455,15 @@ export type Mutation = {
    */
   inventorySetOnHandQuantities?: Maybe<InventorySetOnHandQuantitiesPayload>;
   /**
-   * Set quantities of specified name using absolute values. This mutation supports compare-and-set functionality to handle
-   * concurrent requests properly. If `ignoreCompareQuantity` is not set to true,
+   * Set quantities of specified name using absolute values. This mutation supports compare-and-swap (CAS) functionality to handle
+   * concurrent requests properly.
+   *
+   * As of 2026-04, each quantity in `quantities` must include a `changeFromQuantity` value. The mutation only updates the
+   * quantity if the persisted quantity matches `changeFromQuantity`, and otherwise returns a `CHANGE_FROM_QUANTITY_STALE` error.
+   * In order to opt out of the check for a quantity, explicitly pass `null` as its `changeFromQuantity`. Omitting
+   * `changeFromQuantity` returns an error.
+   *
+   * Before 2026-04, if `ignoreCompareQuantity` is not set to true,
    * the mutation will only update the quantity if the persisted quantity matches the `compareQuantity` value.
    * If the `compareQuantity` value does not match the persisted value, the mutation will return an error. In order to opt out
    * of the `compareQuantity` check, the `ignoreCompareQuantity` argument can be set to true.
@@ -34360,9 +34473,11 @@ export type Mutation = {
    * > otherwise please consider using the [inventoryAdjustQuantities](https://shopify.dev/api/admin-graphql/latest/mutations/inventoryAdjustQuantities) mutation.
    * >
    * >
-   * > Opting out of the `compareQuantity` check can lead to inaccurate inventory quantities if multiple requests are made concurrently.
-   * > It is recommended to always include the `compareQuantity` value to ensure the accuracy of the inventory quantities and to opt out
-   * > of the check using `ignoreCompareQuantity` only when necessary.
+   * > Opting out of the compare-and-swap check can lead to inaccurate inventory quantities if multiple requests are made concurrently.
+   * > It is recommended to always pass the expected current quantity as `changeFromQuantity` (or `compareQuantity` before 2026-04)
+   * > to ensure the accuracy of the inventory quantities, and to opt out of the check (with a `null` `changeFromQuantity`, or
+   * > `ignoreCompareQuantity` before 2026-04) only when necessary.
+   * > For more information, refer to the [compare and swap documentation](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps/manage-quantities-states#compare-and-swap).
    *
    * > Caution:
    * > As of 2026-01, this mutation supports an optional idempotency key using the `@idempotent` directive.
@@ -34564,8 +34679,8 @@ export type Mutation = {
   marketCreate?: Maybe<MarketCreatePayload>;
   /**
    * Updates currency settings of a market.
-   * @deprecated This will be removed in a future version. Use `marketCreate` and `marketUpdate` for creating and updating
-   * market currency settings, respectively.
+   * @deprecated Use `marketCreate` and `marketUpdate` for creating and updating
+   * market currency settings, respectively. Removed in API version 2027-01.
    *
    */
   marketCurrencySettingsUpdate?: Maybe<MarketCurrencySettingsUpdatePayload>;
@@ -34624,12 +34739,11 @@ export type Mutation = {
   marketingActivityUpdateExternal?: Maybe<MarketingActivityUpdateExternalPayload>;
   /** Creates a new external marketing activity or updates an existing one. When optional fields are absent or null, associated information will be removed from an existing marketing activity. */
   marketingActivityUpsertExternal?: Maybe<MarketingActivityUpsertExternalPayload>;
-  /** Creates a new marketing engagement for a marketing activity or a marketing channel. */
+  /** Creates a new marketing engagement for a marketing activity. */
   marketingEngagementCreate?: Maybe<MarketingEngagementCreatePayload>;
   /**
-   * Marks channel-level engagement data such that it no longer appears in reports.
-   *           Activity-level data cannot be deleted directly, instead the MarketingActivity itself should be deleted to
-   *           hide it from reports.
+   * Marks engagement data for a channel so it no longer appears in reports. Activity-level data cannot be deleted directly; delete the MarketingActivity instead.
+   * @deprecated Channel-level engagements are deprecated. Activity-level engagement data cannot be deleted directly; delete the MarketingActivity instead.
    */
   marketingEngagementsDelete?: Maybe<MarketingEngagementsDeletePayload>;
   /**
@@ -35300,10 +35414,10 @@ export type Mutation = {
    */
   productOptionUpdate?: Maybe<ProductOptionUpdatePayload>;
   /**
-   * Creates one or more [options](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductOption)
-   * on a [product](https://shopify.dev/docs/api/admin-graphql/latest/objects/Product),
+   * Creates one or more [options](https://shopify.dev/docs/api/admin-graphql/current/objects/ProductOption)
+   * on a [product](https://shopify.dev/docs/api/admin-graphql/current/objects/Product),
    * such as size, color, or material. Each option includes a name, position, and a list of values. The combination
-   * of a product option and value creates a [product variant](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant).
+   * of a product option and value creates a [product variant](https://shopify.dev/docs/api/admin-graphql/current/objects/ProductVariant).
    *
    * Use the `productOptionsCreate` mutation for the following use cases:
    *
@@ -35322,16 +35436,23 @@ export type Mutation = {
    * > Note:
    * > The `productOptionsCreate` mutation enforces strict data integrity for product options and variants.
    * All option positions must be sequential, and every option should be used by at least one variant.
-   * If you use the [`CREATE` variant strategy](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productOptionsCreate#arguments-variantStrategy.enums.CREATE), consider the maximum allowed number of variants for each product is 2048.
+   * If you use the [`CREATE` variant strategy](https://shopify.dev/docs/api/admin-graphql/current/mutations/productOptionsCreate#arguments-variantStrategy.enums.CREATE), consider the maximum allowed number of variants for each product is 2048.
+   *
+   * If the product already has an option with the same name, then the mutation returns an
+   * `OPTION_ALREADY_EXISTS` error. A product that has only its default variant is the exception,
+   * because its implicit `Title` option is a placeholder that the mutation replaces.
+   * To declare the complete set of options and variants that a product
+   * should have, and let Shopify create, update, or remove them to match, use the
+   * [`productSet`](https://shopify.dev/docs/api/admin-graphql/current/mutations/productSet) mutation instead.
    *
    * After you create product options, you can further manage a product's configuration using related mutations:
    *
-   * - [`productOptionUpdate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productOptionUpdate)
-   * - [`productOptionsReorder`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productOptionsReorder)
-   * - [`productOptionsDelete`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productOptionsDelete)
-   * - [`productVariantsBulkCreate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productVariantsBulkCreate)
-   * - [`productVariantsBulkUpdate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productVariantsBulkUpdate)
-   * - [`productSet`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/productSet)
+   * - [`productOptionUpdate`](https://shopify.dev/docs/api/admin-graphql/current/mutations/productOptionUpdate)
+   * - [`productOptionsReorder`](https://shopify.dev/docs/api/admin-graphql/current/mutations/productOptionsReorder)
+   * - [`productOptionsDelete`](https://shopify.dev/docs/api/admin-graphql/current/mutations/productOptionsDelete)
+   * - [`productVariantsBulkCreate`](https://shopify.dev/docs/api/admin-graphql/current/mutations/productVariantsBulkCreate)
+   * - [`productVariantsBulkUpdate`](https://shopify.dev/docs/api/admin-graphql/current/mutations/productVariantsBulkUpdate)
+   * - [`productSet`](https://shopify.dev/docs/api/admin-graphql/current/mutations/productSet)
    *
    * Learn more about the [product model](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model)
    * and [adding product data](https://shopify.dev/docs/apps/build/graphql/migrate/new-product-model/add-data).
@@ -36071,7 +36192,11 @@ export type Mutation = {
   subscriptionBillingCycleBulkSearch?: Maybe<SubscriptionBillingCycleBulkSearchPayload>;
   /** Creates a new subscription billing attempt for a specified billing cycle. This is the alternative mutation for [subscriptionBillingAttemptCreate](https://shopify.dev/docs/api/admin-graphql/latest/mutations/subscriptionBillingAttemptCreate). For more information, refer to [Create a subscription contract](https://shopify.dev/docs/apps/selling-strategies/subscriptions/contracts/create#step-4-create-a-billing-attempt). */
   subscriptionBillingCycleCharge?: Maybe<SubscriptionBillingCycleChargePayload>;
-  /** Commits the updates of a Subscription Billing Cycle Contract draft. */
+  /**
+   * Commits the updates of a Subscription Billing Cycle Contract draft.
+   *
+   * Commits are rate limited per subscription contract across all apps on the store. If you exceed the limit, then the mutation returns a top-level `THROTTLED` error and doesn't commit. Wait before you retry.
+   */
   subscriptionBillingCycleContractDraftCommit?: Maybe<SubscriptionBillingCycleContractDraftCommitPayload>;
   /** Concatenates a contract to a Subscription Draft. */
   subscriptionBillingCycleContractDraftConcatenate?: Maybe<SubscriptionBillingCycleContractDraftConcatenatePayload>;
@@ -36100,7 +36225,10 @@ export type Mutation = {
    *
    * After you create the draft, you can either modify it with the [`subscriptionDraftUpdate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/subscriptionDraftUpdate) mutation or finalize and create the active subscription contract with [`subscriptionDraftCommit`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/subscriptionDraftCommit).
    *
+   * This mutation and the draft-based flow are deprecated in favor of the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
+   *
    * Learn more about [building subscription contracts](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/build-a-subscription-contract).
+   * @deprecated Use [`subscriptionContractCreateCalculate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/subscriptionContractCreateCalculate) instead.
    */
   subscriptionContractCreate?: Maybe<SubscriptionContractCreatePayload>;
   /** Expires a Subscription Contract. */
@@ -36109,7 +36237,11 @@ export type Mutation = {
   subscriptionContractFail?: Maybe<SubscriptionContractFailPayload>;
   /** Pauses a Subscription Contract. */
   subscriptionContractPause?: Maybe<SubscriptionContractPausePayload>;
-  /** Allows for the easy change of a Product in a Contract or a Product price change. */
+  /**
+   * Allows for the easy change of a Product in a Contract or a Product price change.
+   *
+   * Changes are rate limited per subscription contract across all apps on the store. If you exceed the limit, then the mutation returns a top-level `THROTTLED` error and doesn't change the contract. Wait before you retry.
+   */
   subscriptionContractProductChange?: Maybe<SubscriptionContractProductChangePayload>;
   /**
    * Sets the next billing date of a Subscription Contract. This field is managed by the apps.
@@ -36123,30 +36255,68 @@ export type Mutation = {
    *
    * Changes remain in draft state and don't affect the live contract until committed. After you've made all necessary changes to the draft, commit it using [`subscriptionDraftCommit`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/subscriptionDraftCommit) to apply the updates to the original contract.
    *
+   * This mutation and the draft-based edit flow are deprecated in favor of the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
+   *
    * Learn more about [updating subscription contracts](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/update-a-subscription-contract#step-2-create-a-draft-of-an-existing-contract).
+   * @deprecated Use [`subscriptionContractUpdateCalculate`](https://shopify.dev/docs/api/admin-graphql/latest/mutations/subscriptionContractUpdateCalculate) instead.
    */
   subscriptionContractUpdate?: Maybe<SubscriptionContractUpdatePayload>;
-  /** Commits the updates of a Subscription Contract draft. */
+  /**
+   * Commits the updates of a Subscription Contract draft.
+   *
+   * Commits are rate limited per subscription contract across all apps on the store. If you exceed the limit, then the mutation returns a top-level `THROTTLED` error and doesn't commit. Wait before you retry.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftCommit?: Maybe<SubscriptionDraftCommitPayload>;
-  /** Adds a subscription discount to a subscription draft. */
+  /**
+   * Adds a subscription discount to a subscription draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftDiscountAdd?: Maybe<SubscriptionDraftDiscountAddPayload>;
-  /** Applies a code discount on the subscription draft. */
+  /**
+   * Applies a code discount on the subscription draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftDiscountCodeApply?: Maybe<SubscriptionDraftDiscountCodeApplyPayload>;
-  /** Removes a subscription discount from a subscription draft. */
+  /**
+   * Removes a subscription discount from a subscription draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftDiscountRemove?: Maybe<SubscriptionDraftDiscountRemovePayload>;
-  /** Updates a subscription discount on a subscription draft. */
+  /**
+   * Updates a subscription discount on a subscription draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftDiscountUpdate?: Maybe<SubscriptionDraftDiscountUpdatePayload>;
-  /** Adds a subscription free shipping discount to a subscription draft. */
+  /**
+   * Adds a subscription free shipping discount to a subscription draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftFreeShippingDiscountAdd?: Maybe<SubscriptionDraftFreeShippingDiscountAddPayload>;
-  /** Updates a subscription free shipping discount on a subscription draft. */
+  /**
+   * Updates a subscription free shipping discount on a subscription draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftFreeShippingDiscountUpdate?: Maybe<SubscriptionDraftFreeShippingDiscountUpdatePayload>;
-  /** Adds a subscription line to a subscription draft. */
+  /**
+   * Adds a subscription line to a subscription draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftLineAdd?: Maybe<SubscriptionDraftLineAddPayload>;
-  /** Removes a subscription line from a subscription draft. */
+  /**
+   * Removes a subscription line from a subscription draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftLineRemove?: Maybe<SubscriptionDraftLineRemovePayload>;
-  /** Updates a subscription line on a subscription draft. */
+  /**
+   * Updates a subscription line on a subscription draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftLineUpdate?: Maybe<SubscriptionDraftLineUpdatePayload>;
-  /** Updates a Subscription Draft. */
+  /**
+   * Updates a Subscription Draft.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraftUpdate?: Maybe<SubscriptionDraftUpdatePayload>;
   /**
    * Adds tags to a resource. If the resource type doesn't support tagging, the `id` argument returns a resource-not-found error.
@@ -37755,7 +37925,6 @@ export type MutationInventoryActivateArgs = {
   inventoryItemId: Scalars['ID']['input'];
   locationId: Scalars['ID']['input'];
   onHand?: InputMaybe<Scalars['Int']['input']>;
-  stockAtLegacyLocation?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -38092,17 +38261,9 @@ export type MutationMarketingActivityUpsertExternalArgs = {
 
 /** The schema's entry point for all mutation operations. */
 export type MutationMarketingEngagementCreateArgs = {
-  channelHandle?: InputMaybe<Scalars['String']['input']>;
   marketingActivityId?: InputMaybe<Scalars['ID']['input']>;
   marketingEngagement: MarketingEngagementInput;
   remoteId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** The schema's entry point for all mutation operations. */
-export type MutationMarketingEngagementsDeleteArgs = {
-  channelHandle?: InputMaybe<Scalars['String']['input']>;
-  deleteEngagementsForAllChannels?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -41714,12 +41875,12 @@ export type OrderCreateFulfillmentInput = {
    * If you specify a tracking company name from
    * [the list](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies),
    * Shopify will automatically build tracking URLs for all provided tracking numbers,
-   * which will make the tracking numbers clickable in the interface.
+   * which will make the tracking numbers clickable in the interface. This doesn't mean
+   * that Shopify automatically updates the fulfillment's `shipment_status` field in Admin.
    * The same tracking company will be applied to all tracking numbers specified.
    *
-   * Additionally, for the tracking companies listed on the
-   * [Shipping Carriers help page](https://help.shopify.com/manual/shipping/understanding-shipping/shipping-carriers#integrated-shipping-carriers)
-   * Shopify will automatically update the fulfillment's `shipment_status` field during the fulfillment process.
+   * For tracking companies whose `shipment_status` field is updated automatically, see
+   * [Tracking companies with automatic tracking updates](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#tracking-companies-with-automatic-tracking-updates).
    *
    * > Note:
    * > Send the tracking company name exactly as written in
@@ -43434,7 +43595,9 @@ export type PageCreateUserErrorCode =
   /** The input value is too big. */
   | 'TOO_BIG'
   /** The input value is too long. */
-  | 'TOO_LONG';
+  | 'TOO_LONG'
+  /** The input value is too short. */
+  | 'TOO_SHORT';
 
 /** Return type for `pageDelete` mutation. */
 export type PageDeletePayload = {
@@ -44168,6 +44331,8 @@ export type PriceInput = {
 export type PriceList = Node & {
   /** The catalog that the price list is associated with. */
   catalog?: Maybe<Catalog>;
+  /** The date and time when the price list was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The currency for fixed prices associated with this price list. */
   currency: CurrencyCode;
   /** The number of fixed prices on the price list. */
@@ -44973,7 +45138,10 @@ export type PriceRuleShareableUrlTargetType =
 export type PriceRuleShippingLineEntitlements = {
   /** The codes for the countries to which the price rule applies to. */
   countryCodes: Array<CountryCode>;
-  /** Whether the price rule is applicable to countries that haven't been defined in the shop's shipping zones. */
+  /**
+   * Whether the price rule is applicable to countries that haven't been defined in the shop's shipping zones.
+   * @deprecated This field is being retired. Price rules that set `includeRestOfWorld: true` will be converted to an explicit list of countries, and `countryCodes` will then return every country where the price rule applies.
+   */
   includeRestOfWorld: Scalars['Boolean']['output'];
   /** Whether the price rule applies to all shipping lines. */
   targetAllShippingLines: Scalars['Boolean']['output'];
@@ -45859,7 +46027,7 @@ export type Product = HasEvents & HasMetafieldDefinitions & HasMetafields & HasP
    * Whether the product can only be purchased with
    * a [selling plan](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans).
    * Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores.
-   * If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels, except the online store.
+   * If you update a product to be subscription-only (`requiresSellingPlan: true`), then the product is unpublished from all channels, except the online store.
    */
   requiresSellingPlan: Scalars['Boolean']['output'];
   /**
@@ -47003,7 +47171,7 @@ export type ProductCreateInput = {
    * Whether the product can only be purchased with
    * a [selling plan](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans).
    * Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores.
-   * If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels except the online store.
+   * If you update a product to be subscription-only (`requiresSellingPlan: true`), then the product is unpublished from all channels except the online store.
    */
   requiresSellingPlan?: InputMaybe<Scalars['Boolean']['input']>;
   /**
@@ -47408,7 +47576,7 @@ export type ProductInput = {
    * Whether the product can only be purchased with
    * a [selling plan](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans).
    * Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores.
-   * If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels except the online store.
+   * If you update a product to be subscription-only (`requiresSellingPlan: true`), then the product is unpublished from all channels except the online store.
    */
   requiresSellingPlan?: InputMaybe<Scalars['Boolean']['input']>;
   /**
@@ -47461,6 +47629,8 @@ export type ProductLeaveSellingPlanGroupsPayload = {
 
 /** The set of valid sort keys for the ProductMedia query. */
 export type ProductMediaSortKeys =
+  /** Sort by the `created_at` value. */
+  | 'CREATED_AT'
   /** Sort by the `id` value. */
   | 'ID'
   /** Sort by the `position` value. */
@@ -47489,6 +47659,8 @@ export type ProductOperationStatus =
  * The option includes its display position, associated values, and optional [`LinkedMetafield`](https://shopify.dev/docs/api/admin-graphql/latest/objects/LinkedMetafield) for structured data. Options support translations for international selling and track which [`ProductOptionValue`](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductOptionValue) objects that variants actively use versus unused values that exist without associated variants.
  */
 export type ProductOption = HasPublishedTranslations & Node & {
+  /** The date and time when the product option was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
   /** The metafield identifier linked to this option. */
@@ -48362,7 +48534,7 @@ export type ProductUpdateInput = {
    * Whether the product can only be purchased with
    * a [selling plan](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans).
    * Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores.
-   * If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels except the online store.
+   * If you update a product to be subscription-only (`requiresSellingPlan: true`), then the product is unpublished from all channels except the online store.
    */
   requiresSellingPlan?: InputMaybe<Scalars['Boolean']['input']>;
   /**
@@ -50646,7 +50818,7 @@ export type QueryRoot = {
   automaticDiscountSavedSearches: SavedSearchConnection;
   /**
    * Returns a list of automatic discounts that are applied in the cart and at checkout without requiring a discount code.
-   * @deprecated Use `automaticDiscountNodes` instead.
+   * @deprecated Use `automaticDiscountNodes` instead. This will be removed in 2027-01.
    */
   automaticDiscounts: DiscountAutomaticConnection;
   /** The geographic regions that you can set as the [`Shop`](https://shopify.dev/docs/api/admin-graphql/latest/objects/Shop)'s backup region. The backup region serves as a fallback when the system can't determine a buyer's actual location. */
@@ -51116,17 +51288,21 @@ export type QueryRoot = {
   /** Returns the total count of gift cards that have been issued by the shop. Use this for dashboard summaries or to understand the scale of a merchant's gift card program. The count includes all gift cards regardless of status (active, disabled, or fully redeemed). Limited to a maximum of 10000 by default. */
   giftCardsCount?: Maybe<Count>;
   /**
-   * Returns an
-   * [InventoryItem](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryItem)
-   * object by ID.
+   * Retrieves an [inventory item](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryItem) by its ID. An inventory item represents the inventory for a [product variant](https://shopify.dev/docs/api/admin-graphql/latest/objects/ProductVariant), and holds the stock keeping unit (SKU), whether quantities are tracked, shipping requirements, and customs information.
+   *
+   * Use the [`inventoryLevels`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryItem#field-InventoryItem.fields.inventoryLevels) field to get the [inventory level](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) for each location that stocks the item, and the level's [`quantities`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel#field-InventoryLevel.fields.quantities) field to read its inventory quantities by name.
+   *
+   * Learn more about [inventory object relationships](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps/manage-quantities-states#inventory-object-relationships).
    */
   inventoryItem?: Maybe<InventoryItem>;
   /** Returns a list of inventory items. */
   inventoryItems: InventoryItemConnection;
   /**
-   * Returns an
-   * [InventoryLevel](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel)
-   * object by ID.
+   * Retrieves an [inventory level](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel) by its ID. An inventory level exists for an inventory item at each location that stocks it. Each inventory level has a [`quantities`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryLevel#field-InventoryLevel.fields.quantities) field to read the inventory quantity by name. Quantity names represent the [inventory states](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps#inventory-states) that merchants use to track inventory.
+   *
+   * The [`InventoryItem`](https://shopify.dev/docs/api/admin-graphql/latest/objects/InventoryItem) and [`Location`](https://shopify.dev/docs/api/admin-graphql/latest/objects/Location) objects each have an `inventoryLevels` field. Use it to find the ID of an inventory level.
+   *
+   * Learn more about [inventory object relationships](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps/manage-quantities-states#inventory-object-relationships).
    */
   inventoryLevel?: Maybe<InventoryLevel>;
   /** Returns the shop's inventory configuration, including all inventory quantity names. Quantity names represent different [inventory states](https://shopify.dev/docs/apps/build/orders-fulfillment/inventory-management-apps#inventory-states) that merchants use to track inventory. */
@@ -51753,7 +51929,10 @@ export type QueryRoot = {
    * Filter results with the [`query`](https://shopify.dev/docs/api/admin-graphql/latest/queries/subscriptionContracts#arguments-query) argument. You can paginate results using standard [cursor-based pagination](https://shopify.dev/docs/api/usage/pagination-graphql).
    */
   subscriptionContracts: SubscriptionContractConnection;
-  /** Returns a Subscription Draft resource by ID. */
+  /**
+   * Returns a Subscription Draft resource by ID.
+   * @deprecated Use the [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api) instead.
+   */
   subscriptionDraft?: Maybe<SubscriptionDraft>;
   /**
    * Access to Shopify's [standardized product taxonomy](https://shopify.github.io/product-taxonomy/releases/unstable/?categoryId=sg-4-17-2-17) for categorizing products. The [`Taxonomy`](https://shopify.dev/docs/api/admin-graphql/latest/objects/Taxonomy) organizes products into a hierarchical tree structure with categories, attributes, and values.
@@ -55187,7 +55366,7 @@ export type ReturnLineItem = Node & ReturnLineItemType & {
   returnReasonNote: Scalars['String']['output'];
   /** The total weight of the item. */
   totalWeight?: Maybe<Weight>;
-  /** The quantity that has't been processed. */
+  /** The quantity that hasn't been processed. */
   unprocessedQuantity: Scalars['Int']['output'];
   /** The total line price after all discounts on the line item, including both line item level discounts and code-based line item discounts, are applied. */
   withCodeDiscountedTotalPriceSet: MoneyBag;
@@ -55256,7 +55435,7 @@ export type ReturnLineItemType = {
   returnReasonDefinition?: Maybe<ReturnReasonDefinition>;
   /** Additional information about the reason for the return. Maximum length: 255 characters. */
   returnReasonNote: Scalars['String']['output'];
-  /** The quantity that has't been processed. */
+  /** The quantity that hasn't been processed. */
   unprocessedQuantity: Scalars['Int']['output'];
 };
 
@@ -57173,7 +57352,7 @@ export type SellingPlanFixedDeliveryPolicy = {
 export type SellingPlanFixedDeliveryPolicyInput = {
   /** The specific anchor dates upon which the delivery interval calculations should be made. */
   anchors?: InputMaybe<Array<SellingPlanAnchorInput>>;
-  /** A buffer period for orders to be included in a cycle. */
+  /** Number of days which represent a buffer period for orders to be included in a cycle. */
   cutoff?: InputMaybe<Scalars['Int']['input']>;
   /** The date and time when the fulfillment should trigger. */
   fulfillmentExactTime?: InputMaybe<Scalars['DateTime']['input']>;
@@ -57568,6 +57747,8 @@ export type SellingPlanGroupUserErrorCode =
   | 'LESS_THAN'
   /** The input value should be less than or equal to the maximum value allowed. */
   | 'LESS_THAN_OR_EQUAL_TO'
+  /** A fixed delivery policy with an ANCHOR fulfillment_trigger must have exactly one anchor. */
+  | 'MUST_HAVE_EXACTLY_ONE_ANCHOR'
   /** The input value is not a number. */
   | 'NOT_A_NUMBER'
   /** The record with the ID used as the input value couldn't be found. */
@@ -57612,6 +57793,8 @@ export type SellingPlanGroupUserErrorCode =
   | 'REMAINING_BALANCE_CHARGE_TRIGGER_ON_FULL_CHECKOUT'
   /** The selling plan list provided contains 1 or more invalid IDs. */
   | 'RESOURCE_LIST_CONTAINS_INVALID_IDS'
+  /** The selling plan group list provided is empty. */
+  | 'RESOURCE_LIST_IS_EMPTY'
   /** A fixed delivery policy's anchors must not be present when the fulfillment_trigger isn't ANCHOR. */
   | 'SELLING_PLAN_ANCHORS_NOT_ALLOWED'
   /** A fixed delivery policy's anchors must be present when the fulfillment_trigger is ANCHOR. */
@@ -57819,7 +58002,7 @@ export type SellingPlanRecurringDeliveryPolicy = {
 export type SellingPlanRecurringDeliveryPolicyInput = {
   /** The specific anchor dates upon which the delivery interval calculations should be made. */
   anchors?: InputMaybe<Array<SellingPlanAnchorInput>>;
-  /** A buffer period for orders to be included in a cycle. */
+  /** Number of days which represent a buffer period for orders to be included in a cycle. */
   cutoff?: InputMaybe<Scalars['Int']['input']>;
   /** Intention of this delivery policy, it can be either: delivery or fulfillment. */
   intent?: InputMaybe<SellingPlanRecurringDeliveryPolicyIntent>;
@@ -57946,6 +58129,8 @@ export type ShippingLine = {
   carrierIdentifier?: Maybe<Scalars['String']['output']>;
   /** A reference to the shipping method. */
   code?: Maybe<Scalars['String']['output']>;
+  /** The date and time when the shipping line was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The current shipping price after applying refunds, after applying discounts. If the parent `order.taxesIncluded`` field is true, then this price includes taxes. Otherwise, this field is the pre-tax price. */
   currentDiscountedPriceSet: MoneyBag;
   /** Whether the shipping line is custom or not. */
@@ -58143,11 +58328,11 @@ export type Shop = HasMetafieldDefinitions & HasMetafields & HasPublishedTransla
   /** A list of the shop's active alert messages that appear in the Shopify admin. */
   alerts: Array<ShopAlert>;
   /**
-   * A list of the shop's product categories. Limit: 1000 product categories.
+   * A list of the shop's product categories. Limit: 500 product categories.
    * @deprecated Use `allProductCategoriesList` instead.
    */
   allProductCategories: Array<ProductCategory>;
-  /** A list of the shop's product categories. Limit: 1000 product categories. */
+  /** A list of the shop's product categories. Limit: 500 product categories. */
   allProductCategoriesList: Array<TaxonomyCategory>;
   /**
    * The token required to query the shop's reports or dashboards.
@@ -58975,7 +59160,10 @@ export type ShopFeatures = {
   showMetrics: Scalars['Boolean']['output'];
   /** Whether a shop has an online store. */
   storefront: Scalars['Boolean']['output'];
-  /** Whether a shop is eligible for Unified Markets. */
+  /**
+   * Whether a shop is eligible for Unified Markets.
+   * @deprecated Unified Markets is enabled for all shops. Remove checks against this field.
+   */
   unifiedMarkets: Scalars['Boolean']['output'];
   /** Whether a shop is using Shopify Balance. */
   usingShopifyBalance: Scalars['Boolean']['output'];
@@ -59978,7 +60166,7 @@ export type ShopifyPaymentsDisputeEvidenceUpdateInput = {
   shippingAddress?: InputMaybe<MailingAddressInput>;
   /** Shipping documentation file. */
   shippingDocumentationFile?: InputMaybe<ShopifyPaymentsDisputeFileUploadUpdateInput>;
-  /** Whether to submit the evidence. */
+  /** This field is deprecated and has no effect. */
   submitEvidence?: InputMaybe<Scalars['Boolean']['input']>;
   /** Uncategorized file. */
   uncategorizedFile?: InputMaybe<ShopifyPaymentsDisputeFileUploadUpdateInput>;
@@ -60634,7 +60822,7 @@ export type ShopifyqlTableDataColumn = {
   displayName: Scalars['String']['output'];
   /** The name of the column. */
   name: Scalars['String']['output'];
-  /** The sub type of an array column. */
+  /** The element type of an array column or DAY_DURATION for a range column. */
   subType?: Maybe<ColumnDataType>;
 };
 
@@ -60797,6 +60985,8 @@ export type StaffMemberPrivateData = {
 
 /** The set of valid sort keys for the StaffMembers query. */
 export type StaffMembersSortKeys =
+  /** Sort by the `created_at` value. */
+  | 'CREATED_AT'
   /** Sort by the `email` value. */
   | 'EMAIL'
   /** Sort by the `first_name` value. */
@@ -63066,6 +63256,8 @@ export type SubscriptionDiscountValue = SubscriptionDiscountFixedAmountValue | S
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63151,6 +63343,8 @@ export type SubscriptionDraft = Node & {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63191,6 +63385,8 @@ export type SubscriptionDraftConcatenatedBillingCyclesArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63226,6 +63422,8 @@ export type SubscriptionDraftCustomerPaymentMethodArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63261,6 +63459,8 @@ export type SubscriptionDraftDeliveryOptionsArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63300,6 +63500,8 @@ export type SubscriptionDraftDiscountsArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63339,6 +63541,8 @@ export type SubscriptionDraftDiscountsAddedArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63378,6 +63582,8 @@ export type SubscriptionDraftDiscountsRemovedArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63417,6 +63623,8 @@ export type SubscriptionDraftDiscountsUpdatedArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63456,6 +63664,8 @@ export type SubscriptionDraftLinesArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63495,6 +63705,8 @@ export type SubscriptionDraftLinesAddedArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -63534,6 +63746,8 @@ export type SubscriptionDraftLinesRemovedArgs = {
  * [subscription contract](https://shopify.dev/docs/api/admin-graphql/latest/objects/SubscriptionContract)
  * before it's committed. It serves as a staging area for making changes to an existing subscription or creating
  * a new one. The draft allows you to preview and modify various aspects of a subscription before applying the changes.
+ * This object is deprecated in favor of the
+ * [SubscriptionContractCalculation API](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/migrate-to-subscription-calculation-api).
  *
  * Use the `SubscriptionDraft` object to:
  *
@@ -64987,6 +65201,8 @@ export type TipSale = Sale & {
 export type TransactionFee = Node & {
   /** Amount of the fee. */
   amount: MoneyV2;
+  /** The date and time when the transaction fee was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** Flat rate charge for a transaction. */
   flatFee: MoneyV2;
   /** Name of the credit card flat fee. */
@@ -65518,7 +65734,7 @@ export type UnverifiedReturnLineItem = Node & ReturnLineItemType & {
   returnReasonNote: Scalars['String']['output'];
   /** The unit price of the unverified return line item. */
   unitPrice: MoneyV2;
-  /** The quantity that has't been processed. */
+  /** The quantity that hasn't been processed. */
   unprocessedQuantity: Scalars['Int']['output'];
 };
 
@@ -65534,6 +65750,8 @@ export type UpdateMediaInput = {
 
 /** The URL redirect for the online store. */
 export type UrlRedirect = Node & {
+  /** The date and time when the URL redirect was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The ID of the URL redirect. */
   id: Scalars['ID']['output'];
   /** The old path to be redirected from. When the user visits this path, they will be redirected to the target location. */

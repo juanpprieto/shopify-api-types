@@ -1,5 +1,139 @@
 # @juanpprieto/shopify-api-types
 
+## 2026.10.0
+
+This release makes `2026-10` the current API version. The package includes these
+versions: `2026-10` (current), `2026-07` (previous), `2026-04` and `2026-01`
+(older supported), `2027-01` (release candidate), and `unstable`.
+
+### Breaking changes
+
+The lists below show changes from `2026-07` to `2026-10`.
+
+**Storefront API**
+
+- `ShopPayPaymentRequestSession.paymentRequest` - Shopify changes the type from
+  `ShopPayPaymentRequest!` to `ShopPayPaymentRequest`. The field may return
+  `null`.
+- `Mutation.shopPayPaymentRequestSessionCreate` - Shopify removes the argument
+  `paymentRequest: ShopPayPaymentRequestInput!`.
+
+Check your code for `null` handling of
+`ShopPayPaymentRequestSession.paymentRequest`. Remove the `paymentRequest`
+argument from your calls to `Mutation.shopPayPaymentRequestSessionCreate`.
+
+**Admin API**
+
+- `PriceRule` - Shopify removes this type.
+- `PriceRuleAllocationMethod` - Shopify removes this type.
+- `PriceRuleCustomerSelection` - Shopify removes this type.
+- `PriceRuleDiscountCode` - Shopify removes this type.
+- `PriceRuleDiscountCodeConnection` - Shopify removes this type.
+- `PriceRuleDiscountCodeEdge` - Shopify removes this type.
+- `PriceRuleEntitlementToPrerequisiteQuantityRatio` - Shopify removes this type.
+- `PriceRuleFeature` - Shopify removes this type.
+- `PriceRuleFixedAmountValue` - Shopify removes this type.
+- `PriceRuleItemEntitlements` - Shopify removes this type.
+- `PriceRuleLineItemPrerequisites` - Shopify removes this type.
+- `PriceRuleMoneyRange` - Shopify removes this type.
+- `PriceRulePercentValue` - Shopify removes this type.
+- `PriceRulePrerequisiteToEntitlementQuantityRatio` - Shopify removes this type.
+- `PriceRuleQuantityRange` - Shopify removes this type.
+- `PriceRuleShareableUrl` - Shopify removes this type.
+- `PriceRuleShareableUrlTargetType` - Shopify removes this type.
+- `PriceRuleShippingLineEntitlements` - Shopify removes this type.
+- `PriceRuleStatus` - Shopify removes this type.
+- `PriceRuleTarget` - Shopify removes this type.
+- `PriceRuleTrait` - Shopify removes this type.
+- `PriceRuleValidityPeriod` - Shopify removes this type.
+- `PriceRuleValue` - Shopify removes this type.
+- `InventoryAdjustQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION` -
+  Shopify removes this enum value.
+- `InventoryMoveQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION` - Shopify
+  removes this enum value.
+- `InventorySetOnHandQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION` -
+  Shopify removes this enum value.
+- `InventorySetQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION` - Shopify
+  removes this enum value.
+
+Remove references to these types and to the `ITEM_NOT_STOCKED_AT_LOCATION` enum
+value from your code.
+
+Shopify removes the `PriceRule` types together with the
+`DraftOrderDiscountNotAppliedWarning.priceRule` field. Use the `discountTitle`
+and `discountCode` fields of that warning instead.
+
+**Customer Account API**
+
+- `AppliedGiftCard` - Shopify removes this type.
+- `AvailableShippingRates` - Shopify removes this type.
+- `Checkout` - Shopify removes this type.
+- `CheckoutLineItem` - Shopify removes this type.
+- `CheckoutLineItemConnection` - Shopify removes this type.
+- `CheckoutLineItemEdge` - Shopify removes this type.
+- `CustomerMailingAddress` - Shopify removes this type.
+- `ShippingRate` - Shopify removes this type.
+- `CustomerAddressInput.territoryCode` - Shopify removes this input field.
+- `SubscriptionDeliveryMethodLocalDeliveryInput.address` - Shopify removes this
+  input field.
+- `Mutation.subscriptionContractFetchDeliveryOptions` - Shopify removes the
+  argument `deliveryAddress: CustomerMailingAddressInput`.
+
+Remove references to these types, input fields, and the argument from your code.
+
+The Customer Account API has no replacement for the `Checkout` types. For an
+active cart, use the Storefront API `Cart`. For finished purchases, use
+`Customer.orders`.
+
+### Additions
+
+The table shows added types per API, from `2026-07` to `2026-10`.
+
+| API                  | Added types | Examples                                                                                                                                      |
+| -------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Storefront API       | 1           | `ShopPayPaymentRequestShopUser`                                                                                                               |
+| Admin API            | 201         | `AnalyticsAnnotation`, `AnalyticsAnnotationConnection`, `AnalyticsAnnotationCreatePayload`, `AnalyticsTarget`, `AnalyticsTargetCreatePayload` |
+| Customer Account API | 33          | `CalculateRequestedOrderEditInput`, `CalculatedRequestedOrderEdit`, `EditableLineItem`, `IneligibleLineItem`, `RequestedOrderEdit`            |
+
+### Release candidate
+
+The comparison between `2026-10` and `2027-01` shows no breaking changes for
+Storefront API and Customer Account API. Admin API shows these breaking changes:
+
+- `CollectionSourceInclusionConditionMetafieldInteger`,
+  `CollectionSourceInclusionConditionMetafieldIntegerInput`,
+  `CollectionSourceInclusionConditionMetafieldIntegerRelation`,
+  `CollectionSourceInclusionConditionUpdateMetafieldIntegerInput` - Shopify
+  removes these types.
+- `DiscountAutomaticConnection`, `DiscountAutomaticEdge` - Shopify removes these
+  types.
+- `MarketCurrencySettingsUpdatePayload`, `MarketCurrencySettingsUserError`,
+  `MarketCurrencySettingsUserErrorCode` - Shopify removes these types.
+- `CollectionSourceInclusionConditionInput.metafieldInteger`,
+  `CollectionSourceInclusionConditionUpdateInput.metafieldInteger` - Shopify
+  removes these input fields.
+- `MetaobjectAdminAccess.PRIVATE`, `MetaobjectAdminAccess.PUBLIC_READ` - Shopify
+  removes these deprecated enum values.
+- `Mutation.marketCurrencySettingsUpdate` - Shopify removes this deprecated
+  field.
+
+### Type counts
+
+| API                  | Types in `2026-10` |
+| -------------------- | ------------------ |
+| Storefront API       | 272                |
+| Admin API            | 2123               |
+| Customer Account API | 339                |
+
+### Package changes
+
+- The package now needs Node.js 22 or later (`engines`). Node.js 20 reached end
+  of life on 2026-04-30.
+- The package has no runtime dependencies. Before this release, an install also
+  added `@anthropic-ai/sdk`, `graphql`, `ts-pattern`, and `zod`.
+- npm shows a provenance statement for this version. The Release workflow
+  publishes through npm trusted publishing.
+
 ## 2026.7.0
 
 ### Major Changes (New API Version: 2026-07)

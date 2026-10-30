@@ -3001,7 +3001,7 @@
           },
           {
             "name": "copyFromCustomerAddressId",
-            "description": "Copies details from the customer address to an address on this cart.",
+            "description": "Copies details from the customer address to an address on this cart. The address is copied as-is, regardless of `validationStrategy`. Validation can be requested on later delivery address updates and always occurs in checkout.",
             "type": {
               "kind": "SCALAR",
               "name": "ID",
@@ -4229,6 +4229,49 @@
       },
       {
         "kind": "OBJECT",
+        "name": "CartCompletionOrderFeeLine",
+        "description": "A fee charged on an order from cart completion.",
+        "fields": [
+          {
+            "name": "amount",
+            "description": "The amount charged for the fee.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "MoneyV2",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "title",
+            "description": "The buyer-facing title of the fee.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "CartCompletionOrderLineItem",
         "description": "Represents a order line in an order created from cart completion.",
         "fields": [
@@ -4420,6 +4463,30 @@
             "deprecationReason": null
           },
           {
+            "name": "feeLines",
+            "description": "The fees charged on the order, one line per fee.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "CartCompletionOrderFeeLine",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "lineItems",
             "description": "List of the order's line items.",
             "args": [],
@@ -4474,6 +4541,18 @@
           {
             "name": "totalDutyAmount",
             "description": "The total cost of duties.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "MoneyV2",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "totalFeeAmount",
+            "description": "The total cost of fees. Null when the order has no fees.",
             "args": [],
             "type": {
               "kind": "OBJECT",
@@ -9365,7 +9444,7 @@
           },
           {
             "name": "validationStrategy",
-            "description": "Defines what kind of address validation is requested.",
+            "description": "Defines what kind of address validation is requested. Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is. Validation can be requested on later delivery address updates and always occurs in checkout.",
             "type": {
               "kind": "ENUM",
               "name": "DeliveryAddressValidationStrategy",
@@ -9430,7 +9509,7 @@
           },
           {
             "name": "validationStrategy",
-            "description": "Defines what kind of address validation is requested.",
+            "description": "Defines what kind of address validation is requested. Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is. Validation can be requested on later delivery address updates and always occurs in checkout.",
             "type": {
               "kind": "ENUM",
               "name": "DeliveryAddressValidationStrategy",
@@ -11398,6 +11477,12 @@
             "deprecationReason": null
           },
           {
+            "name": "CAPTCHA_COMPLETION_REQUIRED",
+            "description": "The buyer must solve a captcha in checkout, then retry with the same payment method.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "INVENTORY_RESERVATION_ERROR",
             "description": null,
             "isDeprecated": false,
@@ -11780,22 +11865,6 @@
               "ofType": {
                 "kind": "OBJECT",
                 "name": "ConsentManagementCookies",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "currentCookies",
-            "description": "For debugging purposes, decodes the cookies from `_shopify_essential`, `_shopify_analytics` etc and prints them in plain text.",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
                 "ofType": null
               }
             },
@@ -12199,6 +12268,22 @@
           {
             "name": "buttonAcceptText",
             "description": "Accept button text.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "buttonCloseText",
+            "description": "Accessible label for the close button.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -14720,6 +14805,12 @@
             "deprecationReason": null
           },
           {
+            "name": "XCG",
+            "description": "Caribbean Guilder (XCG).",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "KYD",
             "description": "Cayman Dollars (KYD).",
             "isDeprecated": false,
@@ -15106,8 +15197,8 @@
           {
             "name": "ANG",
             "description": "Netherlands Antillean Guilder.",
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "`ANG` is deprecated. Use `XCG` instead."
           },
           {
             "name": "NZD",
@@ -17727,7 +17818,7 @@
           },
           {
             "name": "STRICT",
-            "description": "Strict validation is performed, i.e. all fields in the address are validated\naccording to Shopify's checkout rules. If the address fails validation, the cart will not be updated.\n",
+            "description": "Strict validation is performed, i.e. all fields in the address are validated\naccording to Shopify's checkout rules. If the address fails validation, the cart will not be updated.\nDoesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is.\nValidation can be requested on later delivery address updates and always occurs in checkout.\n",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -18726,7 +18817,7 @@
       {
         "kind": "ENUM",
         "name": "FilterType",
-        "description": "The type of data that the filter group represents.\n\nFor more information, refer to [Filter products in a collection with the Storefront API]\n(https://shopify.dev/custom-storefronts/products-collections/filter-products).\n",
+        "description": "The type of data that the filter group represents.\n\nFor more information, refer to [Filter products in a collection with the Storefront API]\n(https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products).\n",
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -20196,7 +20287,7 @@
           },
           {
             "name": "BN",
-            "description": "Bangla.",
+            "description": "Bengali.",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -20814,7 +20905,7 @@
           },
           {
             "name": "SR",
-            "description": "Serbian.",
+            "description": "Serbian (Latin).",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -26369,6 +26460,47 @@
             "deprecationReason": null
           },
           {
+            "name": "shopPayPaymentRequestSessionBusinessEntityUpdate",
+            "description": "Updates the business entity associated with an ongoing Shop Pay payment request session.\nYou can change the business entity before submitting payment, or after the latest payment attempt has failed.\n",
+            "args": [
+              {
+                "name": "token",
+                "description": "A payment request session token.",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "businessEntityId",
+                "description": "The full global ID of the business entity to process this payment through, such as `gid://shopify/BusinessEntity/123`, returned by the Admin API `businessEntities` query. To use the shop's primary business entity, provide its global ID.",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ShopPayPaymentRequestSessionBusinessEntityUpdatePayload",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "shopPayPaymentRequestSessionCreate",
             "description": "Creates a [Shop Pay payment request session](https://shopify.dev/docs/api/storefront/current/objects/ShopPayPaymentRequestSession) for processing payments. The session includes a checkout URL where customers complete their purchase and a token for subsequent operations like submitting the payment.\n\nThe `sourceIdentifier` must be unique across all orders to ensure accurate reconciliation.\n\nFor a complete integration guide including the JavaScript SDK setup and checkout flow, refer to the [Shop Component API documentation](https://shopify.dev/docs/api/commerce-components/pay). For implementation steps, see the [development journey guide](https://shopify.dev/docs/api/commerce-components/pay/development-journey). For common error scenarios, see the [troubleshooting guide](https://shopify.dev/docs/api/commerce-components/pay/troubleshooting-guide).\n",
             "args": [
@@ -26383,6 +26515,16 @@
                     "name": "String",
                     "ofType": null
                   }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "businessEntityId",
+                "description": "The full global ID of the business entity to process this payment through, such as `gid://shopify/BusinessEntity/123`, returned by the Admin API `businessEntities` query. Omit it to use the shop's primary business entity.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
                 },
                 "defaultValue": null
               }
@@ -28869,7 +29011,7 @@
           },
           {
             "name": "collections",
-            "description": "The articles that match the search query.",
+            "description": "The collections that match the search query.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -29771,7 +29913,7 @@
           },
           {
             "name": "requiresSellingPlan",
-            "description": "Whether the product can only be purchased with a [selling plan](/docs/apps/build/purchase-options/subscriptions/selling-plans). Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores. If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels, except the online store.",
+            "description": "Whether the product can only be purchased with a [selling plan](/docs/apps/build/purchase-options/subscriptions/selling-plans). Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores. If you update a product to be subscription-only (`requiresSellingPlan: true`), then the product is unpublished from all channels, except the online store.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -31475,7 +31617,7 @@
           },
           {
             "name": "storeAvailability",
-            "description": "The in-store pickup availability of this variant by location.",
+            "description": "The pickup locations and physical stores for this variant. Returns the same pickup locations as earlier API versions, plus locations the merchant has marked as a physical storefront that don't offer local pickup. Use `pickUpEnabled` and `physicalStorefront` to tell them apart. Only locations where `pickUpEnabled` is `true` offer local pickup. A physical storefront without local pickup is returned only when the variant is in stock there, or when it can be sold without stock (its inventory isn't tracked, or it continues selling when out of stock).",
             "args": [
               {
                 "name": "near",
@@ -32554,6 +32696,16 @@
                 "defaultValue": null
               },
               {
+                "name": "attemptKey",
+                "description": "The secret key of the cart that the attempt belongs to.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
                 "name": "requiredActionCompleted",
                 "description": "Indicates whether the required action such as 3DS challenge has been completed.",
                 "type": {
@@ -33288,24 +33440,6 @@
                 "defaultValue": null
               },
               {
-                "name": "searchableFields",
-                "description": "Specifies the list of resource fields to use for search. The default fields searched on are TITLE, PRODUCT_TYPE, VARIANT_TITLE, and VENDOR. For the best search experience, you should search on the default field set.\n\nThe input must not contain more than `250` values.",
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "SearchableField",
-                      "ofType": null
-                    }
-                  }
-                },
-                "defaultValue": null
-              },
-              {
                 "name": "types",
                 "description": "The types of resources to search for.\n\nThe input must not contain more than `250` values.",
                 "type": {
@@ -33628,7 +33762,7 @@
           },
           {
             "name": "search",
-            "description": "Returns paginated search results for [`Product`](https://shopify.dev/docs/api/storefront/current/objects/Product), [`Page`](https://shopify.dev/docs/api/storefront/current/objects/Page), and [`Article`](https://shopify.dev/docs/api/storefront/current/objects/Article) resources based on a query string. Results are sorted by relevance by default.\n\nThe response includes the total result count and available product filters for building [faceted search interfaces](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products). Use the [`prefix`](https://shopify.dev/docs/api/storefront/current/enums/SearchPrefixQueryType) argument to enable partial word matching on the last search term, allowing queries like \"winter snow\" to match \"snowboard\" or \"snowshoe\".\n",
+            "description": "Returns paginated search results for [`Product`](https://shopify.dev/docs/api/storefront/current/objects/Product), [`Page`](https://shopify.dev/docs/api/storefront/current/objects/Page), and [`Article`](https://shopify.dev/docs/api/storefront/current/objects/Article) resources based on a query string. Results are sorted by relevance by default.\n\nThe response includes the total result count and available product filters for building [faceted search interfaces](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products). A search returns up to 1,000 results. When product results are included, a search returns up to 2 pages or articles, on the first page of results only. To get more pages and articles, run a separate search with `types: [PAGE, ARTICLE]`. Product results match partial words automatically. For page and article results, use the [`prefix`](https://shopify.dev/docs/api/storefront/current/enums/SearchPrefixQueryType) argument to match partial words on the last search term, so that a query like \"winter snow\" can match pages that contain \"snowboard\" or \"snowshoe\".\n",
             "args": [
               {
                 "name": "first",
@@ -33706,7 +33840,7 @@
               },
               {
                 "name": "prefix",
-                "description": "Specifies whether to perform a partial word match on the last search term.",
+                "description": "For page and article results, specifies whether to match partial words on the last search term. Product results match partial words automatically.",
                 "type": {
                   "kind": "ENUM",
                   "name": "SearchPrefixQueryType",
@@ -34038,20 +34172,20 @@
       {
         "kind": "ENUM",
         "name": "SearchPrefixQueryType",
-        "description": "Specifies whether to perform a partial word match on the last search term.",
+        "description": "For page and article results, specifies whether to match partial words on the last search term. Product results match partial words automatically.",
         "fields": null,
         "inputFields": null,
         "interfaces": null,
         "enumValues": [
           {
             "name": "LAST",
-            "description": "Perform a partial word match on the last search term.",
+            "description": "For page and article results, match partial words on the last search term.",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "NONE",
-            "description": "Don't perform a partial word match on the last search term.",
+            "description": "For page and article results, don't match partial words on the last search term.",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -34240,7 +34374,7 @@
           },
           {
             "name": "totalCount",
-            "description": "The total number of results.",
+            "description": "The total number of results, up to a maximum of 1,000. If a search matches more than 1,000 results, then it returns 1,000, and pagination returns up to the first 1,000 results.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -38355,6 +38489,18 @@
         "description": "Represents a receipt for a Shop Pay payment request.",
         "fields": [
           {
+            "name": "businessEntityId",
+            "description": "The ID of the business entity recorded when the payment request was submitted. Returns null if no entity was recorded or the recorded entity can't be found. This ID can't be resolved through the Storefront API's node query.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "paymentRequest",
             "description": "The payment request object.",
             "args": [],
@@ -38461,6 +38607,18 @@
         "description": "Represents a Shop Pay payment request session.",
         "fields": [
           {
+            "name": "businessEntityId",
+            "description": "The ID of the business entity selected for this session, in the form accepted by `shopPayPaymentRequestSessionCreate` and `shopPayPaymentRequestSessionBusinessEntityUpdate`. Returns null if no entity was selected or the selected entity can't be found for this shop. When no entity is selected, the shop's primary business entity is used. This ID can't be resolved through the Storefront API's node query.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "checkoutUrl",
             "description": "The checkout URL of the Shop Pay payment request session.",
             "args": [],
@@ -38515,6 +38673,53 @@
                 "kind": "SCALAR",
                 "name": "String",
                 "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ShopPayPaymentRequestSessionBusinessEntityUpdatePayload",
+        "description": "Return type for `shopPayPaymentRequestSessionBusinessEntityUpdate` mutation.",
+        "fields": [
+          {
+            "name": "shopPayPaymentRequestSession",
+            "description": "The Shop Pay payment request session.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ShopPayPaymentRequestSession",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "userErrors",
+            "description": "Error codes for failed Shop Pay payment request session mutations.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "UserErrorsShopPayPaymentRequestSessionUserErrors",
+                    "ofType": null
+                  }
+                }
               }
             },
             "isDeprecated": false,
@@ -39544,11 +39749,11 @@
       {
         "kind": "OBJECT",
         "name": "StoreAvailability",
-        "description": "Inventory information for a product variant at a physical store location that offers local pickup. Includes stock availability, quantity on hand, and estimated pickup readiness time. Availability also includes inventory that can be moved to the location through a store transfer route, so a variant can be available for pickup with no on-hand stock at the location.\n\nLocal pickup must be [enabled in the store's shipping settings](https://help.shopify.com/manual/shipping/setting-up-and-managing-your-shipping/local-methods/local-pickup) for this data to be returned. Results can be sorted by proximity to a customer's location using the `near` argument on the [`ProductVariant.storeAvailability`](https://shopify.dev/docs/api/storefront/current/objects/ProductVariant#field-ProductVariant.fields.storeAvailability) connection. \n\nLearn more about [supporting local pickup on storefronts](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/local-pickup).\n",
+        "description": "Inventory information for a product variant at a physical store location. Includes stock availability, quantity on hand, and estimated pickup readiness time. When the location offers local pickup, availability also includes inventory that can be moved to it through a store transfer route, so a variant can be available for pickup with no on-hand stock at the location.\n\nLocal pickup is [configured in the store's shipping settings](https://help.shopify.com/manual/shipping/setting-up-and-managing-your-shipping/local-methods/local-pickup), and a returned location isn't guaranteed to offer it. Results can be sorted by proximity to a customer's location using the `near` argument on the [`ProductVariant.storeAvailability`](https://shopify.dev/docs/api/storefront/current/objects/ProductVariant#field-ProductVariant.fields.storeAvailability) connection. \n\nLearn more about [supporting local pickup on storefronts](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/local-pickup).\n",
         "fields": [
           {
             "name": "available",
-            "description": "Whether the product variant can be picked up at this location. This is `true` when the variant is in stock here, can be supplied through a store transfer from another location, or is sold with untracked or oversellable inventory (its inventory isn't tracked, or its inventory policy allows continuing to sell when out of stock). As a result, `available` can be `true` even when `quantityAvailable` is `0`.",
+            "description": "Whether the product variant is available at this location. This is `true` when the variant is in stock here, can be supplied through a store transfer from another location when this location offers local pickup, or is sold with untracked or oversellable inventory (its inventory isn't tracked, or its inventory policy allows continuing to sell when out of stock). As a result, `available` can be `true` even when `quantityAvailable` is `0` or less. It doesn't mean the location offers local pickup.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -39572,6 +39777,38 @@
               "ofType": {
                 "kind": "OBJECT",
                 "name": "Location",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "physicalStorefront",
+            "description": "Whether this location is a physical retail store where a buyer can buy this product variant in person. Merchants set this with the \"Physical storefront\" setting on a location. This is informational: it doesn't mean the variant can be bought or reserved online, and it's independent of `pickUpEnabled`.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "pickUpEnabled",
+            "description": "Whether local pickup is turned on for this location.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
                 "ofType": null
               }
             },
@@ -39863,6 +40100,16 @@
         "possibleTypes": null
       },
       {
+        "kind": "SCALAR",
+        "name": "SubdivisionCode",
+        "description": "The code for a subdivision (such as a province or state) of a country/region:\nthe country-scoped part of an ISO 3166-2 code, without the country prefix.\nFor example, `BC` designates British Columbia when the country is `CA`\n(ISO 3166-2 `CA-BC`), and `01` designates Hokkaido when the country is `JP`\n(ISO 3166-2 `JP-01`). A subdivision code is only meaningful together with\nthe country that scopes it.\n",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "SubmissionError",
         "description": "An error that occurred during cart submit for completion.",
@@ -39941,6 +40188,36 @@
           },
           {
             "name": "BUYER_IDENTITY_PHONE_IS_INVALID",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "BUYER_IDENTITY_CONTACT_INFO_DOES_NOT_MATCH_CUSTOMER_PROFILE",
+            "description": "Buyer identity does not match customer profile.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "BUYER_IDENTITY_PRESENTMENT_CURRENCY_DOES_NOT_MATCH",
+            "description": "Buyer identity presentment currency does not match.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "CAPTCHA_COMPLETION_REQUIRED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "CHECKOUT_VALIDATION_RUNTIME_ERROR",
+            "description": "Checkout validation runtime error.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "CUSTOMER_ACCOUNT_REQUIRED",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -40144,6 +40421,36 @@
             "deprecationReason": null
           },
           {
+            "name": "DELIVERY_DETAIL_CHANGED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DELIVERY_WRONG_NUMBER_OF_LINES",
+            "description": "Delivery wrong number of lines.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DISCOUNT_NOT_APPLICABLE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "EXTENSION_INTERACTION_REQUIRED",
+            "description": "Extension interaction required.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "LOCALIZATION_EXTENSION_FIELD_ERROR",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "MERCHANDISE_NOT_APPLICABLE",
             "description": null,
             "isDeprecated": false,
@@ -40170,6 +40477,12 @@
           {
             "name": "MERCHANDISE_PRODUCT_NOT_PUBLISHED",
             "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "NON_TEST_ORDER_LIMIT_REACHED",
+            "description": "Non-test order limit reached.",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -40468,8 +40781,26 @@
             "deprecationReason": null
           },
           {
+            "name": "PAYMENTS_SHIPPING_MUST_MATCH_BILLING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "PENDING_PROCESS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "REDIRECT_TO_CHECKOUT_REQUIRED",
             "description": "Redirect to checkout required to complete this action.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SUBSCRIPTION_TERMS_NOT_ACCEPTED",
+            "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -40488,6 +40819,12 @@
           {
             "name": "TAXES_DELIVERY_GROUP_ID_NOT_FOUND",
             "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "TAXES_INCLUSIVITY_MISMATCH",
+            "description": "Taxes inclusivity mismatch.",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -41524,6 +41861,30 @@
         "inputFields": null,
         "interfaces": null,
         "enumValues": [
+          {
+            "name": "BUSINESS_ENTITY_NOT_FOUND",
+            "description": "Business entity not found.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "BUSINESS_ENTITY_ARCHIVED",
+            "description": "Business entity is archived.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "BUSINESS_ENTITY_NOT_CHARGEABLE",
+            "description": "Business entity can't accept payments.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MULTI_ENTITY_NOT_SUPPORTED",
+            "description": "This shop doesn't support payments through multiple business entities.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "PAYMENT_REQUEST_INVALID_INPUT",
             "description": "Payment request input is invalid.",
@@ -43105,6 +43466,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "ID",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "subdivision",
+            "description": "The subdivision code for context, scoped by `country`: the country-scoped part of an ISO 3166-2 code, without the country prefix. For example, `ON` for Ontario when `country` is `CA`. Requires `country`.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "SubdivisionCode",
               "ofType": null
             },
             "defaultValue": null

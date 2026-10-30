@@ -1954,6 +1954,12 @@
           "interfaces": null,
           "enumValues": [
             {
+              "name": "MANAGED_BY_APP",
+              "description": "This company location is managed by an app and can only be edited by that app.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "INTERNAL_ERROR",
               "description": "An internal error occurred.",
               "isDeprecated": false,
@@ -3010,7 +3016,7 @@
               "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "id",
               "description": "A globally-unique ID.",
@@ -3402,7 +3408,7 @@
               "deprecationReason": "This field will be removed in a future version of the API."
             },
             {
-              "isPreAuthAccessible": false,
+              "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "id",
               "description": "A globally-unique ID.",
@@ -6065,7 +6071,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "market",
-              "description": "The market that includes the location's shipping address. If the shipping address is empty, the shop's primary market is returned.",
+              "description": "The market that applies to the location's shipping address country. In cases where multiple markets match, this returns the most-specific country region market. If the shipping address is empty, the shop's backup region market is returned.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -8856,6 +8862,12 @@
               "deprecationReason": null
             },
             {
+              "name": "XCG",
+              "description": "Caribbean Guilder (XCG).",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "KYD",
               "description": "Cayman Dollars (KYD).",
               "isDeprecated": false,
@@ -9266,8 +9278,8 @@
             {
               "name": "ANG",
               "description": "Netherlands Antillean Guilder.",
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `XCG` instead."
             },
             {
               "name": "NZD",
@@ -16449,7 +16461,7 @@
                 },
                 {
                   "name": "query",
-                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| status | string |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
+                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| created_at | time | Filter by creation date and time. | | | - `created_at:>'2020-10-21T23:39:20Z'`<br/> - `created_at:<now`<br/> - `created_at:<='2024'` |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| status | string |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
@@ -17026,6 +17038,12 @@
           "inputFields": null,
           "interfaces": null,
           "enumValues": [
+            {
+              "name": "CREATED_AT",
+              "description": "Sort by the `created_at` value.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
             {
               "name": "HAPPENED_AT",
               "description": "Sort by the `happened_at` value.",
@@ -26164,7 +26182,7 @@
                 },
                 {
                   "name": "query",
-                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| order_id | id |\n| shipment_status | string |\n| status | string |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
+                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| created_at | time | Filter by creation date and time. | | | - `created_at:>'2020-10-21T23:39:20Z'`<br/> - `created_at:<now`<br/> - `created_at:<='2024'` |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| order_id | id |\n| shipment_status | string |\n| status | string |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
@@ -26438,7 +26456,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "market",
-              "description": "The market that includes the order's shipping address. Or the shop's primary market if the shipping address is empty.",
+              "description": "The market that applies to the order's shipping address country. In cases where multiple markets match, this returns the most-specific country region market. If the shipping address is empty, the shop's backup region market is returned.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -29260,6 +29278,24 @@
                 "ofType": {
                   "kind": "OBJECT",
                   "name": "ReturnableLineItemConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "selfServeReturnsEnabled",
+              "description": "Whether self-serve returns are enabled for the order's buyer context.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
                   "ofType": null
                 }
               },
@@ -46572,12 +46608,6 @@
               "deprecationReason": null
             },
             {
-              "name": "LI",
-              "description": "Liechtenstein.",
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
               "name": "MO",
               "description": "Macao SAR.",
               "isDeprecated": false,
@@ -47320,6 +47350,12 @@
               "description": "Latvia.",
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "LI",
+              "description": "Liechtenstein.",
+              "isDeprecated": true,
+              "deprecationReason": "Use `CH` instead."
             },
             {
               "name": "LT",

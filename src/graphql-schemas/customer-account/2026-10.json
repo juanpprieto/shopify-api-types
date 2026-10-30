@@ -1796,6 +1796,12 @@
           "interfaces": null,
           "enumValues": [
             {
+              "name": "MANAGED_BY_APP",
+              "description": "This company location is managed by an app and can only be edited by that app.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "INTERNAL_ERROR",
               "description": "An internal error occurred.",
               "isDeprecated": false,
@@ -2207,6 +2213,117 @@
         },
         {
           "kind": "INPUT_OBJECT",
+          "name": "CalculateRequestedOrderEditInput",
+          "description": "The input fields to calculate the financial outcome of a requested order edit.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "orderId",
+              "description": "The ID of the order to calculate the requested order edit for.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "lineItems",
+              "description": "The line item changes from the order to include in the edit calculation, grouped by the type of change.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "CalculateRequestedOrderEditLineItemsInput",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "CalculateRequestedOrderEditLineItemRemovalInput",
+          "description": "The input fields for a line item removal on a calculated requested order edit.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "lineItemId",
+              "description": "The ID of the line item to be removed.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "quantity",
+              "description": "The quantity of the item to be removed. Quantity can't exceed the line item's unfulfilled quantity.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "CalculateRequestedOrderEditLineItemsInput",
+          "description": "The input fields for the line item changes in an edit calculation, grouped by the type of change.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "removals",
+              "description": "The line items to be removed in the edit calculation.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "CalculateRequestedOrderEditLineItemRemovalInput",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
           "name": "CalculateReturnInput",
           "description": "The input fields to calculate return amounts associated with an order.",
           "fields": null,
@@ -2288,6 +2405,413 @@
             }
           ],
           "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "CalculatedRequestedOrderEdit",
+          "description": "The calculated financial outcome of a requested order edit based on the line items requested for editing.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "editLineItems",
+              "description": "A list of line items being processed for a requested order edit. Use `lineItems` instead.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CalculatedRequestedOrderEditLineItemConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "financialSummary",
+              "description": "A breakdown of the monetary values for the calculated edit.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "RequestedOrderEditFinancialSummary",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "lineItems",
+              "description": "The line item changes being processed for a requested order edit, grouped by the type of change.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CalculatedRequestedOrderEditLineItems",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "CalculatedRequestedOrderEditLineItem",
+          "description": "The line item being processed for a requested order edit and its calculated monetary values.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "lineItem",
+              "description": "The line item being processed for a requested order edit.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "LineItem",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "quantity",
+              "description": "The quantity being edited.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "subtotalSet",
+              "description": "The subtotal of the edit line item.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "totalTaxSet",
+              "description": "The total tax of the edit line item.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "CalculatedRequestedOrderEditLineItemConnection",
+          "description": "An auto-generated type for paginating through multiple CalculatedRequestedOrderEditLineItems.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "edges",
+              "description": "The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "CalculatedRequestedOrderEditLineItemEdge",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "nodes",
+              "description": "A list of nodes that are contained in CalculatedRequestedOrderEditLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "CalculatedRequestedOrderEditLineItem",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "pageInfo",
+              "description": "An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "CalculatedRequestedOrderEditLineItemEdge",
+          "description": "An auto-generated type which holds one CalculatedRequestedOrderEditLineItem and a cursor during pagination.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "cursor",
+              "description": "The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "node",
+              "description": "The item at the end of CalculatedRequestedOrderEditLineItemEdge.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CalculatedRequestedOrderEditLineItem",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "CalculatedRequestedOrderEditLineItems",
+          "description": "The line item changes on a calculated requested order edit, grouped by the type of change.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "removals",
+              "description": "The line items being removed in the calculated edit.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CalculatedRequestedOrderEditLineItemConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
           "enumValues": null,
           "possibleTypes": null
         },
@@ -5089,7 +5613,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "market",
-              "description": "The market that includes the location's shipping address. If the shipping address is empty, the shop's primary market is returned.",
+              "description": "The market that applies to the location's shipping address country. In cases where multiple markets match, this returns the most-specific country region market. If the shipping address is empty, the shop's backup region market is returned.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -7880,6 +8404,12 @@
               "deprecationReason": null
             },
             {
+              "name": "XCG",
+              "description": "Caribbean Guilder (XCG).",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "KYD",
               "description": "Cayman Dollars (KYD).",
               "isDeprecated": false,
@@ -8290,8 +8820,8 @@
             {
               "name": "ANG",
               "description": "Netherlands Antillean Guilder.",
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `XCG` instead."
             },
             {
               "name": "NZD",
@@ -9894,6 +10424,20 @@
             },
             {
               "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "countryCode",
+              "description": "The two-letter code for the country of the address.",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "CountryCode",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
               "isProtected": true,
               "name": "firstName",
               "description": "The first name of the customer.",
@@ -10052,8 +10596,8 @@
                 "name": "CountryCode",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use countryCode instead."
             },
             {
               "isPreAuthAccessible": true,
@@ -10392,11 +10936,11 @@
               "defaultValue": null
             },
             {
-              "name": "territoryCode",
-              "description": "The country code, in ISO 3166-1 format. Accepts either a two-letter [alpha-2 code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2),\na three-letter [alpha-3 code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3), or a three-digit [numeric code](https://en.wikipedia.org/wiki/ISO_3166-1_numeric).\nFor example, `US`,  `USA`, or `840` represents the United States.",
+              "name": "countryCode",
+              "description": "The two-letter code for the country of the address.",
               "type": {
-                "kind": "SCALAR",
-                "name": "String",
+                "kind": "ENUM",
+                "name": "CountryCode",
                 "ofType": null
               },
               "defaultValue": null
@@ -12645,6 +13189,11 @@
             },
             {
               "kind": "OBJECT",
+              "name": "RequestedOrderEditUserError",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
               "name": "ReturnUserError",
               "ofType": null
             },
@@ -14882,6 +15431,181 @@
           "possibleTypes": null
         },
         {
+          "kind": "OBJECT",
+          "name": "EditableLineItem",
+          "description": "A line item with at least one unit that is eligible for editing (e.g. cancellation of unfulfilled items).",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "lineItem",
+              "description": "The related line item.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "LineItem",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "quantity",
+              "description": "The quantity of units that can be edited.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "EditableLineItemConnection",
+          "description": "An auto-generated type for paginating through multiple EditableLineItems.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "edges",
+              "description": "The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "EditableLineItemEdge",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "nodes",
+              "description": "A list of nodes that are contained in EditableLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "EditableLineItem",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "pageInfo",
+              "description": "An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "EditableLineItemEdge",
+          "description": "An auto-generated type which holds one EditableLineItem and a cursor during pagination.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "cursor",
+              "description": "The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "node",
+              "description": "The item at the end of EditableLineItemEdge.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "EditableLineItem",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "ENUM",
           "name": "EmailMarketingState",
           "description": "Represents the possible email marketing states for a customer.",
@@ -15582,7 +16306,7 @@
                 },
                 {
                   "name": "query",
-                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| status | string |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
+                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| created_at | time | Filter by creation date and time. | | | - `created_at:>'2020-10-21T23:39:20Z'`<br/> - `created_at:<now`<br/> - `created_at:<='2024'` |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| status | string |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
@@ -16159,6 +16883,12 @@
           "inputFields": null,
           "interfaces": null,
           "enumValues": [
+            {
+              "name": "CREATED_AT",
+              "description": "Sort by the `created_at` value.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
             {
               "name": "HAPPENED_AT",
               "description": "Sort by the `happened_at` value.",
@@ -17937,6 +18667,307 @@
           ],
           "interfaces": null,
           "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "IneligibleLineItem",
+          "description": "A line item with at least one unit that is not eligible for return or editing.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "lineItem",
+              "description": "The line item associated with the ineligible units.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "LineItem",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "quantity",
+              "description": "The number of units that aren't eligible for return or editing.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "quantityDetails",
+              "description": "Details about ineligible quantities, including the number of units that can't be returned or edited and the reasons for ineligibility, grouped by reason.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "IneligibleQuantityDetail",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "IneligibleLineItemConnection",
+          "description": "An auto-generated type for paginating through multiple IneligibleLineItems.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "edges",
+              "description": "The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "IneligibleLineItemEdge",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "nodes",
+              "description": "A list of nodes that are contained in IneligibleLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "IneligibleLineItem",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "pageInfo",
+              "description": "An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "IneligibleLineItemEdge",
+          "description": "An auto-generated type which holds one IneligibleLineItem and a cursor during pagination.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "cursor",
+              "description": "The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "node",
+              "description": "The item at the end of IneligibleLineItemEdge.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "IneligibleLineItem",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "IneligibleQuantityDetail",
+          "description": "Details about ineligible quantities, including the number of units that can't be returned\nor edited and the reasons for ineligibility.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "quantity",
+              "description": "The number of units that aren't eligible for return or editing.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "reasonCode",
+              "description": "The reason why this quantity isn't eligible for return or editing.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "IneligibleReason",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "IneligibleReason",
+          "description": "The reason why a line item quantity is not eligible for return or editing.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "RETURN_WINDOW_EXPIRED",
+              "description": "The return window for this line item quantity has expired.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "RETURNED",
+              "description": "The line item quantity has already been returned.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "FINAL_SALE",
+              "description": "The line item quantity is final sale.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "OTHER",
+              "description": "The line item quantity is ineligible for a reason that has not been predefined.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "PENDING_EDIT_REQUEST",
+              "description": "The line item quantity is part of a pending edit request.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "NOT_EDITABLE",
+              "description": "The line item quantity is not eligible for editing.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "EDIT_WINDOW_EXPIRED",
+              "description": "The edit window for this line item quantity has expired.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
           "possibleTypes": null
         },
         {
@@ -23488,6 +24519,59 @@
               "deprecationReason": null
             },
             {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "orderRequestEdit",
+              "description": "Request an edit to an order's unfulfilled line items on behalf of a customer.\n\n> Note:\n> This mutation supports an optional idempotency key via the `@idempotent` directive.\n> Supplying the same key for a retried request returns the originally created\n> edit instead of creating a duplicate.",
+              "args": [
+                {
+                  "name": "orderId",
+                  "description": "The ID of the order for which this edit is being requested.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "lineItems",
+                  "description": "The line item changes requested for the order, grouped by the type of change.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "RequestedOrderEditLineItemsInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "email",
+                  "description": "The email address to associate with the order if one doesn't exist.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrderRequestEditPayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "isPreAuthAccessible": false,
               "isProtected": false,
               "name": "orderRequestReturn",
@@ -24468,6 +25552,16 @@
             },
             {
               "kind": "OBJECT",
+              "name": "RequestedOrderEdit",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "RequestedOrderEditLineItem",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
               "name": "Return",
               "ofType": null
             },
@@ -25352,7 +26446,7 @@
                 },
                 {
                   "name": "query",
-                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| order_id | id |\n| shipment_status | string |\n| status | string |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
+                  "description": "A filter made up of terms, connectives, modifiers, and comparators.\n| name | type | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- | ---- |\n| created_at | time | Filter by creation date and time. | | | - `created_at:>'2020-10-21T23:39:20Z'`<br/> - `created_at:<now`<br/> - `created_at:<='2024'` |\n| id | id | Filter by `id` range. | | | - `id:1234`<br/> - `id:>=1234`<br/> - `id:<=1234` |\n| order_id | id |\n| shipment_status | string |\n| status | string |\nYou can apply one or more filters to a query. Learn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
@@ -25626,7 +26720,7 @@
               "isPreAuthAccessible": true,
               "isProtected": false,
               "name": "market",
-              "description": "The market that includes the order's shipping address. Or the shop's primary market if the shipping address is empty.",
+              "description": "The market that applies to the order's shipping address country. In cases where multiple markets match, this returns the most-specific country region market. If the shipping address is empty, the shop's backup region market is returned.",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -25942,6 +27036,83 @@
                 "kind": "SCALAR",
                 "name": "String",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "requestedEditInformation",
+              "description": "The requested edit information for the order, including editable line items.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "OrderRequestedEditInformation",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "requestedOrderEdits",
+              "description": "The buyer's requests to edit the order's line items.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "RequestedOrderEditConnection",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -28114,6 +29285,57 @@
         },
         {
           "kind": "OBJECT",
+          "name": "OrderRequestEditPayload",
+          "description": "Return type for `orderRequestEdit` mutation.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "requestedOrderEdit",
+              "description": "The created requested order edit.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "RequestedOrderEdit",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "userErrors",
+              "description": "The list of errors that occurred from executing the mutation.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "RequestedOrderEditUserError",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
           "name": "OrderRequestReturnPayload",
           "description": "Return type for `orderRequestReturn` mutation.",
           "fields": [
@@ -28152,6 +29374,191 @@
                       "ofType": null
                     }
                   }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "OrderRequestedEditInformation",
+          "description": "The requested edit information for a specific order, including editable line items.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "editableLineItems",
+              "description": "The line items that are eligible for editing (e.g. cancellation of unfulfilled items).",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "EditableLineItemConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "hasEditableLineItems",
+              "description": "Whether the order has any line items eligible for editing.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "ineligibleLineItems",
+              "description": "The line items that are not eligible for editing.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "reverse",
+                  "description": "Reverse the order of the underlying list.",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": "false"
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "IneligibleLineItemConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "isSelfServiceRequiredForCompliance",
+              "description": "Whether buyer self-serve return or cancellation access is required for this order for compliance reasons.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
                 }
               },
               "isDeprecated": false,
@@ -28434,6 +29841,24 @@
                 "ofType": {
                   "kind": "OBJECT",
                   "name": "ReturnableLineItemConnection",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "selfServeReturnsEnabled",
+              "description": "Whether self-serve returns are enabled for the order's buyer context.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
                   "ofType": null
                 }
               },
@@ -32218,6 +33643,35 @@
             {
               "isPreAuthAccessible": true,
               "isProtected": false,
+              "name": "requestedOrderEditCalculate",
+              "description": "The calculated financial outcome of a requested order edit.",
+              "args": [
+                {
+                  "name": "input",
+                  "description": "The input fields for calculating a requested order edit.",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "CalculateRequestedOrderEditInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "CalculatedRequestedOrderEdit",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
               "name": "return",
               "description": "Returns a Return resource by ID. Apps using the Customer Account API must meet the protected customer data [requirements](https://shopify.dev/docs/apps/launch/protected-customer-data).",
               "args": [
@@ -33061,6 +34515,851 @@
             }
           ],
           "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RequestedOrderEdit",
+          "description": "A requested order edit on an order.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "lineItems",
+              "description": "The line item changes included in the requested order edit, grouped by the type of change.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "RequestedOrderEditLineItems",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "requestedEditLineItems",
+              "description": "The line items included in the requested order edit. Use `lineItems` instead.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "RequestedOrderEditLineItemConnection",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "status",
+              "description": "The status of this requested order edit.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "RequestedOrderEditStatus",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Node",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RequestedOrderEditConnection",
+          "description": "An auto-generated type for paginating through multiple RequestedOrderEdits.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "edges",
+              "description": "The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "RequestedOrderEditEdge",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "nodes",
+              "description": "A list of nodes that are contained in RequestedOrderEditEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "RequestedOrderEdit",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "pageInfo",
+              "description": "An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RequestedOrderEditEdge",
+          "description": "An auto-generated type which holds one RequestedOrderEdit and a cursor during pagination.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "cursor",
+              "description": "The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "node",
+              "description": "The item at the end of RequestedOrderEditEdge.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "RequestedOrderEdit",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "RequestedOrderEditErrorCode",
+          "description": "Possible error codes that can be returned by `RequestedOrderEditUserError`.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "INTERNAL_ERROR",
+              "description": "Unexpected internal error happened.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "BLANK",
+              "description": "The input value is blank.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "INVALID",
+              "description": "The input value is invalid.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "NOT_FOUND",
+              "description": "The record with the ID used as the input value couldn't be found.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RequestedOrderEditFinancialSummary",
+          "description": "The financial breakdown of the requested order edit.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "editOrderLevelDiscountSubtotalSet",
+              "description": "The sum of all order level discounts that are target_all.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "editSubtotalBeforeTargetAllDiscountsSet",
+              "description": "The subtotal of all edit line items excluding target_all discounts.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "editSubtotalSet",
+              "description": "The subtotal of all edit line items.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "editSubtotalWithCartDiscountSet",
+              "description": "The subtotal of all edit line items with order level discounts applied.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "editTotalSet",
+              "description": "The total sum of all edit line items, including subtotals and taxes.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "editTotalTaxSet",
+              "description": "The total tax sum of all edit line items.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MoneyBag",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RequestedOrderEditLineItem",
+          "description": "A line item included in a buyer-initiated requested order edit.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "id",
+              "description": "A globally-unique ID.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "lineItem",
+              "description": "The order line item associated with this requested order edit line item.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "LineItem",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "quantity",
+              "description": "The quantity requested for this line item in the requested order edit.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "Node",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RequestedOrderEditLineItemConnection",
+          "description": "An auto-generated type for paginating through multiple RequestedOrderEditLineItems.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "edges",
+              "description": "The connection between the node and its parent. Each edge contains a minimum of the edge's cursor and the node.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "RequestedOrderEditLineItemEdge",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "nodes",
+              "description": "A list of nodes that are contained in RequestedOrderEditLineItemEdge. You can fetch data about an individual node, or you can follow the edges to fetch data about a collection of related nodes. At each node, you specify the fields that you want to retrieve.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "RequestedOrderEditLineItem",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "pageInfo",
+              "description": "An object that’s used to retrieve [cursor information](https://shopify.dev/api/usage/pagination-graphql) about the current page.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RequestedOrderEditLineItemEdge",
+          "description": "An auto-generated type which holds one RequestedOrderEditLineItem and a cursor during pagination.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "cursor",
+              "description": "The position of each node in an array, used in [pagination](https://shopify.dev/api/usage/pagination-graphql).",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "node",
+              "description": "The item at the end of RequestedOrderEditLineItemEdge.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "RequestedOrderEditLineItem",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "RequestedOrderEditLineItemRemovalInput",
+          "description": "The input fields for a line item requested for removal in a requested order edit.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "lineItemId",
+              "description": "The ID of the line item that the customer wants removed.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "quantity",
+              "description": "The quantity of the line item that the customer wants removed.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RequestedOrderEditLineItems",
+          "description": "The line item changes on a requested order edit, grouped by the type of change.",
+          "fields": [
+            {
+              "isPreAuthAccessible": true,
+              "isProtected": false,
+              "name": "removals",
+              "description": "The line items requested for removal from the order.",
+              "args": [
+                {
+                  "name": "first",
+                  "description": "The first `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": "The elements that come after the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": "The last `n` elements from the [paginated list](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "before",
+                  "description": "The elements that come before the specified [cursor](https://shopify.dev/api/usage/pagination-graphql).",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "RequestedOrderEditLineItemConnection",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "RequestedOrderEditLineItemsInput",
+          "description": "The input fields for the line item changes in a requested order edit, grouped by the type of change.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "removals",
+              "description": "The line items requested for removal.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "RequestedOrderEditLineItemRemovalInput",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "RequestedOrderEditStatus",
+          "description": "The status of a buyer-initiated requested order edit.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "REQUESTED",
+              "description": "The requested order edit is pending merchant action.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "RESOLVED",
+              "description": "The requested order edit has been resolved by the merchant.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "DECLINED",
+              "description": "The requested order edit was declined by the merchant.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "RequestedOrderEditUserError",
+          "description": "The errors that occur while requesting an edit to an order.",
+          "fields": [
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "code",
+              "description": "The error code.",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "RequestedOrderEditErrorCode",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "field",
+              "description": "The path to the input field that caused the error.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "isPreAuthAccessible": false,
+              "isProtected": false,
+              "name": "message",
+              "description": "The error message.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "DisplayableError",
+              "ofType": null
+            }
+          ],
           "enumValues": null,
           "possibleTypes": null
         },
@@ -45671,12 +47970,6 @@
               "deprecationReason": null
             },
             {
-              "name": "LI",
-              "description": "Liechtenstein.",
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
               "name": "MO",
               "description": "Macao SAR.",
               "isDeprecated": false,
@@ -46419,6 +48712,12 @@
               "description": "Latvia.",
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "LI",
+              "description": "Liechtenstein.",
+              "isDeprecated": true,
+              "deprecationReason": "Use `CH` instead."
             },
             {
               "name": "LT",
@@ -48687,6 +50986,12 @@
             {
               "name": "INVALID_TERRITORY_CODE",
               "description": "The provided Territory Code isn't valid.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "COUNTRY_CODE_MISSING",
+              "description": "The Country Code field is missing.",
               "isDeprecated": false,
               "deprecationReason": null
             },
@@ -51476,6 +53781,27 @@
                 "ofType": null
               },
               "defaultValue": "\"No longer supported\""
+            }
+          ]
+        },
+        {
+          "name": "idempotent",
+          "description": "Enables idempotent mutation execution using a provided key. Only supported on mutations that explicitly document idempotency support in their description. Example: `@idempotent(key: \"123e4567-e89b-12d3-a456-426614174000\")`. Note: The idempotency key cannot be an empty string or whitespace only.",
+          "locations": ["FIELD"],
+          "args": [
+            {
+              "name": "key",
+              "description": "The key to identify the idempotent mutation.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
             }
           ]
         },

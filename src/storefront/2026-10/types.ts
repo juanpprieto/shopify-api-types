@@ -746,7 +746,7 @@ export type CartAddress = CartDeliveryAddress;
  *
  */
 export type CartAddressInput = {
-  /** Copies details from the customer address to an address on this cart. */
+  /** Copies details from the customer address to an address on this cart. The address is copied as-is, regardless of `validationStrategy`. Validation can be requested on later delivery address updates and always occurs in checkout. */
   copyFromCustomerAddressId?: InputMaybe<Scalars['ID']['input']>;
   /** A delivery address stored on this cart. */
   deliveryAddress?: InputMaybe<CartDeliveryAddressInput>;
@@ -2139,7 +2139,7 @@ export type CartSelectableAddressInput = {
   oneTimeUse?: InputMaybe<Scalars['Boolean']['input']>;
   /** Sets exactly one address as pre-selected for the buyer. */
   selected?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Defines what kind of address validation is requested. */
+  /** Defines what kind of address validation is requested. Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is. Validation can be requested on later delivery address updates and always occurs in checkout. */
   validationStrategy?: InputMaybe<DeliveryAddressValidationStrategy>;
 };
 
@@ -2153,7 +2153,7 @@ export type CartSelectableAddressUpdateInput = {
   oneTimeUse?: InputMaybe<Scalars['Boolean']['input']>;
   /** Sets exactly one address as pre-selected for the buyer. */
   selected?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Defines what kind of address validation is requested. */
+  /** Defines what kind of address validation is requested. Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is. Validation can be requested on later delivery address updates and always occurs in checkout. */
   validationStrategy?: InputMaybe<DeliveryAddressValidationStrategy>;
 };
 
@@ -3539,6 +3539,8 @@ export type CurrencyCode =
   | 'XAF'
   /** East Caribbean Dollar (XCD). */
   | 'XCD'
+  /** Caribbean Guilder (XCG). */
+  | 'XCG'
   /** West African CFA franc (XOF). */
   | 'XOF'
   /** CFP Franc (XPF). */
@@ -4034,6 +4036,8 @@ export type DeliveryAddressValidationStrategy =
   /**
    * Strict validation is performed, i.e. all fields in the address are validated
    * according to Shopify's checkout rules. If the address fails validation, the cart will not be updated.
+   * Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is.
+   * Validation can be requested on later delivery address updates and always occurs in checkout.
    *
    */
   | 'STRICT';
@@ -4264,7 +4268,7 @@ export type FilterPresentation =
  * The type of data that the filter group represents.
  *
  * For more information, refer to [Filter products in a collection with the Storefront API]
- * (https://shopify.dev/custom-storefronts/products-collections/filter-products).
+ * (https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products).
  *
  */
 export type FilterType =
@@ -4683,7 +4687,7 @@ export type LanguageCode =
   | 'BG'
   /** Bambara. */
   | 'BM'
-  /** Bangla. */
+  /** Bengali. */
   | 'BN'
   /** Tibetan. */
   | 'BO'
@@ -4899,7 +4903,7 @@ export type LanguageCode =
   | 'SO'
   /** Albanian. */
   | 'SQ'
-  /** Serbian. */
+  /** Serbian (Latin). */
   | 'SR'
   /** Sundanese. */
   | 'SU'
@@ -6846,7 +6850,7 @@ export type PredictiveSearchLimitScope =
 export type PredictiveSearchResult = {
   /** The articles that match the search query. */
   articles: Array<Article>;
-  /** The articles that match the search query. */
+  /** The collections that match the search query. */
   collections: Array<Collection>;
   /** The pages that match the search query. */
   pages: Array<Page>;
@@ -7056,7 +7060,7 @@ export type Product = HasMetafields & Node & OnlineStorePublishable & Trackable 
   productType: Scalars['String']['output'];
   /** The date and time when the product was published to the channel. */
   publishedAt: Scalars['DateTime']['output'];
-  /** Whether the product can only be purchased with a [selling plan](/docs/apps/build/purchase-options/subscriptions/selling-plans). Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores. If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels, except the online store. */
+  /** Whether the product can only be purchased with a [selling plan](/docs/apps/build/purchase-options/subscriptions/selling-plans). Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores. If you update a product to be subscription-only (`requiresSellingPlan: true`), then the product is unpublished from all channels, except the online store. */
   requiresSellingPlan: Scalars['Boolean']['output'];
   /**
    * Find an active product variant based on selected options, availability or the first variant.
@@ -8098,7 +8102,7 @@ export type QueryRoot = {
   /**
    * Returns paginated search results for [`Product`](https://shopify.dev/docs/api/storefront/current/objects/Product), [`Page`](https://shopify.dev/docs/api/storefront/current/objects/Page), and [`Article`](https://shopify.dev/docs/api/storefront/current/objects/Article) resources based on a query string. Results are sorted by relevance by default.
    *
-   * The response includes the total result count and available product filters for building [faceted search interfaces](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products). Use the [`prefix`](https://shopify.dev/docs/api/storefront/current/enums/SearchPrefixQueryType) argument to enable partial word matching on the last search term, allowing queries like "winter snow" to match "snowboard" or "snowshoe".
+   * The response includes the total result count and available product filters for building [faceted search interfaces](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products). A search returns up to 1,000 results. When product results are included, a search returns up to 2 pages or articles, on the first page of results only. To get more pages and articles, run a separate search with `types: [PAGE, ARTICLE]`. Product results match partial words automatically. For page and article results, use the [`prefix`](https://shopify.dev/docs/api/storefront/current/enums/SearchPrefixQueryType) argument to match partial words on the last search term, so that a query like "winter snow" can match pages that contain "snowboard" or "snowshoe".
    *
    */
   search: SearchResultItemConnection;
@@ -8436,7 +8440,6 @@ export type QueryRootPredictiveSearchArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   limitScope?: InputMaybe<PredictiveSearchLimitScope>;
   query: Scalars['String']['input'];
-  searchableFields?: InputMaybe<Array<SearchableField>>;
   types?: InputMaybe<Array<PredictiveSearchType>>;
   unavailableProducts?: InputMaybe<SearchUnavailableProductsType>;
 };
@@ -8610,11 +8613,11 @@ export type ScriptDiscountApplication = DiscountApplication & {
   value: PricingValue;
 };
 
-/** Specifies whether to perform a partial word match on the last search term. */
+/** For page and article results, specifies whether to match partial words on the last search term. Product results match partial words automatically. */
 export type SearchPrefixQueryType =
-  /** Perform a partial word match on the last search term. */
+  /** For page and article results, match partial words on the last search term. */
   | 'LAST'
-  /** Don't perform a partial word match on the last search term. */
+  /** For page and article results, don't match partial words on the last search term. */
   | 'NONE';
 
 /**
@@ -8651,7 +8654,7 @@ export type SearchResultItemConnection = {
   pageInfo: PageInfo;
   /** A list of available filters. */
   productFilters: Array<Filter>;
-  /** The total number of results. */
+  /** The total number of results, up to a maximum of 1,000. If a search matches more than 1,000 results, then it returns 1,000, and pagination returns up to the first 1,000 results. */
   totalCount: Scalars['Int']['output'];
 };
 
@@ -9638,15 +9641,15 @@ export type SocialLoginProvider = {
 };
 
 /**
- * Inventory information for a product variant at a physical store location that offers local pickup. Includes stock availability, quantity on hand, and estimated pickup readiness time. Availability also includes inventory that can be moved to the location through a store transfer route, so a variant can be available for pickup with no on-hand stock at the location.
+ * Inventory information for a product variant at a physical store location. Includes stock availability, quantity on hand, and estimated pickup readiness time. When the location offers local pickup, availability also includes inventory that can be moved to it through a store transfer route, so a variant can be available for pickup with no on-hand stock at the location.
  *
- * Local pickup must be [enabled in the store's shipping settings](https://help.shopify.com/manual/shipping/setting-up-and-managing-your-shipping/local-methods/local-pickup) for this data to be returned. Results can be sorted by proximity to a customer's location using the `near` argument on the [`ProductVariant.storeAvailability`](https://shopify.dev/docs/api/storefront/current/objects/ProductVariant#field-ProductVariant.fields.storeAvailability) connection.
+ * Local pickup is [configured in the store's shipping settings](https://help.shopify.com/manual/shipping/setting-up-and-managing-your-shipping/local-methods/local-pickup), and a returned location isn't guaranteed to offer it. Results can be sorted by proximity to a customer's location using the `near` argument on the [`ProductVariant.storeAvailability`](https://shopify.dev/docs/api/storefront/current/objects/ProductVariant#field-ProductVariant.fields.storeAvailability) connection.
  *
  * Learn more about [supporting local pickup on storefronts](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/local-pickup).
  *
  */
 export type StoreAvailability = {
-  /** Whether the product variant can be picked up at this location. This is `true` when the variant is in stock here, can be supplied through a store transfer from another location, or is sold with untracked or oversellable inventory (its inventory isn't tracked, or its inventory policy allows continuing to sell when out of stock). As a result, `available` can be `true` even when `quantityAvailable` is `0`. */
+  /** Whether the product variant is available at this location. This is `true` when the variant is in stock here, can be supplied through a store transfer from another location when this location offers local pickup, or is sold with untracked or oversellable inventory (its inventory isn't tracked, or its inventory policy allows continuing to sell when out of stock). As a result, `available` can be `true` even when `quantityAvailable` is `0` or less. It doesn't mean the location offers local pickup. */
   available: Scalars['Boolean']['output'];
   /** The location where this product variant is stocked at. */
   location: Location;
