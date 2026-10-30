@@ -2,8 +2,9 @@
 // The /models endpoint reports this base URL for chat-completions models.
 const DEFAULT_BASE_URL = 'https://opencode.ai/inference/go/openai/v1';
 
-// Chosen by a bake-off on the 2026.10.0 README (see CONTRIBUTING.md)
-const DEFAULT_MODEL = 'glm-5.3';
+// Chosen in the 2026.10.0 preview rounds: it passed both style gates and
+// named change groups by feature area (glm-5.3 and deepseek-v4-pro lost)
+export const DEFAULT_MODEL = 'kimi-k3.1-pro';
 
 // Reasoning tokens count toward the limit. 32000 left glm-5.3 no room for
 // the answer. 128000 stays below the smallest output limit of the
@@ -34,7 +35,7 @@ export async function generateText(
   const baseUrl = process.env['OPENCODE_GO_BASE_URL'] || DEFAULT_BASE_URL;
   const model = process.env['OPENCODE_GO_MODEL'] || DEFAULT_MODEL;
 
-  const response = await fetch(`${baseUrl}/chat/completions`, {
+  const response = await fetchWithRetry(`${baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
       'authorization': `Bearer ${apiKey}`,
@@ -99,4 +100,23 @@ export async function generateText(
   }
 
   return text;
+}
+
+/**
+ * Retry a request that fails before any response arrives (for example a
+ * connect timeout). A request that got a response is never sent again.
+ */
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  attempts = 3,
+): Promise<Response> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await fetch(url, init);
+    } catch (error) {
+      if (attempt >= attempts || init.signal?.aborted) throw error;
+      await new Promise((resolve) => setTimeout(resolve, attempt * 5000));
+    }
+  }
 }

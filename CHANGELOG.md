@@ -2,128 +2,938 @@
 
 ## 2026.10.0
 
-This release makes `2026-10` the current API version. The package includes these
-versions: `2026-10` (current), `2026-07` (previous), `2026-04` and `2026-01`
-(older supported), `2027-01` (release candidate), and `unstable`.
+Shopify API version `2026-10` is now current. An app that upgrades gets the schema changes below and needs to address breaking changes in each API it calls.
+
+> [!IMPORTANT]
+> `2026-10` has 2 Storefront, 28 Admin, and 13 Customer Account breaking changes compared with `2026-07`.
 
 ### Breaking changes
 
-The lists below show changes from `2026-07` to `2026-10`.
+#### Storefront API: Shop Pay payment request inputs
 
-**Storefront API**
+Shopify removes the `paymentRequest` argument from `Mutation.shopPayPaymentRequestSessionCreate` and makes `ShopPayPaymentRequestSession.paymentRequest` nullable. Change session creation calls and handle `null` when reading the payment request field. Shopify names no replacement for the argument and will remove the deprecated field in a future version.
 
-- `ShopPayPaymentRequestSession.paymentRequest` - Shopify changes the type from
-  `ShopPayPaymentRequest!` to `ShopPayPaymentRequest`. The field may return
-  `null`.
-- `Mutation.shopPayPaymentRequestSessionCreate` - Shopify removes the argument
-  `paymentRequest: ShopPayPaymentRequestInput!`.
+<details>
+<summary>2 Shop Pay breaking changes</summary>
 
-Check your code for `null` handling of
-`ShopPayPaymentRequestSession.paymentRequest`. Remove the `paymentRequest`
-argument from your calls to `Mutation.shopPayPaymentRequestSessionCreate`.
+- `ShopPayPaymentRequestSession.paymentRequest`
+- `Mutation.shopPayPaymentRequestSessionCreate(paymentRequest: ShopPayPaymentRequestInput!)`
 
-**Admin API**
+</details>
 
-- `PriceRule` - Shopify removes this type.
-- `PriceRuleAllocationMethod` - Shopify removes this type.
-- `PriceRuleCustomerSelection` - Shopify removes this type.
-- `PriceRuleDiscountCode` - Shopify removes this type.
-- `PriceRuleDiscountCodeConnection` - Shopify removes this type.
-- `PriceRuleDiscountCodeEdge` - Shopify removes this type.
-- `PriceRuleEntitlementToPrerequisiteQuantityRatio` - Shopify removes this type.
-- `PriceRuleFeature` - Shopify removes this type.
-- `PriceRuleFixedAmountValue` - Shopify removes this type.
-- `PriceRuleItemEntitlements` - Shopify removes this type.
-- `PriceRuleLineItemPrerequisites` - Shopify removes this type.
-- `PriceRuleMoneyRange` - Shopify removes this type.
-- `PriceRulePercentValue` - Shopify removes this type.
-- `PriceRulePrerequisiteToEntitlementQuantityRatio` - Shopify removes this type.
-- `PriceRuleQuantityRange` - Shopify removes this type.
-- `PriceRuleShareableUrl` - Shopify removes this type.
-- `PriceRuleShareableUrlTargetType` - Shopify removes this type.
-- `PriceRuleShippingLineEntitlements` - Shopify removes this type.
-- `PriceRuleStatus` - Shopify removes this type.
-- `PriceRuleTarget` - Shopify removes this type.
-- `PriceRuleTrait` - Shopify removes this type.
-- `PriceRuleValidityPeriod` - Shopify removes this type.
-- `PriceRuleValue` - Shopify removes this type.
-- `InventoryAdjustQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION` -
-  Shopify removes this enum value.
-- `InventoryMoveQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION` - Shopify
-  removes this enum value.
-- `InventorySetOnHandQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION` -
-  Shopify removes this enum value.
-- `InventorySetQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION` - Shopify
-  removes this enum value.
+#### Admin API: discount price rules
 
-Remove references to these types and to the `ITEM_NOT_STOCKED_AT_LOCATION` enum
-value from your code.
+Shopify removes 23 `PriceRule` types and the deprecated `DraftOrderDiscountNotAppliedWarning.priceRule` field. Use the types and queries in Shopify's [discount tutorials](https://shopify.dev/docs/apps/selling-strategies/discounts/getting-started) instead of price rules. Use `discountCode` and `discountTitle` instead of the draft order warning field.
 
-Shopify removes the `PriceRule` types together with the
-`DraftOrderDiscountNotAppliedWarning.priceRule` field. Use the `discountTitle`
-and `discountCode` fields of that warning instead.
+<details>
+<summary>24 discount breaking changes</summary>
 
-**Customer Account API**
+- `PriceRule`
+- `PriceRuleAllocationMethod`
+- `PriceRuleCustomerSelection`
+- `PriceRuleDiscountCode`
+- `PriceRuleDiscountCodeConnection`
+- `PriceRuleDiscountCodeEdge`
+- `PriceRuleEntitlementToPrerequisiteQuantityRatio`
+- `PriceRuleFeature`
+- `PriceRuleFixedAmountValue`
+- `PriceRuleItemEntitlements`
+- `PriceRuleLineItemPrerequisites`
+- `PriceRuleMoneyRange`
+- `PriceRulePercentValue`
+- `PriceRulePrerequisiteToEntitlementQuantityRatio`
+- `PriceRuleQuantityRange`
+- `PriceRuleShareableUrl`
+- `PriceRuleShareableUrlTargetType`
+- `PriceRuleShippingLineEntitlements`
+- `PriceRuleStatus`
+- `PriceRuleTarget`
+- `PriceRuleTrait`
+- `PriceRuleValidityPeriod`
+- `PriceRuleValue`
+- `DraftOrderDiscountNotAppliedWarning.priceRule`
 
-- `AppliedGiftCard` - Shopify removes this type.
-- `AvailableShippingRates` - Shopify removes this type.
-- `Checkout` - Shopify removes this type.
-- `CheckoutLineItem` - Shopify removes this type.
-- `CheckoutLineItemConnection` - Shopify removes this type.
-- `CheckoutLineItemEdge` - Shopify removes this type.
-- `CustomerMailingAddress` - Shopify removes this type.
-- `ShippingRate` - Shopify removes this type.
-- `CustomerAddressInput.territoryCode` - Shopify removes this input field.
-- `SubscriptionDeliveryMethodLocalDeliveryInput.address` - Shopify removes this
-  input field.
-- `Mutation.subscriptionContractFetchDeliveryOptions` - Shopify removes the
-  argument `deliveryAddress: CustomerMailingAddressInput`.
+</details>
 
-Remove references to these types, input fields, and the argument from your code.
+#### Admin API: inventory error codes
 
-The Customer Account API has no replacement for the `Checkout` types. For an
-active cart, use the Storefront API `Cart`. For finished purchases, use
-`Customer.orders`.
+Shopify removes `ITEM_NOT_STOCKED_AT_LOCATION` from four inventory user error enums. Remove this value from error handling for inventory adjustment, movement, and quantity mutations. Shopify names no replacement.
 
-### Additions
+<details>
+<summary>4 removed enum values</summary>
 
-The table shows added types per API, from `2026-07` to `2026-10`.
+- `InventoryAdjustQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION`
+- `InventoryMoveQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION`
+- `InventorySetOnHandQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION`
+- `InventorySetQuantitiesUserErrorCode.ITEM_NOT_STOCKED_AT_LOCATION`
 
-| API                  | Added types | Examples                                                                                                                                      |
-| -------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Storefront API       | 1           | `ShopPayPaymentRequestShopUser`                                                                                                               |
-| Admin API            | 201         | `AnalyticsAnnotation`, `AnalyticsAnnotationConnection`, `AnalyticsAnnotationCreatePayload`, `AnalyticsTarget`, `AnalyticsTargetCreatePayload` |
-| Customer Account API | 33          | `CalculateRequestedOrderEditInput`, `CalculatedRequestedOrderEdit`, `EditableLineItem`, `IneligibleLineItem`, `RequestedOrderEdit`            |
+</details>
+
+#### Customer Account API: checkout types
+
+Shopify removes checkout, line item, gift card, shipping rate, and mailing address types, plus `Customer.lastIncompleteCheckout`. Change Customer Account API queries that use these types or the deprecated checkout field. Shopify names no replacements.
+
+<details>
+<summary>9 checkout breaking changes</summary>
+
+- `AppliedGiftCard`
+- `AvailableShippingRates`
+- `Checkout`
+- `CheckoutLineItem`
+- `CheckoutLineItemConnection`
+- `CheckoutLineItemEdge`
+- `CustomerMailingAddress`
+- `ShippingRate`
+- `Customer.lastIncompleteCheckout`
+
+</details>
+
+#### Customer Account API: address and delivery inputs
+
+Shopify removes `CustomerAddressInput.territoryCode`, `SubscriptionDeliveryMethodLocalDeliveryInput.address`, and the `deliveryAddress` argument from `subscriptionContractFetchDeliveryOptions`. Change customer address inputs and subscription delivery option calls that use them. Shopify names no replacements.
+
+<details>
+<summary>3 removed address inputs</summary>
+
+- `CustomerAddressInput.territoryCode`
+- `SubscriptionDeliveryMethodLocalDeliveryInput.address`
+- `Mutation.subscriptionContractFetchDeliveryOptions(deliveryAddress: CustomerMailingAddressInput)`
+
+</details>
+
+#### Customer Account API: order shipping titles
+
+Shopify removes `Order.shippingTitle`, which summarizes an order's shipping titles. Change order queries that use this field. Shopify names no replacement.
+
+<details>
+<summary>1 removed field</summary>
+
+- `Order.shippingTitle`
+
+</details>
+
+### New features
+
+#### Admin API: analytics annotations and targets
+
+Apps can create, update, and delete annotations for notable events on a shop's analytics timeline. Apps can also manage merchant-defined targets that track one analytics metric over a date range.
+
+<details>
+<summary>31 analytics additions</summary>
+
+- `AnalyticsAnnotation`
+- `AnalyticsAnnotationConnection`
+- `AnalyticsAnnotationCreateInput`
+- `AnalyticsAnnotationCreatePayload`
+- `AnalyticsAnnotationCreateUserError`
+- `AnalyticsAnnotationCreateUserErrorCode`
+- `AnalyticsAnnotationDeletePayload`
+- `AnalyticsAnnotationDeleteUserError`
+- `AnalyticsAnnotationDeleteUserErrorCode`
+- `AnalyticsAnnotationEdge`
+- `AnalyticsAnnotationSortKeys`
+- `AnalyticsAnnotationSource`
+- `AnalyticsAnnotationUpdateInput`
+- `AnalyticsAnnotationUpdatePayload`
+- `AnalyticsAnnotationUpdateUserError`
+- `AnalyticsAnnotationUpdateUserErrorCode`
+- `AnalyticsTarget`
+- `AnalyticsTargetConnection`
+- `AnalyticsTargetCreateInput`
+- `AnalyticsTargetCreatePayload`
+- `AnalyticsTargetCreateUserError`
+- `AnalyticsTargetCreateUserErrorCode`
+- `AnalyticsTargetEdge`
+- `AnalyticsTargetSortKeys`
+- `AnalyticsTargetUpdateInput`
+- `AnalyticsTargetUpdatePayload`
+- `AnalyticsTargetUpdateUserError`
+- `AnalyticsTargetUpdateUserErrorCode`
+- `AnalyticsTargetsDeletePayload`
+- `AnalyticsTargetsDeleteUserError`
+- `AnalyticsTargetsDeleteUserErrorCode`
+
+</details>
+
+#### Admin and Customer Account APIs: requested order edits
+
+Apps can calculate a requested order edit's financial outcome and inspect line item monetary values. Customer Account API apps can request edits to unfulfilled line items and check which quantities are editable or ineligible. The `orderRequestEdit` mutation supports an optional idempotency key through `@idempotent`; retries with the same key return the original edit.
+
+<details>
+<summary>44 order edit additions</summary>
+
+- `CalculateRequestedOrderEditInput`
+- `CalculateRequestedOrderEditLineItemRemovalInput`
+- `CalculateRequestedOrderEditLineItemsInput`
+- `CalculatedRequestedOrderEdit`
+- `CalculatedRequestedOrderEditLineItem`
+- `CalculateRequestedOrderEditInput`
+- `CalculateRequestedOrderEditLineItemRemovalInput`
+- `CalculateRequestedOrderEditLineItemsInput`
+- `CalculatedRequestedOrderEdit`
+- `CalculatedRequestedOrderEditLineItem`
+- `CalculatedRequestedOrderEditLineItemConnection`
+- `CalculatedRequestedOrderEditLineItemEdge`
+- `CalculatedRequestedOrderEditLineItems`
+- `EditableLineItem`
+- `EditableLineItemConnection`
+- `EditableLineItemEdge`
+- `IneligibleLineItem`
+- `IneligibleLineItemConnection`
+- `IneligibleLineItemEdge`
+- `IneligibleQuantityDetail`
+- `IneligibleReason`
+- `OrderRequestEditPayload`
+- `OrderRequestedEditInformation`
+- `RequestedOrderEdit`
+- `RequestedOrderEditConnection`
+- `RequestedOrderEditEdge`
+- `RequestedOrderEditErrorCode`
+- `RequestedOrderEditFinancialSummary`
+- `RequestedOrderEditLineItem`
+- `RequestedOrderEditLineItemConnection`
+- `RequestedOrderEditLineItemEdge`
+- `RequestedOrderEditLineItemRemovalInput`
+- `RequestedOrderEditLineItems`
+- `RequestedOrderEditLineItemsInput`
+- `RequestedOrderEditStatus`
+- `RequestedOrderEditUserError`
+- `QueryRoot.requestedOrderEditCalculate`
+- `Mutation.orderRequestEdit`
+- `CalculatedRequestedOrderEdit.editLineItems`
+- `CalculatedRequestedOrderEdit.financialSummary`
+- `CalculatedRequestedOrderEdit.lineItems`
+- `CalculatedRequestedOrderEditLineItem.lineItem`
+- `CalculatedRequestedOrderEditLineItem.quantity`
+- `CalculatedRequestedOrderEditLineItem.subtotalSet`
+
+</details>
+
+#### Admin API: multiple product variant barcodes
+
+Product variant inputs can accept up to 20 barcodes and declare each barcode's identifier standard. A variant input cannot set both `barcode` and `barcodes`; without a `BarcodeType`, Shopify stores the value as entered with no declared standard.
+
+<details>
+<summary>2 barcode additions</summary>
+
+- `BarcodeInput`
+- `BarcodeType`
+
+</details>
+
+#### Storefront API: Shop Pay authorizing user
+
+Storefront apps can read the Shop user that authorized a payment request through `ShopPayPaymentRequestReceipt.shopUser`. `ShopPayPaymentRequestShopUser.publicId` exposes the user's public ID.
+
+<details>
+<summary>3 Shop Pay additions</summary>
+
+- `ShopPayPaymentRequestShopUser`
+- `ShopPayPaymentRequestShopUser.publicId`
+- `ShopPayPaymentRequestReceipt.shopUser`
+
+</details>
+
+<details>
+<summary>603 other additions</summary>
+
+Admin API (540):
+
+- `AuditTrailAdjustment`
+- `AuditTrailAdjustmentType`
+- `CollectionSourceInclusionConditionMetafieldIntInput`
+- `CollectionSourceInclusionConditionMetafieldIntRelation`
+- `CollectionSourceInclusionConditionUpdateMetafieldIntInput`
+- `CustomerSmsMarketingConsent`
+- `DiscountContextUnknown`
+- `HasRollouts`
+- `InventoryPurchaseOrder`
+- `InventoryPurchaseOrderConnection`
+- `InventoryPurchaseOrderEdge`
+- `InventoryPurchaseOrderLineItem`
+- `InventoryPurchaseOrderLineItemConnection`
+- `InventoryPurchaseOrderLineItemEdge`
+- `InventoryPurchaseOrderStatus`
+- `InventorySupplierSnapshot`
+- `MarketRelationship`
+- `MarketRelationshipConnection`
+- `MarketRelationshipEdge`
+- `MarketRelationshipsStatus`
+- `OrderCancelJobResult`
+- `OrderCancelStatus`
+- `OrderDisplayRequestedEditStatus`
+- `PaymentInstrumentMandateInput`
+- `PaymentInstrumentMandateResourceType`
+- `PaymentInstrumentSendAddEmailPayload`
+- `PricingAuditTrail`
+- `ProductVariantBarcode`
+- `ProductVariantBarcodeConnection`
+- `ProductVariantBarcodeEdge`
+- `PurchaseOrderLineItemSortKeys`
+- `RequestedOrderEditCreateInput`
+- `RequestedOrderEditCreatePayload`
+- `RequestedOrderEditCreateUserError`
+- `RequestedOrderEditCreateUserErrorCode`
+- `RequestedOrderEditDeclineInput`
+- `RequestedOrderEditDeclinePayload`
+- `RequestedOrderEditDeclineUserError`
+- `RequestedOrderEditDeclineUserErrorCode`
+- `RequestedOrderEditResolveInput`
+- `RequestedOrderEditResolvePayload`
+- `RequestedOrderEditResolveUserError`
+- `RequestedOrderEditResolveUserErrorCode`
+- `ReturnPoliciesEditRules`
+- `ReturnPoliciesReturnRules`
+- `ReturnPoliciesReturnWindowStartingFrom`
+- `ReturnPolicyProfile`
+- `ReturnPolicyProfileConnection`
+- `ReturnPolicyProfileEdge`
+- `Rollout`
+- `RolloutCatalogActivateChange`
+- `RolloutCatalogChange`
+- `RolloutCatalogDraftChange`
+- `RolloutChange`
+- `RolloutChangeConnection`
+- `RolloutChangeEdge`
+- `RolloutCheckoutAndAccountsConfigurationChange`
+- `RolloutCheckoutAndAccountsConfigurationPublishChange`
+- `RolloutConnection`
+- `RolloutDiscountActivateChange`
+- `RolloutDiscountChange`
+- `RolloutDiscountExpireChange`
+- `RolloutEdge`
+- `RolloutSchedule`
+- `RolloutSortKeys`
+- `RolloutStatus`
+- `RolloutThemeChange`
+- `RolloutThemePublishChange`
+- `RolloutTreatment`
+- `SubscriptionBillingCycleContractEditCalculatePayload`
+- `SubscriptionBillingCycleContractEditCalculateUserError`
+- `SubscriptionBillingCycleContractEditCalculateUserErrorCode`
+- `SubscriptionCalculatedContract`
+- `SubscriptionCommittedContract`
+- `SubscriptionContractCalculation`
+- `SubscriptionContractCalculationAnchorInput`
+- `SubscriptionContractCalculationAppManagedBillingConfigInput`
+- `SubscriptionContractCalculationAppManagedPricingPolicyInput`
+- `SubscriptionContractCalculationBillingCycleEditInput`
+- `SubscriptionContractCalculationBillingPolicyInput`
+- `SubscriptionContractCalculationCadence`
+- `SubscriptionContractCalculationCadenceInput`
+- `SubscriptionContractCalculationCadenceUnit`
+- `SubscriptionContractCalculationCommitPayload`
+- `SubscriptionContractCalculationCommitUserError`
+- `SubscriptionContractCalculationCommitUserErrorCode`
+- `SubscriptionContractCalculationComponentLineInput`
+- `SubscriptionContractCalculationContractCreateInput`
+- `SubscriptionContractCalculationContractUpdateInput`
+- `SubscriptionContractCalculationCustomLineInput`
+- `SubscriptionContractCalculationCustomerPaymentMethodInput`
+- `SubscriptionContractCalculationCyclePriceAdjustmentInput`
+- `SubscriptionContractCalculationDeliveryDiscountInput`
+- `SubscriptionContractCalculationDeliveryMethodInput`
+- `SubscriptionContractCalculationDeliveryMethodLocalDeliveryInput`
+- `SubscriptionContractCalculationDeliveryMethodPickupInput`
+- `SubscriptionContractCalculationDeliveryMethodShippingInput`
+- `SubscriptionContractCalculationDeliveryOption`
+- `SubscriptionContractCalculationDeliveryPolicyInput`
+- `SubscriptionContractCalculationDiagnostic`
+- `SubscriptionContractCalculationDiagnosticCode`
+- `SubscriptionContractCalculationDiscountCodeInput`
+- `SubscriptionContractCalculationDiscountFixedAmountInput`
+- `SubscriptionContractCalculationDiscountValueInput`
+- `SubscriptionContractCalculationFailure`
+- `SubscriptionContractCalculationFetchDeliveryOptionsInput`
+- `SubscriptionContractCalculationLineDiscountInput`
+- `SubscriptionContractCalculationLineInput`
+- `SubscriptionContractCalculationLocalDeliveryOption`
+- `SubscriptionContractCalculationManualDiscountInput`
+- `SubscriptionContractCalculationMonthdayAnchorInput`
+- `SubscriptionContractCalculationMultipleFulfillmentConfig`
+- `SubscriptionContractCalculationMultipleFulfillmentConfigInput`
+- `SubscriptionContractCalculationOrderDiscountInput`
+- `SubscriptionContractCalculationPaymentMethodInput`
+- `SubscriptionContractCalculationPending`
+- `SubscriptionContractCalculationPickupOption`
+- `SubscriptionContractCalculationProductVariantLineInput`
+- `SubscriptionContractCalculationProductVariantParentLineInput`
+- `SubscriptionContractCalculationProjectedOrderTotals`
+- `SubscriptionContractCalculationShippingOption`
+- `SubscriptionContractCalculationSuccess`
+- `SubscriptionContractCalculationWeekdayAnchorInput`
+- `SubscriptionContractCalculationYeardayAnchorInput`
+- `SubscriptionContractCreateCalculatePayload`
+- `SubscriptionContractCreateCalculateUserError`
+- `SubscriptionContractCreateCalculateUserErrorCode`
+- `SubscriptionContractUpdateCalculatePayload`
+- `SubscriptionContractUpdateCalculateUserError`
+- `SubscriptionContractUpdateCalculateUserErrorCode`
+- `SubscriptionGroupedLine`
+- `SubscriptionGroupedLineConnection`
+- `SubscriptionGroupedLineEdge`
+- `SubscriptionParentLine`
+- `QueryRoot.analyticsTargets`
+- `QueryRoot.inventoryPurchaseOrder`
+- `QueryRoot.inventoryPurchaseOrders`
+- `QueryRoot.marketRelationships`
+- `QueryRoot.marketRelationshipsStatus`
+- `QueryRoot.returnPolicyProfile`
+- `QueryRoot.returnPolicyProfiles`
+- `QueryRoot.rollout`
+- `QueryRoot.rollouts`
+- `QueryRoot.subscriptionContractCalculation`
+- `Mutation.analyticsAnnotationCreate`
+- `Mutation.analyticsAnnotationDelete`
+- `Mutation.analyticsAnnotationUpdate`
+- `Mutation.analyticsTargetCreate`
+- `Mutation.analyticsTargetUpdate`
+- `Mutation.analyticsTargetsDelete`
+- `Mutation.paymentInstrumentSendAddEmail`
+- `Mutation.requestedOrderEditCreate`
+- `Mutation.requestedOrderEditDecline`
+- `Mutation.requestedOrderEditResolve`
+- `Mutation.subscriptionBillingCycleContractEditCalculate`
+- `Mutation.subscriptionContractCalculationCommit`
+- `Mutation.subscriptionContractCreateCalculate`
+- `Mutation.subscriptionContractUpdateCalculate`
+- `AnalyticsAnnotation.createdAt`
+- `AnalyticsAnnotation.createdByApp`
+- `AnalyticsAnnotation.description`
+- `AnalyticsAnnotation.endedAt`
+- `AnalyticsAnnotation.id`
+- `AnalyticsAnnotation.source`
+- `AnalyticsAnnotation.startedAt`
+- `AnalyticsAnnotation.title`
+- `AnalyticsAnnotation.type`
+- `AnalyticsAnnotation.updatedAt`
+- `AnalyticsAnnotationConnection.edges`
+- `AnalyticsAnnotationConnection.nodes`
+- `AnalyticsAnnotationConnection.pageInfo`
+- `AnalyticsAnnotationCreatePayload.analyticsAnnotation`
+- `AnalyticsAnnotationCreatePayload.userErrors`
+- `AnalyticsAnnotationCreateUserError.code`
+- `AnalyticsAnnotationCreateUserError.field`
+- `AnalyticsAnnotationCreateUserError.message`
+- `AnalyticsAnnotationDeletePayload.deletedId`
+- `AnalyticsAnnotationDeletePayload.userErrors`
+- `AnalyticsAnnotationDeleteUserError.code`
+- `AnalyticsAnnotationDeleteUserError.field`
+- `AnalyticsAnnotationDeleteUserError.message`
+- `AnalyticsAnnotationEdge.cursor`
+- `AnalyticsAnnotationEdge.node`
+- `AnalyticsAnnotationUpdatePayload.analyticsAnnotation`
+- `AnalyticsAnnotationUpdatePayload.userErrors`
+- `AnalyticsAnnotationUpdateUserError.code`
+- `AnalyticsAnnotationUpdateUserError.field`
+- `AnalyticsAnnotationUpdateUserError.message`
+- `AnalyticsTarget.createdAt`
+- `AnalyticsTarget.currencyCode`
+- `AnalyticsTarget.endDate`
+- `AnalyticsTarget.expectedValue`
+- `AnalyticsTarget.filters`
+- `AnalyticsTarget.id`
+- `AnalyticsTarget.metric`
+- `AnalyticsTarget.name`
+- `AnalyticsTarget.presentmentExpectedValue`
+- `AnalyticsTarget.shopifyqlQuery`
+- `AnalyticsTarget.startDate`
+- `AnalyticsTarget.updatedAt`
+- `AnalyticsTargetConnection.edges`
+- `AnalyticsTargetConnection.nodes`
+- `AnalyticsTargetConnection.pageInfo`
+- `AnalyticsTargetCreatePayload.analyticsTarget`
+- `AnalyticsTargetCreatePayload.userErrors`
+- `AnalyticsTargetCreateUserError.code`
+- `AnalyticsTargetCreateUserError.field`
+- `AnalyticsTargetCreateUserError.message`
+- `AnalyticsTargetEdge.cursor`
+- `AnalyticsTargetEdge.node`
+- `AnalyticsTargetUpdatePayload.analyticsTarget`
+- `AnalyticsTargetUpdatePayload.userErrors`
+- `AnalyticsTargetUpdateUserError.code`
+- `AnalyticsTargetUpdateUserError.field`
+- `AnalyticsTargetUpdateUserError.message`
+- `AnalyticsTargetsDeletePayload.deletedIds`
+- `AnalyticsTargetsDeletePayload.userErrors`
+- `AnalyticsTargetsDeleteUserError.code`
+- `AnalyticsTargetsDeleteUserError.field`
+- `AnalyticsTargetsDeleteUserError.message`
+- `AuditTrailAdjustment.label`
+- `AuditTrailAdjustment.price`
+- `AuditTrailAdjustment.type`
+- `AuditTrailAdjustment.value`
+- `CalculatedRequestedOrderEditLineItem.totalTaxSet`
+- `CalculatedRequestedOrderEditLineItemConnection.edges`
+- `CalculatedRequestedOrderEditLineItemConnection.nodes`
+- `CalculatedRequestedOrderEditLineItemConnection.pageInfo`
+- `CalculatedRequestedOrderEditLineItemEdge.cursor`
+- `CalculatedRequestedOrderEditLineItemEdge.node`
+- `CalculatedRequestedOrderEditLineItems.removals`
+- `CollectionSourceInclusionConditionMetafieldInt.definition`
+- `CollectionSourceInclusionConditionMetafieldInt.id`
+- `CollectionSourceInclusionConditionMetafieldInt.relation`
+- `CollectionSourceInclusionConditionMetafieldInt.value`
+- `CustomerSmsMarketingConsent.collectedFrom`
+- `CustomerSmsMarketingConsent.optInLevel`
+- `CustomerSmsMarketingConsent.sourceLocation`
+- `CustomerSmsMarketingConsent.state`
+- `CustomerSmsMarketingConsent.updatedAt`
+- `DiscountContextUnknown.contextType`
+- `HasRollouts.rollouts`
+- `InventoryPurchaseOrder.archivedAt`
+- `InventoryPurchaseOrder.currency`
+- `InventoryPurchaseOrder.dateCreated`
+- `InventoryPurchaseOrder.destination`
+- `InventoryPurchaseOrder.id`
+- `InventoryPurchaseOrder.lineItems`
+- `InventoryPurchaseOrder.name`
+- `InventoryPurchaseOrder.orderedAt`
+- `InventoryPurchaseOrder.origin`
+- `InventoryPurchaseOrder.status`
+- `InventoryPurchaseOrder.transfers`
+- `InventoryPurchaseOrderConnection.edges`
+- `InventoryPurchaseOrderConnection.nodes`
+- `InventoryPurchaseOrderConnection.pageInfo`
+- `InventoryPurchaseOrderEdge.cursor`
+- `InventoryPurchaseOrderEdge.node`
+- `InventoryPurchaseOrderLineItem.id`
+- `InventoryPurchaseOrderLineItem.inventoryItem`
+- `InventoryPurchaseOrderLineItem.purchaseOrder`
+- `InventoryPurchaseOrderLineItem.subtotal`
+- `InventoryPurchaseOrderLineItem.supplierSku`
+- `InventoryPurchaseOrderLineItem.taxPercent`
+- `InventoryPurchaseOrderLineItem.title`
+- `InventoryPurchaseOrderLineItem.totalCost`
+- `InventoryPurchaseOrderLineItem.totalQuantity`
+- `InventoryPurchaseOrderLineItem.unitCost`
+- `InventoryPurchaseOrderLineItem.variantTitle`
+- `InventoryPurchaseOrderLineItemConnection.edges`
+- `InventoryPurchaseOrderLineItemConnection.nodes`
+- `InventoryPurchaseOrderLineItemConnection.pageInfo`
+- `InventoryPurchaseOrderLineItemEdge.cursor`
+- `InventoryPurchaseOrderLineItemEdge.node`
+- `InventorySupplierSnapshot.supplierName`
+- `MarketRelationship.childMarket`
+- `MarketRelationship.id`
+- `MarketRelationship.parentMarket`
+- `MarketRelationshipConnection.edges`
+- `MarketRelationshipConnection.nodes`
+- `MarketRelationshipConnection.pageInfo`
+- `MarketRelationshipEdge.cursor`
+- `MarketRelationshipEdge.node`
+- `MarketRelationshipsStatus.version`
+- `OrderCancelJobResult.done`
+- `OrderCancelJobResult.errors`
+- `OrderCancelJobResult.id`
+- `OrderCancelJobResult.order`
+- `OrderCancelJobResult.status`
+- `PaymentInstrumentSendAddEmailPayload.customer`
+- `PaymentInstrumentSendAddEmailPayload.userErrors`
+- `PricingAuditTrail.priceAdjustments`
+- `ProductVariantBarcode.type`
+- `ProductVariantBarcode.value`
+- `ProductVariantBarcodeConnection.edges`
+- `ProductVariantBarcodeConnection.nodes`
+- `ProductVariantBarcodeConnection.pageInfo`
+- `ProductVariantBarcodeEdge.cursor`
+- `ProductVariantBarcodeEdge.node`
+- `RequestedOrderEdit.createdAt`
+- `RequestedOrderEdit.id`
+- `RequestedOrderEdit.lineItems`
+- `RequestedOrderEdit.order`
+- `RequestedOrderEdit.requestDeclinedAt`
+- `RequestedOrderEdit.requestResolvedAt`
+- `RequestedOrderEdit.requestedAt`
+- `RequestedOrderEdit.status`
+- `RequestedOrderEdit.updatedAt`
+- `RequestedOrderEditConnection.edges`
+- `RequestedOrderEditConnection.nodes`
+- `RequestedOrderEditConnection.pageInfo`
+- `RequestedOrderEditCreatePayload.requestedOrderEdit`
+- `RequestedOrderEditCreatePayload.userErrors`
+- `RequestedOrderEditCreateUserError.code`
+- `RequestedOrderEditCreateUserError.field`
+- `RequestedOrderEditCreateUserError.message`
+- `RequestedOrderEditDeclinePayload.requestedOrderEdit`
+- `RequestedOrderEditDeclinePayload.userErrors`
+- `RequestedOrderEditDeclineUserError.code`
+- `RequestedOrderEditDeclineUserError.field`
+- `RequestedOrderEditDeclineUserError.message`
+- `RequestedOrderEditEdge.cursor`
+- `RequestedOrderEditEdge.node`
+- `RequestedOrderEditFinancialSummary.editOrderLevelDiscountSubtotalSet`
+- `RequestedOrderEditFinancialSummary.editSubtotalBeforeTargetAllDiscountsSet`
+- `RequestedOrderEditFinancialSummary.editSubtotalSet`
+- `RequestedOrderEditFinancialSummary.editSubtotalWithCartDiscountSet`
+- `RequestedOrderEditFinancialSummary.editTotalSet`
+- `RequestedOrderEditFinancialSummary.editTotalTaxSet`
+- `RequestedOrderEditLineItem.id`
+- `RequestedOrderEditLineItem.lineItem`
+- `RequestedOrderEditLineItem.quantity`
+- `RequestedOrderEditLineItem.resolvedQuantity`
+- `RequestedOrderEditLineItemConnection.edges`
+- `RequestedOrderEditLineItemConnection.nodes`
+- `RequestedOrderEditLineItemConnection.pageInfo`
+- `RequestedOrderEditLineItemEdge.cursor`
+- `RequestedOrderEditLineItemEdge.node`
+- `RequestedOrderEditLineItems.removals`
+- `RequestedOrderEditResolvePayload.requestedOrderEdit`
+- `RequestedOrderEditResolvePayload.userErrors`
+- `RequestedOrderEditResolveUserError.code`
+- `RequestedOrderEditResolveUserError.field`
+- `RequestedOrderEditResolveUserError.message`
+- `ReturnPoliciesEditRules.canAcceptEdits`
+- `ReturnPoliciesEditRules.editWindowMinutes`
+- `ReturnPoliciesReturnRules.canAcceptReturns`
+- `ReturnPoliciesReturnRules.extendWindowToBusinessDay`
+- `ReturnPoliciesReturnRules.returnWindowDays`
+- `ReturnPoliciesReturnRules.returnWindowStartingFrom`
+- `ReturnPolicyProfile.default`
+- `ReturnPolicyProfile.editRules`
+- `ReturnPolicyProfile.id`
+- `ReturnPolicyProfile.markets`
+- `ReturnPolicyProfile.name`
+- `ReturnPolicyProfile.returnRules`
+- `ReturnPolicyProfile.updatedAt`
+- `ReturnPolicyProfileConnection.edges`
+- `ReturnPolicyProfileConnection.nodes`
+- `ReturnPolicyProfileConnection.pageInfo`
+- `ReturnPolicyProfileEdge.cursor`
+- `ReturnPolicyProfileEdge.node`
+- `Rollout.archivedAt`
+- `Rollout.concludedAt`
+- `Rollout.createdAt`
+- `Rollout.effectiveTrafficAllocation`
+- `Rollout.id`
+- `Rollout.name`
+- `Rollout.schedule`
+- `Rollout.startedAt`
+- `Rollout.status`
+- `Rollout.trafficAllocation`
+- `Rollout.treatments`
+- `Rollout.updatedAt`
+- `RolloutCatalogActivateChange.catalog`
+- `RolloutCatalogActivateChange.id`
+- `RolloutCatalogChange.catalog`
+- `RolloutCatalogChange.id`
+- `RolloutCatalogDraftChange.catalog`
+- `RolloutCatalogDraftChange.id`
+- `RolloutChange.id`
+- `RolloutChangeConnection.edges`
+- `RolloutChangeConnection.nodes`
+- `RolloutChangeConnection.pageInfo`
+- `RolloutChangeEdge.cursor`
+- `RolloutChangeEdge.node`
+- `RolloutCheckoutAndAccountsConfigurationChange.checkoutAndAccountsConfiguration`
+- `RolloutCheckoutAndAccountsConfigurationChange.id`
+- `RolloutCheckoutAndAccountsConfigurationPublishChange.checkoutAndAccountsConfiguration`
+- `RolloutCheckoutAndAccountsConfigurationPublishChange.id`
+- `RolloutConnection.edges`
+- `RolloutConnection.nodes`
+- `RolloutConnection.pageInfo`
+- `RolloutDiscountActivateChange.discount`
+- `RolloutDiscountActivateChange.id`
+- `RolloutDiscountChange.discount`
+- `RolloutDiscountChange.id`
+- `RolloutDiscountExpireChange.discount`
+- `RolloutDiscountExpireChange.id`
+- `RolloutEdge.cursor`
+- `RolloutEdge.node`
+- `RolloutSchedule.activateAt`
+- `RolloutSchedule.concludeAt`
+- `RolloutThemeChange.id`
+- `RolloutThemeChange.theme`
+- `RolloutThemePublishChange.id`
+- `RolloutThemePublishChange.theme`
+- `RolloutTreatment.changes`
+- `RolloutTreatment.id`
+- `RolloutTreatment.rollout`
+- `RolloutTreatment.split`
+- `SubscriptionBillingCycleContractEditCalculatePayload.subscriptionContractCalculation`
+- `SubscriptionBillingCycleContractEditCalculatePayload.userErrors`
+- `SubscriptionBillingCycleContractEditCalculateUserError.code`
+- `SubscriptionBillingCycleContractEditCalculateUserError.field`
+- `SubscriptionBillingCycleContractEditCalculateUserError.message`
+- `SubscriptionCalculatedContract.billingPolicy`
+- `SubscriptionCalculatedContract.currencyCode`
+- `SubscriptionCalculatedContract.customAttributes`
+- `SubscriptionCalculatedContract.customer`
+- `SubscriptionCalculatedContract.customerPaymentMethod`
+- `SubscriptionCalculatedContract.deliveryMethod`
+- `SubscriptionCalculatedContract.deliveryPolicy`
+- `SubscriptionCalculatedContract.deliveryPrice`
+- `SubscriptionCalculatedContract.discounts`
+- `SubscriptionCalculatedContract.groupedLines`
+- `SubscriptionCalculatedContract.lines`
+- `SubscriptionCalculatedContract.note`
+- `SubscriptionContractCalculationCadence.count`
+- `SubscriptionContractCalculationCadence.unit`
+- `SubscriptionContractCalculationCommitPayload.contract`
+- `SubscriptionContractCalculationCommitPayload.userErrors`
+- `SubscriptionContractCalculationCommitUserError.code`
+- `SubscriptionContractCalculationCommitUserError.field`
+- `SubscriptionContractCalculationCommitUserError.message`
+- `SubscriptionContractCalculationDiagnostic.code`
+- `SubscriptionContractCalculationDiagnostic.field`
+- `SubscriptionContractCalculationDiagnostic.message`
+- `SubscriptionContractCalculationFailure.errors`
+- `SubscriptionContractCalculationFailure.id`
+- `SubscriptionContractCalculationLocalDeliveryOption.code`
+- `SubscriptionContractCalculationLocalDeliveryOption.description`
+- `SubscriptionContractCalculationLocalDeliveryOption.phoneRequired`
+- `SubscriptionContractCalculationLocalDeliveryOption.presentmentTitle`
+- `SubscriptionContractCalculationLocalDeliveryOption.price`
+- `SubscriptionContractCalculationLocalDeliveryOption.title`
+- `SubscriptionContractCalculationMultipleFulfillmentConfig.cadence`
+- `SubscriptionContractCalculationMultipleFulfillmentConfig.numberOfFulfillments`
+- `SubscriptionContractCalculationPending.id`
+- `SubscriptionContractCalculationPickupOption.code`
+- `SubscriptionContractCalculationPickupOption.description`
+- `SubscriptionContractCalculationPickupOption.location`
+- `SubscriptionContractCalculationPickupOption.phoneRequired`
+- `SubscriptionContractCalculationPickupOption.pickupTime`
+- `SubscriptionContractCalculationPickupOption.presentmentTitle`
+- `SubscriptionContractCalculationPickupOption.price`
+- `SubscriptionContractCalculationPickupOption.title`
+- `SubscriptionContractCalculationProjectedOrderTotals.subtotal`
+- `SubscriptionContractCalculationProjectedOrderTotals.total`
+- `SubscriptionContractCalculationProjectedOrderTotals.totalDelivery`
+- `SubscriptionContractCalculationProjectedOrderTotals.totalDeliveryDiscounts`
+- `SubscriptionContractCalculationProjectedOrderTotals.totalMerchandiseDiscounts`
+- `SubscriptionContractCalculationProjectedOrderTotals.totalTax`
+- `SubscriptionContractCalculationShippingOption.code`
+- `SubscriptionContractCalculationShippingOption.description`
+- `SubscriptionContractCalculationShippingOption.phoneRequired`
+- `SubscriptionContractCalculationShippingOption.presentmentTitle`
+- `SubscriptionContractCalculationShippingOption.price`
+- `SubscriptionContractCalculationShippingOption.title`
+- `SubscriptionContractCalculationSuccess.calculatedContract`
+- `SubscriptionContractCalculationSuccess.deliveryOptions`
+- `SubscriptionContractCalculationSuccess.id`
+- `SubscriptionContractCalculationSuccess.projectedOrderTotals`
+- `SubscriptionContractCalculationSuccess.warnings`
+- `SubscriptionContractCalculationSuccess.withMerchandiseCustomizations`
+- `SubscriptionContractCreateCalculatePayload.subscriptionContractCalculation`
+- `SubscriptionContractCreateCalculatePayload.userErrors`
+- `SubscriptionContractCreateCalculateUserError.code`
+- `SubscriptionContractCreateCalculateUserError.field`
+- `SubscriptionContractCreateCalculateUserError.message`
+- `SubscriptionContractUpdateCalculatePayload.subscriptionContractCalculation`
+- `SubscriptionContractUpdateCalculatePayload.userErrors`
+- `SubscriptionContractUpdateCalculateUserError.code`
+- `SubscriptionContractUpdateCalculateUserError.field`
+- `SubscriptionContractUpdateCalculateUserError.message`
+- `SubscriptionGroupedLineConnection.edges`
+- `SubscriptionGroupedLineConnection.nodes`
+- `SubscriptionGroupedLineConnection.pageInfo`
+- `SubscriptionGroupedLineEdge.cursor`
+- `SubscriptionGroupedLineEdge.node`
+- `SubscriptionParentLine.bundledBy`
+- `SubscriptionParentLine.components`
+- `SubscriptionParentLine.customAttributes`
+- `SubscriptionParentLine.id`
+- `SubscriptionParentLine.presentmentTitle`
+- `SubscriptionParentLine.productId`
+- `SubscriptionParentLine.quantity`
+- `SubscriptionParentLine.sourceType`
+- `SubscriptionParentLine.title`
+- `SubscriptionParentLine.variantId`
+- `CalculatedReturnShippingFee.taxAmountSet`
+- `CustomerPhoneNumber.smsMarketingConsent`
+- `DiscountAutomaticApp.rollouts`
+- `DiscountAutomaticBasic.rollouts`
+- `DiscountAutomaticBxgy.rollouts`
+- `DiscountAutomaticFreeShipping.rollouts`
+- `DiscountCodeApp.rollouts`
+- `DiscountCodeBasic.rollouts`
+- `DiscountCodeBxgy.rollouts`
+- `DiscountCodeFreeShipping.rollouts`
+- `ExchangeLineItem.productId`
+- `ExchangeLineItem.title`
+- `ExchangeLineItem.variantSku`
+- `ExchangeLineItem.variantTitle`
+- `InventoryShipment.totalCanceledQuantity`
+- `InventoryShipmentLineItem.canceledQuantity`
+- `Market.childMarkets`
+- `Market.childMarketsCount`
+- `Market.parentMarkets`
+- `Market.parentMarketsCount`
+- `Market.returnPolicyProfile`
+- `Metafield.translatable`
+- `Order.displayRequestedEditStatus`
+- `Order.requestedOrderEdits`
+- `OrderCancelPayload.jobResult`
+- `PointOfSaleDevice.fiscalDeviceIdentifier`
+- `ProductVariant.barcodes`
+- `ProductVariantContextualPricing.auditTrail`
+- `ReturnShippingFee.finalizedTaxAmountSet`
+- `Shop.analyticsAnnotations`
+- `ShopifyqlQueryResponse.analyticsTargets`
+- `ShopifyqlQueryResponse.parseWarnings`
+- `SubscriptionBillingCycleEditedContract.groupedLines`
+- `SubscriptionBillingCycleEditedContract.latestCommittedProjectedOrderTotals`
+- `SubscriptionBillingPolicy.cadence`
+- `SubscriptionContract.groupedLines`
+- `SubscriptionContract.latestCommittedProjectedOrderTotals`
+- `SubscriptionContractBase.groupedLines`
+- `SubscriptionDeliveryPolicy.multiFulfillment`
+- `SubscriptionLine.weight`
+
+Customer Account API (63):
+
+- `CustomerSmsMarketingConsent`
+- `CalculatedRequestedOrderEditLineItem.totalTaxSet`
+- `CalculatedRequestedOrderEditLineItemConnection.edges`
+- `CalculatedRequestedOrderEditLineItemConnection.nodes`
+- `CalculatedRequestedOrderEditLineItemConnection.pageInfo`
+- `CalculatedRequestedOrderEditLineItemEdge.cursor`
+- `CalculatedRequestedOrderEditLineItemEdge.node`
+- `CalculatedRequestedOrderEditLineItems.removals`
+- `CustomerSmsMarketingConsent.state`
+- `EditableLineItem.lineItem`
+- `EditableLineItem.quantity`
+- `EditableLineItemConnection.edges`
+- `EditableLineItemConnection.nodes`
+- `EditableLineItemConnection.pageInfo`
+- `EditableLineItemEdge.cursor`
+- `EditableLineItemEdge.node`
+- `IneligibleLineItem.lineItem`
+- `IneligibleLineItem.quantity`
+- `IneligibleLineItem.quantityDetails`
+- `IneligibleLineItemConnection.edges`
+- `IneligibleLineItemConnection.nodes`
+- `IneligibleLineItemConnection.pageInfo`
+- `IneligibleLineItemEdge.cursor`
+- `IneligibleLineItemEdge.node`
+- `IneligibleQuantityDetail.quantity`
+- `IneligibleQuantityDetail.reasonCode`
+- `OrderRequestEditPayload.requestedOrderEdit`
+- `OrderRequestEditPayload.userErrors`
+- `OrderRequestedEditInformation.editableLineItems`
+- `OrderRequestedEditInformation.hasEditableLineItems`
+- `OrderRequestedEditInformation.ineligibleLineItems`
+- `OrderRequestedEditInformation.isSelfServiceRequiredForCompliance`
+- `RequestedOrderEdit.id`
+- `RequestedOrderEdit.lineItems`
+- `RequestedOrderEdit.requestedEditLineItems`
+- `RequestedOrderEdit.status`
+- `RequestedOrderEditConnection.edges`
+- `RequestedOrderEditConnection.nodes`
+- `RequestedOrderEditConnection.pageInfo`
+- `RequestedOrderEditEdge.cursor`
+- `RequestedOrderEditEdge.node`
+- `RequestedOrderEditFinancialSummary.editOrderLevelDiscountSubtotalSet`
+- `RequestedOrderEditFinancialSummary.editSubtotalBeforeTargetAllDiscountsSet`
+- `RequestedOrderEditFinancialSummary.editSubtotalSet`
+- `RequestedOrderEditFinancialSummary.editSubtotalWithCartDiscountSet`
+- `RequestedOrderEditFinancialSummary.editTotalSet`
+- `RequestedOrderEditFinancialSummary.editTotalTaxSet`
+- `RequestedOrderEditLineItem.id`
+- `RequestedOrderEditLineItem.lineItem`
+- `RequestedOrderEditLineItem.quantity`
+- `RequestedOrderEditLineItemConnection.edges`
+- `RequestedOrderEditLineItemConnection.nodes`
+- `RequestedOrderEditLineItemConnection.pageInfo`
+- `RequestedOrderEditLineItemEdge.cursor`
+- `RequestedOrderEditLineItemEdge.node`
+- `RequestedOrderEditLineItems.removals`
+- `RequestedOrderEditUserError.code`
+- `RequestedOrderEditUserError.field`
+- `RequestedOrderEditUserError.message`
+- `CustomerAddress.countryCode`
+- `CustomerPhoneNumber.smsMarketingConsent`
+- `Order.requestedEditInformation`
+- `Order.requestedOrderEdits`
+
+</details>
 
 ### Release candidate
 
-The comparison between `2026-10` and `2027-01` shows no breaking changes for
-Storefront API and Customer Account API. Admin API shows these breaking changes:
+`2027-01` is the release candidate. Compared with `2026-10`, it has 16 Admin API breaking changes and no Storefront or Customer Account API breaking changes.
 
-- `CollectionSourceInclusionConditionMetafieldInteger`,
-  `CollectionSourceInclusionConditionMetafieldIntegerInput`,
-  `CollectionSourceInclusionConditionMetafieldIntegerRelation`,
-  `CollectionSourceInclusionConditionUpdateMetafieldIntegerInput` - Shopify
-  removes these types.
-- `DiscountAutomaticConnection`, `DiscountAutomaticEdge` - Shopify removes these
-  types.
-- `MarketCurrencySettingsUpdatePayload`, `MarketCurrencySettingsUserError`,
-  `MarketCurrencySettingsUserErrorCode` - Shopify removes these types.
-- `CollectionSourceInclusionConditionInput.metafieldInteger`,
-  `CollectionSourceInclusionConditionUpdateInput.metafieldInteger` - Shopify
-  removes these input fields.
-- `MetaobjectAdminAccess.PRIVATE`, `MetaobjectAdminAccess.PUBLIC_READ` - Shopify
-  removes these deprecated enum values.
-- `Mutation.marketCurrencySettingsUpdate` - Shopify removes this deprecated
-  field.
+#### Admin API: integer metafield collection conditions
 
-### Type counts
+Shopify removes the legacy integer metafield condition types and `metafieldInteger` input fields. Use `CollectionSourceInclusionConditionMetafieldInt`, which supports the full integer metafield value range.
 
-| API                  | Types in `2026-10` |
-| -------------------- | ------------------ |
-| Storefront API       | 272                |
-| Admin API            | 2123               |
-| Customer Account API | 339                |
+<details>
+<summary>6 collection condition breaking changes</summary>
+
+- `CollectionSourceInclusionConditionMetafieldInteger`
+- `CollectionSourceInclusionConditionMetafieldIntegerInput`
+- `CollectionSourceInclusionConditionMetafieldIntegerRelation`
+- `CollectionSourceInclusionConditionUpdateMetafieldIntegerInput`
+- `CollectionSourceInclusionConditionInput.metafieldInteger`
+- `CollectionSourceInclusionConditionUpdateInput.metafieldInteger`
+
+</details>
+
+#### Admin API: automatic discount queries
+
+Shopify removes `QueryRoot.automaticDiscounts` and the `DiscountAutomatic` connection types. Use `automaticDiscountNodes` instead.
+
+<details>
+<summary>3 automatic discount breaking changes</summary>
+
+- `DiscountAutomaticConnection`
+- `DiscountAutomaticEdge`
+- `QueryRoot.automaticDiscounts`
+
+</details>
+
+#### Admin API: market currency settings
+
+Shopify removes `Mutation.marketCurrencySettingsUpdate` and its payload and error types. Use `marketCreate` to create currency settings and `marketUpdate` to update them.
+
+<details>
+<summary>4 market currency breaking changes</summary>
+
+- `MarketCurrencySettingsUpdatePayload`
+- `MarketCurrencySettingsUserError`
+- `MarketCurrencySettingsUserErrorCode`
+- `Mutation.marketCurrencySettingsUpdate`
+
+</details>
+
+#### Admin API: metaobject access
+
+Shopify removes `PRIVATE` and `PUBLIC_READ` from `MetaobjectAdminAccess`, plus `StandardMetaobjectDefinitionFieldTemplate.visibleToStorefrontApi`. Use `MERCHANT_READ` instead of both enum values. Use the definition's `access` field instead of field-level Storefront visibility.
+
+<details>
+<summary>3 metaobject access breaking changes</summary>
+
+- `MetaobjectAdminAccess.PRIVATE`
+- `MetaobjectAdminAccess.PUBLIC_READ`
+- `StandardMetaobjectDefinitionFieldTemplate.visibleToStorefrontApi`
+
+</details>
+
+#### Release candidate additions
+
+Shopify adds 177 Admin API items, 6 Storefront API items, and 50 Customer Account API items.
+
+Admin API additions cover analytics schemas, draft order selling plans, packaged inventory item dimensions, and product variant compliance values.
+
+Storefront API additions let apps change a Shop Pay session's business entity before payment submission or after the latest payment attempt fails.
+
+Customer Account API additions cover order duties, fee lines, and subscription lines grouped by bundle parent.
+
+### Versions in this release
+
+| Alias             | Version    |
+| ----------------- | ---------- |
+| Current           | `2026-10`  |
+| Previous          | `2026-07`  |
+| Older supported   | `2026-04`  |
+| Older supported   | `2026-01`  |
+| Release candidate | `2027-01`  |
+| Unstable          | `unstable` |
+
+| API              | Types |
+| ---------------- | ----: |
+| Storefront       |   272 |
+| Admin            |  2123 |
+| Customer Account |   339 |
 
 ### Package changes
 

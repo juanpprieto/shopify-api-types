@@ -50,7 +50,7 @@ never reaches the published package.
 | `generate-types`          | Generate types from the schemas, then the index files                                             |
 | `generate:exports`        | Write the `exports` map in `package.json`                                                         |
 | `generate:comparisons`    | Write `dist/comparisons` for every adjacent version pair                                          |
-| `docs`                    | Generate `README.md` and draft the `CHANGELOG.md` section                                         |
+| `docs`                    | Generate `README.md` and draft the `CHANGELOG.md` section (`-- --preview` changes no file)        |
 | `check:prose`             | Check docs, or one `CHANGELOG.md` section (`--changelog <version>`), against the writing contract |
 | `ci:validate-build`       | Check the files in `dist/`                                                                        |
 | `ci:validate-types`       | Compile a test file that imports the latest generated types                                       |
@@ -274,12 +274,21 @@ the 2026-09 catch-up releases (see `decisions/011`).
    CHANGELOG section, and the GitHub release (a copy of that section) use the
    rules in `scripts/lib/writing-contract.ts`: the clarity foundations (write
    for the reader's task, invent nothing, mark a missing fact with `[TK]`) and
-   Simplified Technical English. `npm run docs` gives the rules to OpenCode Go
-   (`OPENCODE_GO_API_KEY`, default model `glm-5.3`, `OPENCODE_GO_MODEL` changes
-   it). It writes neither file unless both texts pass the checks. It stops when
-   `dist/` belongs to another version set, and it never rewrites the section of
-   a version that has a git tag. A person reviews the rules that a script cannot
-   check.
+   Simplified Technical English. The texts are for a developer who wants to know
+   what changed and what to do:
+   - The README gives a summary table per area. The CHANGELOG section gives the
+     detail, grouped by feature area, with every item in a collapsed list.
+   - The model gets Shopify's own description and migration note for each
+     changed item (`scripts/lib/change-context.ts`). It never guesses a
+     replacement.
+   - `npm run docs` uses OpenCode Go (`OPENCODE_GO_API_KEY`). The default model
+     is `kimi-k3.1-pro`; `OPENCODE_GO_MODEL` changes it.
+   - `npm run docs -- --preview` writes the drafts, the model input, and the
+     gate result to `preview/<model>/` and changes no tracked file. Read a
+     preview before you write the texts.
+   - It writes neither file unless both texts pass the checks. It stops when
+     `dist/` belongs to another version set, and it never rewrites the section
+     of a version that has a git tag.
 7. **No patch releases.** The package releases once per quarter, in step with
    Shopify. A fix waits for the next quarterly release.
 8. **Node support follows the Node release schedule.** CI tests only Node

@@ -54,3 +54,17 @@ describe('findProseViolations', () => {
     );
   });
 });
+
+describe('findProseViolations with GitHub Markdown', () => {
+  it('reads an alert marker and its text as separate units', () => {
+    const alert =
+      '> [!IMPORTANT]\n> Shopify removes 23 discount types in this version. Use the discount fields instead.';
+    expect(findProseViolations(alert)).toEqual([]);
+  });
+
+  it('skips the HTML lines of a collapsed block', () => {
+    const block =
+      '<details>\n<summary>23 removed types</summary>\n\n- `PriceRule`\n\n</details>';
+    expect(findProseViolations(block)).toEqual([]);
+  });
+});
