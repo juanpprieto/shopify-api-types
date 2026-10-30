@@ -1,327 +1,56 @@
 name: API Version Check
 
+# Opens one issue when Shopify has a stable API version that the package
+# does not ship yet. The release itself follows the CONTRIBUTING.md
+# quarterly release guide.
+
 on:
   schedule:
-    # Check for new API versions weekly (Mondays at 9 AM UTC)
-    - cron: '0 9 * * 1'
+    - cron: '0 9 * * 1' # Mondays 09:00 UTC
   workflow_dispatch:
-    inputs:
-      force_check:
-        description: 'Force check even if no new version'
-        required: false
-        default: false
-        type: boolean
 
-concurrency:
-  group: api-version-check
-  cancel-in-progress: true
+permissions:
+  contents: read
+  issues: write
 
 jobs:
-  check-api-versions:
-    name: Check for New API Versions
+  check:
     runs-on: ubuntu-latest
-    outputs:
-      has-new-version: ${{ steps.version-check.outputs.hasNewVersion }}
-      new-version: ${{ steps.version-check.outputs.newVersion }}
-      should-update: ${{ steps.decision.outputs.shouldUpdate }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '20'
+          node-version: '26'
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check for new Shopify API versions
-        id: version-check
-        run: |
-          # Build project first to ensure utilities are available
-          npm run build:ci
-
-          # Get current version set from our utilities
-          npm run ci:validate-version-model
-
-          # Export version info for shell script
-          npx tsx -e "
-            import { getCurrentVersionSet } from './scripts/version-utils.ts';
-            const versionSet = getCurrentVersionSet();
-            console.log('CURRENT_VERSION=' + versionSet.current);
-            console.log('RC_VERSION=' + versionSet.releaseCandidate);
-            console.log('UNSTABLE_VERSION=' + versionSet.unstable);
-          " > version_info.txt
-
-          source version_info.txt
-
-          # Get current year and calculate next expected version
-          current_year=$(date +%Y)
-          current_month=$(date +%-m)
-
-          # Determine next expected quarterly version
-          if [ $current_month -lt 4 ]; then
-            next_quarter="04"
-          elif [ $current_month -lt 7 ]; then
-            next_quarter="07"
-          elif [ $current_month -lt 10 ]; then
-            next_quarter="10"
-          else
-            next_quarter="01"
-            current_year=$((current_year + 1))
-          fi
-
-          expected_next="${current_year}-${next_quarter}"
-
-          echo "📊 Version Analysis:"
-          echo "  Current: $CURRENT_VERSION"
-          echo "  RC: $RC_VERSION"
-          echo "  Unstable: $UNSTABLE_VERSION"
-          echo "  Expected Next: $expected_next"
-
-          # Check if expected next version is newer than current RC
-          if [[ "$expected_next" > "$RC_VERSION" ]] || [[ "${{ github.event.inputs.force_check }}" == "true" ]]; then
-            echo "hasNewVersion=true" >> $GITHUB_OUTPUT
-            echo "newVersion=$expected_next" >> $GITHUB_OUTPUT
-            echo "🆕 New API version detected: $expected_next"
-          else
-            echo "hasNewVersion=false" >> $GITHUB_OUTPUT
-            echo "newVersion=" >> $GITHUB_OUTPUT
-            echo "ℹ️ No new API version detected. RC version $RC_VERSION is current."
-          fi
-
-      - name: Decide if update is needed
-        id: decision
-        run: |
-          has_new="${{ steps.version-check.outputs.hasNewVersion }}"
-          force_check="${{ github.event.inputs.force_check }}"
-
-          if [[ "$has_new" == "true" || "$force_check" == "true" ]]; then
-            echo "shouldUpdate=true" >> $GITHUB_OUTPUT
-          else
-            echo "shouldUpdate=false" >> $GITHUB_OUTPUT
-          fi
-
-  create-api-update-pr:
-    name: Create API Update PR
-    runs-on: ubuntu-latest
-    needs: check-api-versions
-    if: needs.check-api-versions.outputs.should-update == 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Create feature branch
-        run: |
-          new_version="${{ needs.check-api-versions.outputs.new-version }}"
-          branch_name="api-update/${new_version}"
-          git checkout -b "$branch_name"
-          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
-
-      - name: Fetch new schemas
-        run: |
-          new_version="${{ needs.check-api-versions.outputs.new-version }}"
-          echo "🔄 Attempting to fetch schemas for API version $new_version"
-
-          # Build first to ensure utilities are available
-          npm run build:ci
-
-          # Test fetch for the new version across all APIs
-          echo "Testing schema availability for version $new_version..."
-
-          # Try to fetch schemas for the new version
-          # This might fail if the API isn't available yet
-          if npm run fetch-schemas; then
-            echo "✅ Schemas fetched successfully for $new_version"
-          else
-            echo "⚠️ Schema fetch failed - API $new_version might not be available yet"
-            echo "This is expected for future versions that haven't been released."
-          fi
-
-      - name: Update version utilities
-        run: |
-          new_version="${{ needs.check-api-versions.outputs.new-version }}"
-          echo "🔄 Updating version utilities for $new_version..."
-
-          # Test that the new version can be properly handled by our utilities
-          echo "🔍 Testing version utilities with new version $new_version..."
-
-          npx tsx -e "
-            import { getVersionMetadata } from './scripts/version-utils.ts';
-            
-            // Test metadata for new version
-            try {
-              const metadata = getVersionMetadata('$new_version');
-              console.log('New version metadata:', metadata);
-            } catch (error) {
-              console.log('New version will be handled as standard quarterly release');
-            }
-            
-            console.log('✅ Version utilities ready for $new_version');
-          "
-
-          echo "✅ Version utilities validated for $new_version"
-
-      - name: Generate new types and comparisons
-        run: |
-          echo "🔄 Generating types and comparisons..."
-
-          # Rebuild with any new schemas
-          npm run build:ci
-
-          # Generate schema comparisons if schemas are available
-          if npm run generate:comparisons; then
-            echo "✅ Schema comparisons generated"
-          else
-            echo "⚠️ Comparison generation skipped - some schemas may not be available"
-          fi
-
-      - name: Validate everything before paid doc generation
-        run: |
-          # Token optimization: the AI docs generator spends API tokens.
-          # Run it only after every other check passes, so a red build
-          # never wastes a docs run.
-          npm run validate
-          npm run ci:validate-build
-
-      - name: Update documentation
+      - run: npm ci
+      - name: Compare the packaged version with Shopify's current version
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
-            echo "⚠️ ANTHROPIC_API_KEY not set - skipping AI doc generation."
-            echo "Regenerate the README in the release flow instead."
+          # The package version maps to an API version (2026.7.0 -> 2026-07)
+          # through the same version model the build uses
+          current_of() {
+            RELEASE_DATE="$1" npx tsx -e "
+              import { getCurrentVersionSet } from './scripts/version-utils.ts';
+              console.log(getCurrentVersionSet().current);
+            "
+          }
+          packaged=$(current_of "$(npx tsx scripts/release-date-from-version.ts)")
+          latest=$(current_of "")
+          echo "Packaged: $packaged. Shopify current: $latest."
+
+          if [[ ! "$latest" > "$packaged" ]]; then
+            echo "The package ships the current version."
             exit 0
           fi
 
-          echo "📝 Regenerating documentation with new version info..."
-          npm run docs
-          echo "✅ Documentation updated"
-
-      - name: Create changeset
-        run: |
-          new_version="${{ needs.check-api-versions.outputs.new-version }}"
-
-          cat > .changeset/api-update-${new_version}.md << EOF
-          ---
-          "@juanpprieto/shopify-api-types": major
-          ---
-
-          Add support for Shopify API ${new_version}
-
-          - Added new types for API version ${new_version}
-          - Updated the support-window version set (4 stable quarters + RC + unstable)
-          - Generated schema comparisons for every adjacent version pair
-
-          This release updates the package to the latest Shopify API version
-          under the support-window version model (see CONTRIBUTING.md).
-          EOF
-
-      - name: Commit changes
-        run: |
-          git add .
-          new_version="${{ needs.check-api-versions.outputs.new-version }}"
-          git commit -m "feat: add support for Shopify API ${new_version}
-
-          - Add schemas and types for API version ${new_version}
-          - Update documentation and version utilities
-          - Create changeset for major release
-
-          This automated update maintains our quarterly release cycle
-          aligned with Shopify's API versioning."
-
-      - name: Push branch
-        run: |
-          git push origin "$BRANCH_NAME"
-
-      - name: Create Pull Request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          new_version="${{ needs.check-api-versions.outputs.new-version }}"
-
-          gh pr create \
-            --title "🚀 Add support for Shopify API ${new_version}" \
-            --body "## 🆕 Automated API Update
-
-          This PR adds support for Shopify API version \`${new_version}\` using the new Phase 5 version model.
-
-          ### 📋 Changes
-          - ✅ Fetch schemas for API version \`${new_version}\`
-          - ✅ Update the support-window version set (4 stable quarters + RC + unstable)
-          - ✅ Generate schema comparisons for every adjacent version pair
-          - ✅ Update TypeScript types
-          - ✅ Regenerate documentation (only after all validations pass)
-          - ✅ Create major changeset
-
-          ### 🔄 Version Model
-          Support-window model (see CONTRIBUTING.md "Version Support Principle"):
-          - **Current / Previous / 2 older supported**: every stable quarter Shopify still serves
-          - **Next (RC)**: release candidate for the upcoming quarter
-          - **Unstable**: latest development version
-
-          ### 📊 Schema Comparisons
-          Automated schema comparison generation provides:
-          - Detailed change analysis between versions
-          - Breaking change detection
-          - AI-generated technical documentation
-          - Export-ready comparison data in \`dist/comparisons/\`
-
-          ### 🔄 Release Process
-          After merging this PR:
-          1. Run \`npm run release\` to create version \`$(date +%Y).$(date +%-m).0\`
-          2. Publish to npm with updated version model
-          3. Release includes comprehensive changelog generation
-
-          ### ⚠️ Breaking Changes
-          This is a major release that:
-          - Updates version model and export paths
-          - May change import paths for version-specific types
-          - Implements new schema comparison and documentation system
-
-          ---
-
-          *This PR was created automatically by the API Version Check workflow with Phase 5 enhancements.*" \
-            --label "api-update" \
-            --label "major" \
-            --reviewer "juanpprieto"
-
-  notify:
-    name: Notify
-    runs-on: ubuntu-latest
-    needs: [check-api-versions, create-api-update-pr]
-    if: always()
-    steps:
-      - name: Summary
-        run: |
-          if [[ "${{ needs.check-api-versions.outputs.has-new-version }}" == "true" ]]; then
-            echo "🆕 New API version detected: ${{ needs.check-api-versions.outputs.new-version }}"
-            if [[ "${{ needs.create-api-update-pr.result }}" == "success" ]]; then
-              echo "✅ API update PR created successfully"
-            else
-              echo "❌ Failed to create API update PR"
-            fi
-          else
-            echo "ℹ️ No new API version detected"
+          title="Release support for Shopify API $latest"
+          open=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq length)
+          if [[ "$open" != "0" ]]; then
+            echo "An open issue already tracks $latest."
+            exit 0
           fi
+
+          gh issue create --title "$title" --body "Shopify API \`$latest\` is the current stable version. The package ships \`$packaged\`.
+
+          Follow the quarterly release guide in CONTRIBUTING.md."

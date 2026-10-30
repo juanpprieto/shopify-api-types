@@ -26,5 +26,5 @@ jobs:
       - name: Fallback Security Check
         if: failure()
         run: |
-          echo "⚠️ Dependency Review not available - running fallback security check"
+          echo "Dependency Review not available - running fallback security check"
           npm audit --audit-level=moderate || echo "Manual dependency review recommended"

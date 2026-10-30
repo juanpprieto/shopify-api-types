@@ -1,159 +1,120 @@
 name: Release
 
+# Start by hand after the release commit is on main and CI is green.
+# The npm trusted publisher matches this file name and the "main"
+# environment; do not rename either.
+
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact package version to publish (for example 2026.10.0)
+        required: true
+        type: string
+      dry_run:
+        description: Check everything without uploading to npm
+        type: boolean
+        default: true
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: npm-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
-  release:
-    name: Release
+  publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment: main
     permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      id-token: write
+      contents: write # tag and GitHub release
+      actions: read # CI status check
+      id-token: write # OIDC publish and provenance
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+      RELEASE_DRY_RUN: ${{ inputs.dry_run }}
+      TARBALL: /tmp/juanpprieto-shopify-api-types-${{ inputs.version }}.tgz
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '22'
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '26'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
 
-      - name: Update npm for OIDC trusted publishing
-        run: npm install -g npm@latest # trusted publishing needs npm >= 11.5.1
+      - name: Check version, changelog, branch and CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node -e 'require("node:assert/strict").equal(require("./package.json").version, process.env.RELEASE_VERSION, "Requested version must match package.json")'
+          grep -q "^## $RELEASE_VERSION\$" CHANGELOG.md || { echo "CHANGELOG.md has no '## $RELEASE_VERSION' section."; exit 1; }
+          if [[ "$RELEASE_DRY_RUN" != "true" && "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "Publication is only allowed from main."
+            exit 1
+          fi
+          passed=$(gh api --method GET "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs" \
+            -f head_sha="$GITHUB_SHA" --jq '.workflow_runs | any(.event == "push" and .conclusion == "success")')
+          test "$passed" = true || { echo "CI must pass for this exact commit first."; exit 1; }
 
-      - name: Install dependencies
-        run: npm ci
-
+      - run: npm ci
       - name: Derive RELEASE_DATE from package version
         run:
           echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>
-          $GITHUB_ENV
+          "$GITHUB_ENV"
+      - run: npm run build:ci
+      - run: npm run ci:validate-build
+      - run: npm run ci:validate-types
+      - run: npm pack --ignore-scripts --pack-destination /tmp
 
-      - name: Run quality checks
+      - name: Test the packed archive in the consumer app
+        working-directory: tests/e2e/test-app
         run: |
-          npm run type-check
-          npm run lint
-          npm run format:check
+          npm install
+          npm install --no-save "$TARBALL"
+          npm run typecheck
+          npm test
 
-      - name: Build package
-        run: npm run build:ci
-
-      - name: Validate build output
+      # Trusted publishing needs npm >= 11.5.1
+      - run: npm install --global npm@12.2.0
+      - name: Publish the tested archive or dry run
         run: |
-          npm run ci:validate-build
-          npm run ci:validate-types
-          npm run ci:validate-version-model
+          flags=()
+          if [[ "$RELEASE_DRY_RUN" == "true" ]]; then flags+=(--dry-run); fi
+          npm publish "$TARBALL" --access public --provenance --ignore-scripts "${flags[@]}"
 
-      - name: Run tests
-        run: npm test
+      - name: Check published integrity and provenance
+        if: ${{ !inputs.dry_run }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { createHash } from 'node:crypto';
+          const expected = 'sha512-' + createHash('sha512').update(readFileSync(process.env.TARBALL)).digest('base64');
+          const url = `https://registry.npmjs.org/@juanpprieto%2Fshopify-api-types/${process.env.RELEASE_VERSION}`;
+          // npm can take several minutes to expose a successful upload
+          for (let attempt = 0; attempt < 60; attempt++) {
+            const response = await fetch(url);
+            if (response.ok) {
+              const { dist } = await response.json();
+              if (dist.integrity !== expected) throw new Error('Published archive integrity differs from the tested archive');
+              if (dist.attestations?.provenance) {
+                console.log(`Checked integrity and provenance for ${process.env.RELEASE_VERSION}`);
+                process.exit(0);
+              }
+            }
+            console.log(`Waiting for npm registry processing (${attempt + 1}/60). The upload already succeeded.`);
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+          }
+          throw new Error('Upload completed but registry checks are pending. Inspect the published version before you retry; do not republish.');
+          NODE
 
-      - name: Create Release Pull Request or Publish
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: npm run changeset:version
-          publish: npm run changeset:publish
-          title: 'chore: release package'
-          commit: 'chore: release package'
+      - name: Create tag and GitHub release from CHANGELOG
+        if: ${{ !inputs.dry_run }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # No NPM_TOKEN: publishing authenticates via OIDC trusted
-          # publishing (npm trusted publisher: release.yml, environment
-          # main). A token in the env would take precedence and bypass
-          # OIDC. Provenance is automatic under trusted publishing.
-          NPM_CONFIG_PROVENANCE: true
-
-      - name: Create GitHub Release
-        if: steps.changesets.outputs.published == 'true'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name:
-            v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version
-            }}
-          release_name:
-            Release v${{
-            fromJson(steps.changesets.outputs.publishedPackages)[0].version }}
-          body: |
-            ## 🚀 What's Changed
-
-            This release provides TypeScript definitions for Shopify's GraphQL APIs with comprehensive type safety and validation.
-
-            ### 📦 Installation
-
-            ```bash
-            npm install @juanpprieto/shopify-api-types@${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}
-            ```
-
-            ### 🔧 Usage
-
-            ```typescript
-            // Use the current stable API version
-            import type { Product, Shop } from '@juanpprieto/shopify-api-types/admin/current'
-            import type { Cart } from '@juanpprieto/shopify-api-types/sfapi/current'
-
-            // Or specify a version explicitly
-            import type { Product } from '@juanpprieto/shopify-api-types/admin/2025-07'
-            ```
-
-            ### 📊 Type Coverage
-
-            - **Admin API**: 1,758+ types for store management, webhooks, analytics
-            - **Storefront API**: 261+ types for product catalog, cart, checkout
-            - **Customer Account API**: 296+ types for customer profiles, orders
-
-            ### 📝 Changelog
-
-            See [CHANGELOG.md](https://github.com/juanpprieto/shopify-api-types/blob/main/CHANGELOG.md) for detailed changes.
-
-            ### 🔗 Links
-
-            - [NPM Package](https://www.npmjs.com/package/@juanpprieto/shopify-api-types)
-            - [Documentation](https://github.com/juanpprieto/shopify-api-types#readme)
-            - [Shopify API Docs](https://shopify.dev/docs/api)
-          draft: false
-          prerelease: false
-
-  security-check:
-    name: Security Check
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run security audit
-        run: npm audit --audit-level=high
-
-      - name: Check for known vulnerabilities
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if npm audit --audit-level=critical 2>/dev/null; then
-            echo "No critical vulnerabilities found"
-          else
-            echo "Critical vulnerabilities detected - blocking release"
-            npm audit --audit-level=critical
-            exit 1
-          fi
+          awk -v v="## $RELEASE_VERSION" '$0 == v { on = 1; next } on && /^## / { exit } on' CHANGELOG.md > /tmp/notes.md
+          gh release create "v$RELEASE_VERSION" --target "$GITHUB_SHA" --title "v$RELEASE_VERSION" --notes-file /tmp/notes.md
