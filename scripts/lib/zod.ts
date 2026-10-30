@@ -128,6 +128,7 @@ export const FieldChangeSchema = z.object({
   breaking: z.boolean(),
   oldType: z.string().optional(), // For modified fields
   newType: z.string().optional(), // For modified fields
+  path: z.string().optional(), // Owner type and field, like "Customer.orders"
 });
 export type FieldChange = z.infer<typeof FieldChangeSchema>;
 
@@ -173,6 +174,8 @@ export const SchemaChangelogSchema = z.object({
     mutations: z.array(FieldChangeSchema),
     subscriptions: z.array(FieldChangeSchema),
     enums: z.array(TypeChangeSchema),
+    // Field and argument changes on types other than the root types
+    fields: z.array(FieldChangeSchema),
   }),
 });
 export type SchemaChangelog = z.infer<typeof SchemaChangelogSchema>;

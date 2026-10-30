@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { diff } from '@graphql-inspector/core';
 import { compareSchemas } from '../../scripts/lib/schema-compare.js';
 import type { GraphQLSchema } from '../../scripts/lib/zod.js';
 
@@ -164,6 +165,61 @@ describe('Schema Comparison', () => {
       expect(result.toVersion).toBe('2025-07');
       expect(result.apiType).toBe('admin');
       expect(result.generatedAt).toBeDefined();
+    });
+  });
+
+  describe('change groups', () => {
+    it('keeps field changes on normal types and QueryRoot changes', async () => {
+      const inspectorChanges = [
+        {
+          type: 'FIELD_REMOVED',
+          path: 'Customer.lastIncompleteCheckout',
+          message:
+            "Field 'lastIncompleteCheckout' (deprecated) was removed from object type 'Customer'",
+          criticality: { level: 'BREAKING' },
+        },
+        {
+          type: 'FIELD_REMOVED',
+          path: 'QueryRoot.priceRules',
+          message:
+            "Field 'priceRules' was removed from object type 'QueryRoot'",
+          criticality: { level: 'BREAKING' },
+        },
+        {
+          type: 'FIELD_ADDED',
+          path: 'Customer.smsMarketingConsent',
+          message:
+            "Field 'smsMarketingConsent' was added to object type 'Customer'",
+          criticality: { level: 'NON_BREAKING' },
+        },
+      ];
+      vi.mocked(diff).mockResolvedValueOnce(
+        inspectorChanges as unknown as Awaited<ReturnType<typeof diff>>,
+      );
+
+      const result = await compareSchemas(
+        createTestSchema([]),
+        createTestSchema([]),
+        '2026-07',
+        '2026-10',
+        'customer-account',
+      );
+
+      const fieldPaths = result.changes.fields.map((c) => c.path);
+      expect(fieldPaths).toContain('Customer.lastIncompleteCheckout');
+      expect(fieldPaths).toContain('Customer.smsMarketingConsent');
+      expect(result.changes.queries.map((c) => c.path)).toContain(
+        'QueryRoot.priceRules',
+      );
+
+      // Every change lands in exactly one group (enums repeat types)
+      const kept =
+        result.changes.types.length +
+        result.changes.queries.length +
+        result.changes.mutations.length +
+        result.changes.subscriptions.length +
+        result.changes.fields.length;
+      expect(kept).toBe(result.summary.totalChanges);
     });
   });
 });

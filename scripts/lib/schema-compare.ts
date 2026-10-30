@@ -47,6 +47,7 @@ function convertInspectorChangeToFieldChange(change: {
     breaking: isBreaking,
     deprecationReason:
       change.type === 'FIELD_DEPRECATED' ? change.message : undefined,
+    ...(change.path ? { path: change.path } : {}),
   };
 }
 
@@ -178,6 +179,7 @@ export async function compareSchemas(
   const queryChanges: FieldChange[] = [];
   const mutationChanges: FieldChange[] = [];
   const subscriptionChanges: FieldChange[] = [];
+  const fieldChanges: FieldChange[] = [];
 
   for (const change of changes) {
     // Categorize by change type and target
@@ -189,6 +191,10 @@ export async function compareSchemas(
       mutationChanges.push(convertInspectorChangeToFieldChange(change));
     } else if (isSubscriptionChange(change)) {
       subscriptionChanges.push(convertInspectorChangeToFieldChange(change));
+    } else {
+      // Field and argument changes on other types (for example a removed
+      // Customer field). Without this group they were dropped.
+      fieldChanges.push(convertInspectorChangeToFieldChange(change));
     }
   }
 
@@ -198,6 +204,7 @@ export async function compareSchemas(
     ...queryChanges,
     ...mutationChanges,
     ...subscriptionChanges,
+    ...fieldChanges,
   ];
   const summary = {
     totalChanges: changes.length,
@@ -221,6 +228,7 @@ export async function compareSchemas(
       mutations: mutationChanges,
       subscriptions: subscriptionChanges,
       enums: typeChanges.filter((t) => t.kind === 'ENUM'),
+      fields: fieldChanges,
     },
   };
 
@@ -254,7 +262,8 @@ function isTypeChange(change: { type: string }): boolean {
  */
 function isQueryChange(change: { path?: string; message: string }): boolean {
   return (
-    (change.path || change.message).startsWith('Query.') ||
+    // Shopify names its query root "QueryRoot"
+    /^Query(Root)?\./.test(change.path || change.message) ||
     change.message.includes('Query type')
   );
 }
