@@ -13,6 +13,7 @@ export type Scalars = {
   HTML: { input: string; output: string; }
   ISO8601DateTime: { input: string; output: string; }
   JSON: { input: unknown; output: unknown; }
+  SubdivisionCode: { input: unknown; output: unknown; }
   URL: { input: string; output: string; }
   UnsignedInt64: { input: string; output: string; }
 };
@@ -750,7 +751,7 @@ export type CartAddress = CartDeliveryAddress;
  *
  */
 export type CartAddressInput = {
-  /** Copies details from the customer address to an address on this cart. */
+  /** Copies details from the customer address to an address on this cart. The address is copied as-is, regardless of `validationStrategy`. Validation can be requested on later delivery address updates and always occurs in checkout. */
   copyFromCustomerAddressId?: InputMaybe<Scalars['ID']['input']>;
   /** A delivery address stored on this cart. */
   deliveryAddress?: InputMaybe<CartDeliveryAddressInput>;
@@ -1011,6 +1012,14 @@ export type CartCompletionFailed = {
   id: Scalars['String']['output'];
 };
 
+/** A fee charged on an order from cart completion. */
+export type CartCompletionOrderFeeLine = {
+  /** The amount charged for the fee. */
+  amount: MoneyV2;
+  /** The buyer-facing title of the fee. */
+  title: Scalars['String']['output'];
+};
+
 /** Represents a order line in an order created from cart completion. */
 export type CartCompletionOrderLineItem = {
   /** The amount of the line item per quantity, not including any discounts. */
@@ -1037,6 +1046,8 @@ export type CartCompletionOrderSummary = {
   deliveryGroups: Array<CartCompletionDeliveryGroup>;
   /** The discounts that have been allocated to the entire order and shipping. */
   discountAllocations: Array<CartCompletionDiscountAllocation>;
+  /** The fees charged on the order, one line per fee. */
+  feeLines: Array<CartCompletionOrderFeeLine>;
   /** List of the order's line items. */
   lineItems: Array<CartCompletionOrderLineItem>;
   /** The subtotal of the order before duties, shipping and taxes. */
@@ -1045,6 +1056,8 @@ export type CartCompletionOrderSummary = {
   totalAmount: MoneyV2;
   /** The total cost of duties. */
   totalDutyAmount?: Maybe<MoneyV2>;
+  /** The total cost of fees. Null when the order has no fees. */
+  totalFeeAmount?: Maybe<MoneyV2>;
   /** The total cost of shipping. */
   totalShippingAmount: MoneyV2;
   /** The total cost of taxes. */
@@ -2235,7 +2248,7 @@ export type CartSelectableAddressInput = {
   oneTimeUse?: InputMaybe<Scalars['Boolean']['input']>;
   /** Sets exactly one address as pre-selected for the buyer. */
   selected?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Defines what kind of address validation is requested. */
+  /** Defines what kind of address validation is requested. Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is. Validation can be requested on later delivery address updates and always occurs in checkout. */
   validationStrategy?: InputMaybe<DeliveryAddressValidationStrategy>;
 };
 
@@ -2249,7 +2262,7 @@ export type CartSelectableAddressUpdateInput = {
   oneTimeUse?: InputMaybe<Scalars['Boolean']['input']>;
   /** Sets exactly one address as pre-selected for the buyer. */
   selected?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Defines what kind of address validation is requested. */
+  /** Defines what kind of address validation is requested. Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is. Validation can be requested on later delivery address updates and always occurs in checkout. */
   validationStrategy?: InputMaybe<DeliveryAddressValidationStrategy>;
 };
 
@@ -2706,6 +2719,8 @@ export type CompletionError = {
 
 /** The code of the error that occurred during a cart completion attempt. */
 export type CompletionErrorCode =
+  /** The buyer must solve a captcha in checkout, then retry with the same payment method. */
+  | 'CAPTCHA_COMPLETION_REQUIRED'
   | 'ERROR'
   | 'INVENTORY_RESERVATION_ERROR'
   | 'PAYMENT_AMOUNT_TOO_SMALL'
@@ -2767,8 +2782,6 @@ export type ConsentManagement = {
   banner?: Maybe<ConsentManagementBanner>;
   /** Given the provided visitor consent, the resulting ConsentManagementCookies that need to be setin the browser for the Consent Management Platform to work and respect visitor consent. */
   cookies: ConsentManagementCookies;
-  /** For debugging purposes, decodes the cookies from `_shopify_essential`, `_shopify_analytics` etc and prints them in plain text. */
-  currentCookies: Scalars['String']['output'];
   /** URL to the customer accounts page. */
   customerAccountUrl?: Maybe<Scalars['URL']['output']>;
   /** List of ISO3166 2-character country codes where the sale of data is enabled. */
@@ -2850,6 +2863,8 @@ export type ConsentManagementBannerPreferences = {
   bulletPoints?: Maybe<ConsentManagementBannerBulletPoints>;
   /** Accept button text. */
   buttonAcceptText: Scalars['String']['output'];
+  /** Accessible label for the close button. */
+  buttonCloseText: Scalars['String']['output'];
   /** Decline button text. */
   buttonDeclineText: Scalars['String']['output'];
   /** Save button text. */
@@ -3824,6 +3839,8 @@ export type CurrencyCode =
   | 'XAF'
   /** East Caribbean Dollar (XCD). */
   | 'XCD'
+  /** Caribbean Guilder (XCG). */
+  | 'XCG'
   /** West African CFA franc (XOF). */
   | 'XOF'
   /** CFP Franc (XPF). */
@@ -4349,6 +4366,8 @@ export type DeliveryAddressValidationStrategy =
   /**
    * Strict validation is performed, i.e. all fields in the address are validated
    * according to Shopify's checkout rules. If the address fails validation, the cart will not be updated.
+   * Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is.
+   * Validation can be requested on later delivery address updates and always occurs in checkout.
    *
    */
   | 'STRICT';
@@ -4597,7 +4616,7 @@ export type FilterPresentation =
  * The type of data that the filter group represents.
  *
  * For more information, refer to [Filter products in a collection with the Storefront API]
- * (https://shopify.dev/custom-storefronts/products-collections/filter-products).
+ * (https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products).
  *
  */
 export type FilterType =
@@ -5020,7 +5039,7 @@ export type LanguageCode =
   | 'BG'
   /** Bambara. */
   | 'BM'
-  /** Bangla. */
+  /** Bengali. */
   | 'BN'
   /** Tibetan. */
   | 'BO'
@@ -5236,7 +5255,7 @@ export type LanguageCode =
   | 'SO'
   /** Albanian. */
   | 'SQ'
-  /** Serbian. */
+  /** Serbian (Latin). */
   | 'SR'
   /** Sundanese. */
   | 'SU'
@@ -6418,6 +6437,12 @@ export type Mutation = {
    */
   customerUpdate?: Maybe<CustomerUpdatePayload>;
   /**
+   * Updates the business entity associated with an ongoing Shop Pay payment request session.
+   * You can change the business entity before submitting payment, or after the latest payment attempt has failed.
+   *
+   */
+  shopPayPaymentRequestSessionBusinessEntityUpdate?: Maybe<ShopPayPaymentRequestSessionBusinessEntityUpdatePayload>;
+  /**
    * Creates a [Shop Pay payment request session](https://shopify.dev/docs/api/storefront/current/objects/ShopPayPaymentRequestSession) for processing payments. The session includes a checkout URL where customers complete their purchase and a token for subsequent operations like submitting the payment.
    *
    * The `sourceIdentifier` must be unique across all orders to ensure accurate reconciliation.
@@ -6714,7 +6739,15 @@ export type MutationCustomerUpdateArgs = {
 
 
 /** The schema’s entry-point for mutations. This acts as the public, top-level API from which all mutation queries must start. */
+export type MutationShopPayPaymentRequestSessionBusinessEntityUpdateArgs = {
+  businessEntityId: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
+
+/** The schema’s entry-point for mutations. This acts as the public, top-level API from which all mutation queries must start. */
 export type MutationShopPayPaymentRequestSessionCreateArgs = {
+  businessEntityId?: InputMaybe<Scalars['String']['input']>;
   sourceIdentifier: Scalars['String']['input'];
 };
 
@@ -7201,7 +7234,7 @@ export type PredictiveSearchLimitScope =
 export type PredictiveSearchResult = {
   /** The articles that match the search query. */
   articles: Array<Article>;
-  /** The articles that match the search query. */
+  /** The collections that match the search query. */
   collections: Array<Collection>;
   /** The pages that match the search query. */
   pages: Array<Page>;
@@ -7411,7 +7444,7 @@ export type Product = HasMetafields & Node & OnlineStorePublishable & Trackable 
   productType: Scalars['String']['output'];
   /** The date and time when the product was published to the channel. */
   publishedAt: Scalars['DateTime']['output'];
-  /** Whether the product can only be purchased with a [selling plan](/docs/apps/build/purchase-options/subscriptions/selling-plans). Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores. If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels, except the online store. */
+  /** Whether the product can only be purchased with a [selling plan](/docs/apps/build/purchase-options/subscriptions/selling-plans). Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores. If you update a product to be subscription-only (`requiresSellingPlan: true`), then the product is unpublished from all channels, except the online store. */
   requiresSellingPlan: Scalars['Boolean']['output'];
   /**
    * Find an active product variant based on selected options, availability or the first variant.
@@ -7975,7 +8008,7 @@ export type ProductVariant = HasMetafields & Node & {
   shopPayInstallmentsPricing?: Maybe<ShopPayInstallmentsProductVariantPricing>;
   /** The SKU (stock keeping unit) associated with the variant. */
   sku?: Maybe<Scalars['String']['output']>;
-  /** The in-store pickup availability of this variant by location. */
+  /** The pickup locations and physical stores for this variant. Returns the same pickup locations as earlier API versions, plus locations the merchant has marked as a physical storefront that don't offer local pickup. Use `pickUpEnabled` and `physicalStorefront` to tell them apart. Only locations where `pickUpEnabled` is `true` offer local pickup. A physical storefront without local pickup is returned only when the variant is in stock there, or when it can be sold without stock (its inventory isn't tracked, or it continues selling when out of stock). */
   storeAvailability: StoreAvailabilityConnection;
   /** Whether tax is charged when the product variant is sold. */
   taxable: Scalars['Boolean']['output'];
@@ -8455,7 +8488,7 @@ export type QueryRoot = {
   /**
    * Returns paginated search results for [`Product`](https://shopify.dev/docs/api/storefront/current/objects/Product), [`Page`](https://shopify.dev/docs/api/storefront/current/objects/Page), and [`Article`](https://shopify.dev/docs/api/storefront/current/objects/Article) resources based on a query string. Results are sorted by relevance by default.
    *
-   * The response includes the total result count and available product filters for building [faceted search interfaces](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products). Use the [`prefix`](https://shopify.dev/docs/api/storefront/current/enums/SearchPrefixQueryType) argument to enable partial word matching on the last search term, allowing queries like "winter snow" to match "snowboard" or "snowshoe".
+   * The response includes the total result count and available product filters for building [faceted search interfaces](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products). A search returns up to 1,000 results. When product results are included, a search returns up to 2 pages or articles, on the first page of results only. To get more pages and articles, run a separate search with `types: [PAGE, ARTICLE]`. Product results match partial words automatically. For page and article results, use the [`prefix`](https://shopify.dev/docs/api/storefront/current/enums/SearchPrefixQueryType) argument to match partial words on the last search term, so that a query like "winter snow" can match pages that contain "snowboard" or "snowshoe".
    *
    */
   search: SearchResultItemConnection;
@@ -8582,6 +8615,7 @@ export type QueryRootCartArgs = {
  */
 export type QueryRootCartCompletionAttemptArgs = {
   attemptId: Scalars['String']['input'];
+  attemptKey?: InputMaybe<Scalars['String']['input']>;
   requiredActionCompleted?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -8794,7 +8828,6 @@ export type QueryRootPredictiveSearchArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   limitScope?: InputMaybe<PredictiveSearchLimitScope>;
   query: Scalars['String']['input'];
-  searchableFields?: InputMaybe<Array<SearchableField>>;
   types?: InputMaybe<Array<PredictiveSearchType>>;
   unavailableProducts?: InputMaybe<SearchUnavailableProductsType>;
 };
@@ -8968,11 +9001,11 @@ export type ScriptDiscountApplication = DiscountApplication & {
   value: PricingValue;
 };
 
-/** Specifies whether to perform a partial word match on the last search term. */
+/** For page and article results, specifies whether to match partial words on the last search term. Product results match partial words automatically. */
 export type SearchPrefixQueryType =
-  /** Perform a partial word match on the last search term. */
+  /** For page and article results, match partial words on the last search term. */
   | 'LAST'
-  /** Don't perform a partial word match on the last search term. */
+  /** For page and article results, don't match partial words on the last search term. */
   | 'NONE';
 
 /**
@@ -9009,7 +9042,7 @@ export type SearchResultItemConnection = {
   pageInfo: PageInfo;
   /** A list of available filters. */
   productFilters: Array<Filter>;
-  /** The total number of results. */
+  /** The total number of results, up to a maximum of 1,000. If a search matches more than 1,000 results, then it returns 1,000, and pagination returns up to the first 1,000 results. */
   totalCount: Scalars['Int']['output'];
 };
 
@@ -9910,6 +9943,8 @@ export type ShopPayPaymentRequestLineItemSubscriptionInput = {
 
 /** Represents a receipt for a Shop Pay payment request. */
 export type ShopPayPaymentRequestReceipt = {
+  /** The ID of the business entity recorded when the payment request was submitted. Returns null if no entity was recorded or the recorded entity can't be found. This ID can't be resolved through the Storefront API's node query. */
+  businessEntityId?: Maybe<Scalars['ID']['output']>;
   /** The payment request object. */
   paymentRequest: ShopPayPaymentRequest;
   /** The processing status. */
@@ -9933,6 +9968,8 @@ export type ShopPayPaymentRequestSellingPlanInterval =
 
 /** Represents a Shop Pay payment request session. */
 export type ShopPayPaymentRequestSession = {
+  /** The ID of the business entity selected for this session, in the form accepted by `shopPayPaymentRequestSessionCreate` and `shopPayPaymentRequestSessionBusinessEntityUpdate`. Returns null if no entity was selected or the selected entity can't be found for this shop. When no entity is selected, the shop's primary business entity is used. This ID can't be resolved through the Storefront API's node query. */
+  businessEntityId?: Maybe<Scalars['String']['output']>;
   /** The checkout URL of the Shop Pay payment request session. */
   checkoutUrl: Scalars['URL']['output'];
   /**
@@ -9944,6 +9981,14 @@ export type ShopPayPaymentRequestSession = {
   sourceIdentifier: Scalars['String']['output'];
   /** The token of the Shop Pay payment request session. */
   token: Scalars['String']['output'];
+};
+
+/** Return type for `shopPayPaymentRequestSessionBusinessEntityUpdate` mutation. */
+export type ShopPayPaymentRequestSessionBusinessEntityUpdatePayload = {
+  /** The Shop Pay payment request session. */
+  shopPayPaymentRequestSession?: Maybe<ShopPayPaymentRequestSession>;
+  /** Error codes for failed Shop Pay payment request session mutations. */
+  userErrors: Array<UserErrorsShopPayPaymentRequestSessionUserErrors>;
 };
 
 /** Return type for `shopPayPaymentRequestSessionCreate` mutation. */
@@ -10165,18 +10210,22 @@ export type SocialLoginProvider = {
 };
 
 /**
- * Inventory information for a product variant at a physical store location that offers local pickup. Includes stock availability, quantity on hand, and estimated pickup readiness time. Availability also includes inventory that can be moved to the location through a store transfer route, so a variant can be available for pickup with no on-hand stock at the location.
+ * Inventory information for a product variant at a physical store location. Includes stock availability, quantity on hand, and estimated pickup readiness time. When the location offers local pickup, availability also includes inventory that can be moved to it through a store transfer route, so a variant can be available for pickup with no on-hand stock at the location.
  *
- * Local pickup must be [enabled in the store's shipping settings](https://help.shopify.com/manual/shipping/setting-up-and-managing-your-shipping/local-methods/local-pickup) for this data to be returned. Results can be sorted by proximity to a customer's location using the `near` argument on the [`ProductVariant.storeAvailability`](https://shopify.dev/docs/api/storefront/current/objects/ProductVariant#field-ProductVariant.fields.storeAvailability) connection.
+ * Local pickup is [configured in the store's shipping settings](https://help.shopify.com/manual/shipping/setting-up-and-managing-your-shipping/local-methods/local-pickup), and a returned location isn't guaranteed to offer it. Results can be sorted by proximity to a customer's location using the `near` argument on the [`ProductVariant.storeAvailability`](https://shopify.dev/docs/api/storefront/current/objects/ProductVariant#field-ProductVariant.fields.storeAvailability) connection.
  *
  * Learn more about [supporting local pickup on storefronts](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/local-pickup).
  *
  */
 export type StoreAvailability = {
-  /** Whether the product variant can be picked up at this location. This is `true` when the variant is in stock here, can be supplied through a store transfer from another location, or is sold with untracked or oversellable inventory (its inventory isn't tracked, or its inventory policy allows continuing to sell when out of stock). As a result, `available` can be `true` even when `quantityAvailable` is `0`. */
+  /** Whether the product variant is available at this location. This is `true` when the variant is in stock here, can be supplied through a store transfer from another location when this location offers local pickup, or is sold with untracked or oversellable inventory (its inventory isn't tracked, or its inventory policy allows continuing to sell when out of stock). As a result, `available` can be `true` even when `quantityAvailable` is `0` or less. It doesn't mean the location offers local pickup. */
   available: Scalars['Boolean']['output'];
   /** The location where this product variant is stocked at. */
   location: Location;
+  /** Whether this location is a physical retail store where a buyer can buy this product variant in person. Merchants set this with the "Physical storefront" setting on a location. This is informational: it doesn't mean the variant can be bought or reserved online, and it's independent of `pickUpEnabled`. */
+  physicalStorefront: Scalars['Boolean']['output'];
+  /** Whether local pickup is turned on for this location. */
+  pickUpEnabled: Scalars['Boolean']['output'];
   /** Returns the estimated amount of time it takes for pickup to be ready (Example: Usually ready in 24 hours). When the variant is out of stock at this location and supplied through a store transfer, this reflects the estimated transfer transit time when available, otherwise it falls back to the location's standard pickup processing time. */
   pickUpTime: Scalars['String']['output'];
   /** The quantity of the product variant physically in stock at this location. This counts on-hand inventory only and excludes inventory available through a store transfer, so it can be `0` while `available` is `true`. */
@@ -10241,10 +10290,18 @@ export type SubmissionError = {
 
 /** The code of the error that occurred during cart submit for completion. */
 export type SubmissionErrorCode =
+  /** Buyer identity does not match customer profile. */
+  | 'BUYER_IDENTITY_CONTACT_INFO_DOES_NOT_MATCH_CUSTOMER_PROFILE'
   | 'BUYER_IDENTITY_CONTACT_METHOD_REQUIRED'
   | 'BUYER_IDENTITY_EMAIL_IS_INVALID'
   | 'BUYER_IDENTITY_EMAIL_REQUIRED'
   | 'BUYER_IDENTITY_PHONE_IS_INVALID'
+  /** Buyer identity presentment currency does not match. */
+  | 'BUYER_IDENTITY_PRESENTMENT_CURRENCY_DOES_NOT_MATCH'
+  | 'CAPTCHA_COMPLETION_REQUIRED'
+  /** Checkout validation runtime error. */
+  | 'CHECKOUT_VALIDATION_RUNTIME_ERROR'
+  | 'CUSTOMER_ACCOUNT_REQUIRED'
   | 'DELIVERY_ADDRESS1_INVALID'
   | 'DELIVERY_ADDRESS1_REQUIRED'
   | 'DELIVERY_ADDRESS1_TOO_LONG'
@@ -10261,6 +10318,7 @@ export type SubmissionErrorCode =
   /** Country is not supported. */
   | 'DELIVERY_COUNTRY_INVALID'
   | 'DELIVERY_COUNTRY_REQUIRED'
+  | 'DELIVERY_DETAIL_CHANGED'
   | 'DELIVERY_FIRST_NAME_INVALID'
   | 'DELIVERY_FIRST_NAME_REQUIRED'
   | 'DELIVERY_FIRST_NAME_TOO_LONG'
@@ -10277,14 +10335,22 @@ export type SubmissionErrorCode =
   | 'DELIVERY_PHONE_NUMBER_REQUIRED'
   | 'DELIVERY_POSTAL_CODE_INVALID'
   | 'DELIVERY_POSTAL_CODE_REQUIRED'
+  /** Delivery wrong number of lines. */
+  | 'DELIVERY_WRONG_NUMBER_OF_LINES'
   | 'DELIVERY_ZONE_NOT_FOUND'
   | 'DELIVERY_ZONE_REQUIRED_FOR_COUNTRY'
+  | 'DISCOUNT_NOT_APPLICABLE'
   | 'ERROR'
+  /** Extension interaction required. */
+  | 'EXTENSION_INTERACTION_REQUIRED'
+  | 'LOCALIZATION_EXTENSION_FIELD_ERROR'
   | 'MERCHANDISE_LINE_LIMIT_REACHED'
   | 'MERCHANDISE_NOT_APPLICABLE'
   | 'MERCHANDISE_NOT_ENOUGH_STOCK_AVAILABLE'
   | 'MERCHANDISE_OUT_OF_STOCK'
   | 'MERCHANDISE_PRODUCT_NOT_PUBLISHED'
+  /** Non-test order limit reached. */
+  | 'NON_TEST_ORDER_LIMIT_REACHED'
   | 'NO_DELIVERY_GROUP_SELECTED'
   | 'PAYMENTS_ADDRESS1_INVALID'
   | 'PAYMENTS_ADDRESS1_REQUIRED'
@@ -10333,12 +10399,17 @@ export type SubmissionErrorCode =
   | 'PAYMENTS_PHONE_NUMBER_REQUIRED'
   | 'PAYMENTS_POSTAL_CODE_INVALID'
   | 'PAYMENTS_POSTAL_CODE_REQUIRED'
+  | 'PAYMENTS_SHIPPING_MUST_MATCH_BILLING'
   | 'PAYMENTS_SHOPIFY_PAYMENTS_REQUIRED'
   | 'PAYMENTS_UNACCEPTABLE_PAYMENT_AMOUNT'
   | 'PAYMENTS_WALLET_CONTENT_MISSING'
+  | 'PENDING_PROCESS'
   /** Redirect to checkout required to complete this action. */
   | 'REDIRECT_TO_CHECKOUT_REQUIRED'
+  | 'SUBSCRIPTION_TERMS_NOT_ACCEPTED'
   | 'TAXES_DELIVERY_GROUP_ID_NOT_FOUND'
+  /** Taxes inclusivity mismatch. */
+  | 'TAXES_INCLUSIVITY_MISMATCH'
   | 'TAXES_LINE_ID_NOT_FOUND'
   | 'TAXES_MUST_BE_DEFINED'
   /** Validation failed. */
@@ -10576,8 +10647,16 @@ export type UserErrorsShopPayPaymentRequestSessionUserErrors = DisplayableError 
 
 /** Possible error codes that can be returned by `ShopPayPaymentRequestSessionUserErrors`. */
 export type UserErrorsShopPayPaymentRequestSessionUserErrorsCode =
+  /** Business entity is archived. */
+  | 'BUSINESS_ENTITY_ARCHIVED'
+  /** Business entity can't accept payments. */
+  | 'BUSINESS_ENTITY_NOT_CHARGEABLE'
+  /** Business entity not found. */
+  | 'BUSINESS_ENTITY_NOT_FOUND'
   /** Idempotency key has already been used. */
   | 'IDEMPOTENCY_KEY_ALREADY_USED'
+  /** This shop doesn't support payments through multiple business entities. */
+  | 'MULTI_ENTITY_NOT_SUPPORTED'
   /** Payment request input is invalid. */
   | 'PAYMENT_REQUEST_INVALID_INPUT'
   /** Payment request not found. */

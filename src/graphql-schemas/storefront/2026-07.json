@@ -2989,7 +2989,7 @@
           },
           {
             "name": "copyFromCustomerAddressId",
-            "description": "Copies details from the customer address to an address on this cart.",
+            "description": "Copies details from the customer address to an address on this cart. The address is copied as-is, regardless of `validationStrategy`. Validation can be requested on later delivery address updates and always occurs in checkout.",
             "type": {
               "kind": "SCALAR",
               "name": "ID",
@@ -8812,7 +8812,7 @@
           },
           {
             "name": "validationStrategy",
-            "description": "Defines what kind of address validation is requested.",
+            "description": "Defines what kind of address validation is requested. Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is. Validation can be requested on later delivery address updates and always occurs in checkout.",
             "type": {
               "kind": "ENUM",
               "name": "DeliveryAddressValidationStrategy",
@@ -8877,7 +8877,7 @@
           },
           {
             "name": "validationStrategy",
-            "description": "Defines what kind of address validation is requested.",
+            "description": "Defines what kind of address validation is requested. Doesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is. Validation can be requested on later delivery address updates and always occurs in checkout.",
             "type": {
               "kind": "ENUM",
               "name": "DeliveryAddressValidationStrategy",
@@ -13091,6 +13091,12 @@
             "deprecationReason": null
           },
           {
+            "name": "XCG",
+            "description": "Caribbean Guilder (XCG).",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "KYD",
             "description": "Cayman Dollars (KYD).",
             "isDeprecated": false,
@@ -13477,8 +13483,8 @@
           {
             "name": "ANG",
             "description": "Netherlands Antillean Guilder.",
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "`ANG` is deprecated. Use `XCG` instead."
           },
           {
             "name": "NZD",
@@ -15942,7 +15948,7 @@
           },
           {
             "name": "STRICT",
-            "description": "Strict validation is performed, i.e. all fields in the address are validated\naccording to Shopify's checkout rules. If the address fails validation, the cart will not be updated.\n",
+            "description": "Strict validation is performed, i.e. all fields in the address are validated\naccording to Shopify's checkout rules. If the address fails validation, the cart will not be updated.\nDoesn't apply to addresses copied with `copyFromCustomerAddressId`, which are copied as-is.\nValidation can be requested on later delivery address updates and always occurs in checkout.\n",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -16900,7 +16906,7 @@
       {
         "kind": "ENUM",
         "name": "FilterType",
-        "description": "The type of data that the filter group represents.\n\nFor more information, refer to [Filter products in a collection with the Storefront API]\n(https://shopify.dev/custom-storefronts/products-collections/filter-products).\n",
+        "description": "The type of data that the filter group represents.\n\nFor more information, refer to [Filter products in a collection with the Storefront API]\n(https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products).\n",
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -18354,7 +18360,7 @@
           },
           {
             "name": "BN",
-            "description": "Bangla.",
+            "description": "Bengali.",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -18972,7 +18978,7 @@
           },
           {
             "name": "SR",
-            "description": "Serbian.",
+            "description": "Serbian (Latin).",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -26981,7 +26987,7 @@
           },
           {
             "name": "collections",
-            "description": "The articles that match the search query.",
+            "description": "The collections that match the search query.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -27883,7 +27889,7 @@
           },
           {
             "name": "requiresSellingPlan",
-            "description": "Whether the product can only be purchased with a [selling plan](/docs/apps/build/purchase-options/subscriptions/selling-plans). Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores. If you update a product to be subscription-only (`requiresSellingPlan:false`), then the product is unpublished from all channels, except the online store.",
+            "description": "Whether the product can only be purchased with a [selling plan](/docs/apps/build/purchase-options/subscriptions/selling-plans). Products that are sold on subscription (`requiresSellingPlan: true`) can be updated only for online stores. If you update a product to be subscription-only (`requiresSellingPlan: true`), then the product is unpublished from all channels, except the online store.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -31374,24 +31380,6 @@
                 "defaultValue": null
               },
               {
-                "name": "searchableFields",
-                "description": "Specifies the list of resource fields to use for search. The default fields searched on are TITLE, PRODUCT_TYPE, VARIANT_TITLE, and VENDOR. For the best search experience, you should search on the default field set.\n\nThe input must not contain more than `250` values.",
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "SearchableField",
-                      "ofType": null
-                    }
-                  }
-                },
-                "defaultValue": null
-              },
-              {
                 "name": "types",
                 "description": "The types of resources to search for.\n\nThe input must not contain more than `250` values.",
                 "type": {
@@ -31714,7 +31702,7 @@
           },
           {
             "name": "search",
-            "description": "Returns paginated search results for [`Product`](https://shopify.dev/docs/api/storefront/current/objects/Product), [`Page`](https://shopify.dev/docs/api/storefront/current/objects/Page), and [`Article`](https://shopify.dev/docs/api/storefront/current/objects/Article) resources based on a query string. Results are sorted by relevance by default.\n\nThe response includes the total result count and available product filters for building [faceted search interfaces](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products). Use the [`prefix`](https://shopify.dev/docs/api/storefront/current/enums/SearchPrefixQueryType) argument to enable partial word matching on the last search term, allowing queries like \"winter snow\" to match \"snowboard\" or \"snowshoe\".\n",
+            "description": "Returns paginated search results for [`Product`](https://shopify.dev/docs/api/storefront/current/objects/Product), [`Page`](https://shopify.dev/docs/api/storefront/current/objects/Page), and [`Article`](https://shopify.dev/docs/api/storefront/current/objects/Article) resources based on a query string. Results are sorted by relevance by default.\n\nThe response includes the total result count and available product filters for building [faceted search interfaces](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/filter-products). A search returns up to 1,000 results. When product results are included, a search returns up to 2 pages or articles, on the first page of results only. To get more pages and articles, run a separate search with `types: [PAGE, ARTICLE]`. Product results match partial words automatically. For page and article results, use the [`prefix`](https://shopify.dev/docs/api/storefront/current/enums/SearchPrefixQueryType) argument to match partial words on the last search term, so that a query like \"winter snow\" can match pages that contain \"snowboard\" or \"snowshoe\".\n",
             "args": [
               {
                 "name": "first",
@@ -31792,7 +31780,7 @@
               },
               {
                 "name": "prefix",
-                "description": "Specifies whether to perform a partial word match on the last search term.",
+                "description": "For page and article results, specifies whether to match partial words on the last search term. Product results match partial words automatically.",
                 "type": {
                   "kind": "ENUM",
                   "name": "SearchPrefixQueryType",
@@ -32124,20 +32112,20 @@
       {
         "kind": "ENUM",
         "name": "SearchPrefixQueryType",
-        "description": "Specifies whether to perform a partial word match on the last search term.",
+        "description": "For page and article results, specifies whether to match partial words on the last search term. Product results match partial words automatically.",
         "fields": null,
         "inputFields": null,
         "interfaces": null,
         "enumValues": [
           {
             "name": "LAST",
-            "description": "Perform a partial word match on the last search term.",
+            "description": "For page and article results, match partial words on the last search term.",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "NONE",
-            "description": "Don't perform a partial word match on the last search term.",
+            "description": "For page and article results, don't match partial words on the last search term.",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -32326,7 +32314,7 @@
           },
           {
             "name": "totalCount",
-            "description": "The total number of results.",
+            "description": "The total number of results, up to a maximum of 1,000. If a search matches more than 1,000 results, then it returns 1,000, and pagination returns up to the first 1,000 results.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -37126,11 +37114,11 @@
       {
         "kind": "OBJECT",
         "name": "StoreAvailability",
-        "description": "Inventory information for a product variant at a physical store location that offers local pickup. Includes stock availability, quantity on hand, and estimated pickup readiness time. Availability also includes inventory that can be moved to the location through a store transfer route, so a variant can be available for pickup with no on-hand stock at the location.\n\nLocal pickup must be [enabled in the store's shipping settings](https://help.shopify.com/manual/shipping/setting-up-and-managing-your-shipping/local-methods/local-pickup) for this data to be returned. Results can be sorted by proximity to a customer's location using the `near` argument on the [`ProductVariant.storeAvailability`](https://shopify.dev/docs/api/storefront/current/objects/ProductVariant#field-ProductVariant.fields.storeAvailability) connection. \n\nLearn more about [supporting local pickup on storefronts](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/local-pickup).\n",
+        "description": "Inventory information for a product variant at a physical store location. Includes stock availability, quantity on hand, and estimated pickup readiness time. When the location offers local pickup, availability also includes inventory that can be moved to it through a store transfer route, so a variant can be available for pickup with no on-hand stock at the location.\n\nLocal pickup is [configured in the store's shipping settings](https://help.shopify.com/manual/shipping/setting-up-and-managing-your-shipping/local-methods/local-pickup), and a returned location isn't guaranteed to offer it. Results can be sorted by proximity to a customer's location using the `near` argument on the [`ProductVariant.storeAvailability`](https://shopify.dev/docs/api/storefront/current/objects/ProductVariant#field-ProductVariant.fields.storeAvailability) connection. \n\nLearn more about [supporting local pickup on storefronts](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/products-collections/local-pickup).\n",
         "fields": [
           {
             "name": "available",
-            "description": "Whether the product variant can be picked up at this location. This is `true` when the variant is in stock here, can be supplied through a store transfer from another location, or is sold with untracked or oversellable inventory (its inventory isn't tracked, or its inventory policy allows continuing to sell when out of stock). As a result, `available` can be `true` even when `quantityAvailable` is `0`.",
+            "description": "Whether the product variant is available at this location. This is `true` when the variant is in stock here, can be supplied through a store transfer from another location when this location offers local pickup, or is sold with untracked or oversellable inventory (its inventory isn't tracked, or its inventory policy allows continuing to sell when out of stock). As a result, `available` can be `true` even when `quantityAvailable` is `0` or less. It doesn't mean the location offers local pickup.",
             "args": [],
             "type": {
               "kind": "NON_NULL",

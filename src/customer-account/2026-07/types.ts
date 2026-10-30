@@ -370,6 +370,8 @@ export type BusinessCustomerErrorCode =
   | 'INVALID_INPUT'
   /** The number of resources exceeded the limit. */
   | 'LIMIT_REACHED'
+  /** This company location is managed by an app and can only be edited by that app. */
+  | 'MANAGED_BY_APP'
   /** The input is empty. */
   | 'NO_INPUT'
   /** Permission denied. */
@@ -1083,7 +1085,7 @@ export type CompanyLocation = HasMetafields & HasStoreCreditAccounts & Node & {
   /** A globally-unique ID. */
   id: Scalars['ID']['output'];
   /**
-   * The market that includes the location's shipping address. If the shipping address is empty, the shop's primary market is returned.
+   * The market that applies to the location's shipping address country. In cases where multiple markets match, this returns the most-specific country region market. If the shipping address is empty, the shop's backup region market is returned.
    * @deprecated This `market` field will be removed in a future version of the API.
    */
   market: Market;
@@ -2141,6 +2143,8 @@ export type CurrencyCode =
   | 'XAF'
   /** East Caribbean Dollar (XCD). */
   | 'XCD'
+  /** Caribbean Guilder (XCG). */
+  | 'XCG'
   /** West African CFA franc (XOF). */
   | 'XOF'
   /** CFP Franc (XPF). */
@@ -3488,6 +3492,8 @@ export type FulfillmentEventEdge = {
 
 /** The set of valid sort keys for the FulfillmentEvent query. */
 export type FulfillmentEventSortKeys =
+  /** Sort by the `created_at` value. */
+  | 'CREATED_AT'
   /** Sort by the `happened_at` value. */
   | 'HAPPENED_AT'
   /** Sort by the `id` value. */
@@ -5266,7 +5272,7 @@ export type Order = HasMetafields & Node & {
   /** The name of the fulfillment location assigned at the time of order creation. */
   locationName: Maybe<Scalars['String']['output']>;
   /**
-   * The market that includes the order's shipping address. Or the shop's primary market if the shipping address is empty.
+   * The market that applies to the order's shipping address country. In cases where multiple markets match, this returns the most-specific country region market. If the shipping address is empty, the shop's backup region market is returned.
    * @deprecated This `market` field will be removed in a future version of the API.
    */
   market: Market;
@@ -5790,6 +5796,8 @@ export type OrderReturnInformation = {
   returnShippingMethods: Array<ReturnShippingMethod>;
   /** The line items that are eligible for return. */
   returnableLineItems: ReturnableLineItemConnection;
+  /** Whether self-serve returns are enabled for the order's buyer context. */
+  selfServeReturnsEnabled: Scalars['Boolean']['output'];
 };
 
 

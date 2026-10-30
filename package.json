@@ -1,11 +1,26 @@
 {
   "name": "@juanpprieto/shopify-api-types",
-  "version": "2026.7.0",
+  "version": "2026.10.0",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.d.ts",
       "default": "./dist/index.d.ts"
+    },
+    "./sfapi/2026-10": {
+      "types": "./dist/storefront/2026-10/index.d.ts",
+      "import": "./dist/storefront/2026-10/index.d.ts",
+      "default": "./dist/storefront/2026-10/index.d.ts"
+    },
+    "./caapi/2026-10": {
+      "types": "./dist/customer-account/2026-10/index.d.ts",
+      "import": "./dist/customer-account/2026-10/index.d.ts",
+      "default": "./dist/customer-account/2026-10/index.d.ts"
+    },
+    "./admin/2026-10": {
+      "types": "./dist/admin/2026-10/index.d.ts",
+      "import": "./dist/admin/2026-10/index.d.ts",
+      "default": "./dist/admin/2026-10/index.d.ts"
     },
     "./sfapi/2026-07": {
       "types": "./dist/storefront/2026-07/index.d.ts",
@@ -52,35 +67,20 @@
       "import": "./dist/admin/2026-01/index.d.ts",
       "default": "./dist/admin/2026-01/index.d.ts"
     },
-    "./sfapi/2025-10": {
-      "types": "./dist/storefront/2025-10/index.d.ts",
-      "import": "./dist/storefront/2025-10/index.d.ts",
-      "default": "./dist/storefront/2025-10/index.d.ts"
+    "./sfapi/2027-01": {
+      "types": "./dist/storefront/2027-01/index.d.ts",
+      "import": "./dist/storefront/2027-01/index.d.ts",
+      "default": "./dist/storefront/2027-01/index.d.ts"
     },
-    "./caapi/2025-10": {
-      "types": "./dist/customer-account/2025-10/index.d.ts",
-      "import": "./dist/customer-account/2025-10/index.d.ts",
-      "default": "./dist/customer-account/2025-10/index.d.ts"
+    "./caapi/2027-01": {
+      "types": "./dist/customer-account/2027-01/index.d.ts",
+      "import": "./dist/customer-account/2027-01/index.d.ts",
+      "default": "./dist/customer-account/2027-01/index.d.ts"
     },
-    "./admin/2025-10": {
-      "types": "./dist/admin/2025-10/index.d.ts",
-      "import": "./dist/admin/2025-10/index.d.ts",
-      "default": "./dist/admin/2025-10/index.d.ts"
-    },
-    "./sfapi/2026-10": {
-      "types": "./dist/storefront/2026-10/index.d.ts",
-      "import": "./dist/storefront/2026-10/index.d.ts",
-      "default": "./dist/storefront/2026-10/index.d.ts"
-    },
-    "./caapi/2026-10": {
-      "types": "./dist/customer-account/2026-10/index.d.ts",
-      "import": "./dist/customer-account/2026-10/index.d.ts",
-      "default": "./dist/customer-account/2026-10/index.d.ts"
-    },
-    "./admin/2026-10": {
-      "types": "./dist/admin/2026-10/index.d.ts",
-      "import": "./dist/admin/2026-10/index.d.ts",
-      "default": "./dist/admin/2026-10/index.d.ts"
+    "./admin/2027-01": {
+      "types": "./dist/admin/2027-01/index.d.ts",
+      "import": "./dist/admin/2027-01/index.d.ts",
+      "default": "./dist/admin/2027-01/index.d.ts"
     },
     "./sfapi/unstable": {
       "types": "./dist/storefront/unstable/index.d.ts",
@@ -111,6 +111,24 @@
       "types": "./dist/admin/index.d.ts",
       "import": "./dist/admin/index.d.ts",
       "default": "./dist/admin/index.d.ts"
+    },
+    "./schemas/sfapi/2026-10": {
+      "types": "./dist/schemas/storefront/2026-10.json",
+      "import": "./dist/schemas/storefront/2026-10.json",
+      "require": "./dist/schemas/storefront/2026-10.json",
+      "default": "./dist/schemas/storefront/2026-10.json"
+    },
+    "./schemas/caapi/2026-10": {
+      "types": "./dist/schemas/customer-account/2026-10.json",
+      "import": "./dist/schemas/customer-account/2026-10.json",
+      "require": "./dist/schemas/customer-account/2026-10.json",
+      "default": "./dist/schemas/customer-account/2026-10.json"
+    },
+    "./schemas/admin/2026-10": {
+      "types": "./dist/schemas/admin/2026-10.json",
+      "import": "./dist/schemas/admin/2026-10.json",
+      "require": "./dist/schemas/admin/2026-10.json",
+      "default": "./dist/schemas/admin/2026-10.json"
     },
     "./schemas/sfapi/2026-07": {
       "types": "./dist/schemas/storefront/2026-07.json",
@@ -166,41 +184,23 @@
       "require": "./dist/schemas/admin/2026-01.json",
       "default": "./dist/schemas/admin/2026-01.json"
     },
-    "./schemas/sfapi/2025-10": {
-      "types": "./dist/schemas/storefront/2025-10.json",
-      "import": "./dist/schemas/storefront/2025-10.json",
-      "require": "./dist/schemas/storefront/2025-10.json",
-      "default": "./dist/schemas/storefront/2025-10.json"
+    "./schemas/sfapi/2027-01": {
+      "types": "./dist/schemas/storefront/2027-01.json",
+      "import": "./dist/schemas/storefront/2027-01.json",
+      "require": "./dist/schemas/storefront/2027-01.json",
+      "default": "./dist/schemas/storefront/2027-01.json"
     },
-    "./schemas/caapi/2025-10": {
-      "types": "./dist/schemas/customer-account/2025-10.json",
-      "import": "./dist/schemas/customer-account/2025-10.json",
-      "require": "./dist/schemas/customer-account/2025-10.json",
-      "default": "./dist/schemas/customer-account/2025-10.json"
+    "./schemas/caapi/2027-01": {
+      "types": "./dist/schemas/customer-account/2027-01.json",
+      "import": "./dist/schemas/customer-account/2027-01.json",
+      "require": "./dist/schemas/customer-account/2027-01.json",
+      "default": "./dist/schemas/customer-account/2027-01.json"
     },
-    "./schemas/admin/2025-10": {
-      "types": "./dist/schemas/admin/2025-10.json",
-      "import": "./dist/schemas/admin/2025-10.json",
-      "require": "./dist/schemas/admin/2025-10.json",
-      "default": "./dist/schemas/admin/2025-10.json"
-    },
-    "./schemas/sfapi/2026-10": {
-      "types": "./dist/schemas/storefront/2026-10.json",
-      "import": "./dist/schemas/storefront/2026-10.json",
-      "require": "./dist/schemas/storefront/2026-10.json",
-      "default": "./dist/schemas/storefront/2026-10.json"
-    },
-    "./schemas/caapi/2026-10": {
-      "types": "./dist/schemas/customer-account/2026-10.json",
-      "import": "./dist/schemas/customer-account/2026-10.json",
-      "require": "./dist/schemas/customer-account/2026-10.json",
-      "default": "./dist/schemas/customer-account/2026-10.json"
-    },
-    "./schemas/admin/2026-10": {
-      "types": "./dist/schemas/admin/2026-10.json",
-      "import": "./dist/schemas/admin/2026-10.json",
-      "require": "./dist/schemas/admin/2026-10.json",
-      "default": "./dist/schemas/admin/2026-10.json"
+    "./schemas/admin/2027-01": {
+      "types": "./dist/schemas/admin/2027-01.json",
+      "import": "./dist/schemas/admin/2027-01.json",
+      "require": "./dist/schemas/admin/2027-01.json",
+      "default": "./dist/schemas/admin/2027-01.json"
     },
     "./schemas/sfapi/unstable": {
       "types": "./dist/schemas/storefront/unstable.json",
@@ -220,12 +220,6 @@
       "require": "./dist/schemas/admin/unstable.json",
       "default": "./dist/schemas/admin/unstable.json"
     },
-    "./comparisons/2025-10-to-2026-01": {
-      "types": "./dist/comparisons/2025-10-to-2026-01.json",
-      "import": "./dist/comparisons/2025-10-to-2026-01.json",
-      "require": "./dist/comparisons/2025-10-to-2026-01.json",
-      "default": "./dist/comparisons/2025-10-to-2026-01.json"
-    },
     "./comparisons/2026-01-to-2026-04": {
       "types": "./dist/comparisons/2026-01-to-2026-04.json",
       "import": "./dist/comparisons/2026-01-to-2026-04.json",
@@ -244,62 +238,68 @@
       "require": "./dist/comparisons/2026-07-to-2026-10.json",
       "default": "./dist/comparisons/2026-07-to-2026-10.json"
     },
-    "./comparisons/current": {
-      "types": "./dist/comparisons/2026-04-to-2026-07.json",
-      "import": "./dist/comparisons/2026-04-to-2026-07.json",
-      "require": "./dist/comparisons/2026-04-to-2026-07.json",
-      "default": "./dist/comparisons/2026-04-to-2026-07.json"
+    "./comparisons/2026-10-to-2027-01": {
+      "types": "./dist/comparisons/2026-10-to-2027-01.json",
+      "import": "./dist/comparisons/2026-10-to-2027-01.json",
+      "require": "./dist/comparisons/2026-10-to-2027-01.json",
+      "default": "./dist/comparisons/2026-10-to-2027-01.json"
     },
-    "./comparisons/next": {
+    "./comparisons/current": {
       "types": "./dist/comparisons/2026-07-to-2026-10.json",
       "import": "./dist/comparisons/2026-07-to-2026-10.json",
       "require": "./dist/comparisons/2026-07-to-2026-10.json",
       "default": "./dist/comparisons/2026-07-to-2026-10.json"
     },
+    "./comparisons/next": {
+      "types": "./dist/comparisons/2026-10-to-2027-01.json",
+      "import": "./dist/comparisons/2026-10-to-2027-01.json",
+      "require": "./dist/comparisons/2026-10-to-2027-01.json",
+      "default": "./dist/comparisons/2026-10-to-2027-01.json"
+    },
     "./sfapi/current": {
-      "types": "./dist/storefront/2026-07/index.d.ts",
-      "import": "./dist/storefront/2026-07/index.d.ts",
-      "default": "./dist/storefront/2026-07/index.d.ts"
-    },
-    "./sfapi/previous": {
-      "types": "./dist/storefront/2026-04/index.d.ts",
-      "import": "./dist/storefront/2026-04/index.d.ts",
-      "default": "./dist/storefront/2026-04/index.d.ts"
-    },
-    "./sfapi/next": {
       "types": "./dist/storefront/2026-10/index.d.ts",
       "import": "./dist/storefront/2026-10/index.d.ts",
       "default": "./dist/storefront/2026-10/index.d.ts"
     },
+    "./sfapi/previous": {
+      "types": "./dist/storefront/2026-07/index.d.ts",
+      "import": "./dist/storefront/2026-07/index.d.ts",
+      "default": "./dist/storefront/2026-07/index.d.ts"
+    },
+    "./sfapi/next": {
+      "types": "./dist/storefront/2027-01/index.d.ts",
+      "import": "./dist/storefront/2027-01/index.d.ts",
+      "default": "./dist/storefront/2027-01/index.d.ts"
+    },
     "./caapi/current": {
-      "types": "./dist/customer-account/2026-07/index.d.ts",
-      "import": "./dist/customer-account/2026-07/index.d.ts",
-      "default": "./dist/customer-account/2026-07/index.d.ts"
-    },
-    "./caapi/previous": {
-      "types": "./dist/customer-account/2026-04/index.d.ts",
-      "import": "./dist/customer-account/2026-04/index.d.ts",
-      "default": "./dist/customer-account/2026-04/index.d.ts"
-    },
-    "./caapi/next": {
       "types": "./dist/customer-account/2026-10/index.d.ts",
       "import": "./dist/customer-account/2026-10/index.d.ts",
       "default": "./dist/customer-account/2026-10/index.d.ts"
     },
+    "./caapi/previous": {
+      "types": "./dist/customer-account/2026-07/index.d.ts",
+      "import": "./dist/customer-account/2026-07/index.d.ts",
+      "default": "./dist/customer-account/2026-07/index.d.ts"
+    },
+    "./caapi/next": {
+      "types": "./dist/customer-account/2027-01/index.d.ts",
+      "import": "./dist/customer-account/2027-01/index.d.ts",
+      "default": "./dist/customer-account/2027-01/index.d.ts"
+    },
     "./admin/current": {
+      "types": "./dist/admin/2026-10/index.d.ts",
+      "import": "./dist/admin/2026-10/index.d.ts",
+      "default": "./dist/admin/2026-10/index.d.ts"
+    },
+    "./admin/previous": {
       "types": "./dist/admin/2026-07/index.d.ts",
       "import": "./dist/admin/2026-07/index.d.ts",
       "default": "./dist/admin/2026-07/index.d.ts"
     },
-    "./admin/previous": {
-      "types": "./dist/admin/2026-04/index.d.ts",
-      "import": "./dist/admin/2026-04/index.d.ts",
-      "default": "./dist/admin/2026-04/index.d.ts"
-    },
     "./admin/next": {
-      "types": "./dist/admin/2026-10/index.d.ts",
-      "import": "./dist/admin/2026-10/index.d.ts",
-      "default": "./dist/admin/2026-10/index.d.ts"
+      "types": "./dist/admin/2027-01/index.d.ts",
+      "import": "./dist/admin/2027-01/index.d.ts",
+      "default": "./dist/admin/2027-01/index.d.ts"
     }
   },
   "typesVersions": {
@@ -312,6 +312,15 @@
       ],
       "admin": [
         "./dist/admin/index.d.ts"
+      ],
+      "sfapi/2026-10": [
+        "./dist/storefront/2026-10/index.d.ts"
+      ],
+      "caapi/2026-10": [
+        "./dist/customer-account/2026-10/index.d.ts"
+      ],
+      "admin/2026-10": [
+        "./dist/admin/2026-10/index.d.ts"
       ],
       "sfapi/2026-07": [
         "./dist/storefront/2026-07/index.d.ts"
@@ -340,23 +349,14 @@
       "admin/2026-01": [
         "./dist/admin/2026-01/index.d.ts"
       ],
-      "sfapi/2025-10": [
-        "./dist/storefront/2025-10/index.d.ts"
+      "sfapi/2027-01": [
+        "./dist/storefront/2027-01/index.d.ts"
       ],
-      "caapi/2025-10": [
-        "./dist/customer-account/2025-10/index.d.ts"
+      "caapi/2027-01": [
+        "./dist/customer-account/2027-01/index.d.ts"
       ],
-      "admin/2025-10": [
-        "./dist/admin/2025-10/index.d.ts"
-      ],
-      "sfapi/2026-10": [
-        "./dist/storefront/2026-10/index.d.ts"
-      ],
-      "caapi/2026-10": [
-        "./dist/customer-account/2026-10/index.d.ts"
-      ],
-      "admin/2026-10": [
-        "./dist/admin/2026-10/index.d.ts"
+      "admin/2027-01": [
+        "./dist/admin/2027-01/index.d.ts"
       ],
       "sfapi/unstable": [
         "./dist/storefront/unstable/index.d.ts"
@@ -368,31 +368,31 @@
         "./dist/admin/unstable/index.d.ts"
       ],
       "sfapi/current": [
-        "./dist/storefront/2026-07/index.d.ts"
-      ],
-      "caapi/current": [
-        "./dist/customer-account/2026-07/index.d.ts"
-      ],
-      "admin/current": [
-        "./dist/admin/2026-07/index.d.ts"
-      ],
-      "sfapi/previous": [
-        "./dist/storefront/2026-04/index.d.ts"
-      ],
-      "caapi/previous": [
-        "./dist/customer-account/2026-04/index.d.ts"
-      ],
-      "admin/previous": [
-        "./dist/admin/2026-04/index.d.ts"
-      ],
-      "sfapi/next": [
         "./dist/storefront/2026-10/index.d.ts"
       ],
-      "caapi/next": [
+      "caapi/current": [
         "./dist/customer-account/2026-10/index.d.ts"
       ],
-      "admin/next": [
+      "admin/current": [
         "./dist/admin/2026-10/index.d.ts"
+      ],
+      "sfapi/previous": [
+        "./dist/storefront/2026-07/index.d.ts"
+      ],
+      "caapi/previous": [
+        "./dist/customer-account/2026-07/index.d.ts"
+      ],
+      "admin/previous": [
+        "./dist/admin/2026-07/index.d.ts"
+      ],
+      "sfapi/next": [
+        "./dist/storefront/2027-01/index.d.ts"
+      ],
+      "caapi/next": [
+        "./dist/customer-account/2027-01/index.d.ts"
+      ],
+      "admin/next": [
+        "./dist/admin/2027-01/index.d.ts"
       ]
     }
   },
