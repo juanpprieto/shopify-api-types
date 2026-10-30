@@ -5,14 +5,17 @@ const DEFAULT_BASE_URL = 'https://opencode.ai/inference/go/openai/v1';
 // Chosen by a bake-off on the 2026.10.0 README (see CONTRIBUTING.md)
 const DEFAULT_MODEL = 'glm-5.3';
 
-// Reasoning tokens count toward the limit; a low cap can leave no room
-// for the visible answer
-const MAX_TOKENS = 32000;
+// Reasoning tokens count toward the limit. 32000 left glm-5.3 no room for
+// the answer. 128000 stays below the smallest output limit of the
+// candidate models (131072).
+const MAX_TOKENS = 128000;
 
-const TIMEOUT_MS = 10 * 60 * 1000;
+// Long reasoning can take many minutes; streaming keeps the connection open
+const TIMEOUT_MS = 30 * 60 * 1000;
 
-interface ChatCompletion {
-  choices?: Array<{ message?: { content?: string }; finish_reason?: string }>;
+interface ChatCompletionChunk {
+  usage?: Record<string, unknown>;
+  choices?: Array<{ delta?: { content?: string }; finish_reason?: string }>;
 }
 
 /**
@@ -42,6 +45,10 @@ export async function generateText(
     body: JSON.stringify({
       model,
       max_tokens: MAX_TOKENS,
+      // Without streaming, the server sends no headers until the model
+      // finishes, and fetch stops waiting for headers after 300 seconds
+      stream: true,
+      stream_options: { include_usage: true },
       messages: [
         {
           role: 'user',
@@ -58,13 +65,35 @@ export async function generateText(
     );
   }
 
-  const completion = (await response.json()) as ChatCompletion;
-  const choice = completion.choices?.[0];
-  const text = choice?.message?.content ?? '';
+  // Server-sent events: one "data: {json}" line per chunk, then [DONE]
+  let text = '';
+  let finishReason: string | undefined;
+  let usage: Record<string, unknown> | undefined;
+  let buffer = '';
+  const readLine = (line: string): void => {
+    const data = line.startsWith('data:') ? line.slice(5).trim() : '';
+    if (data === '' || data === '[DONE]') return;
+    const chunk = JSON.parse(data) as ChatCompletionChunk;
+    text += chunk.choices?.[0]?.delta?.content ?? '';
+    finishReason = chunk.choices?.[0]?.finish_reason ?? finishReason;
+    usage = chunk.usage ?? usage;
+  };
+  if (!response.body) {
+    throw new Error('OpenCode Go returned an empty response body');
+  }
+  for await (const part of response.body.pipeThrough(new TextDecoderStream())) {
+    buffer += part;
+    const lines = buffer.split('\n');
+    buffer = lines.pop() ?? '';
+    lines.forEach(readLine);
+  }
+  // The stream can end without a final newline
+  readLine(buffer);
 
-  if (text.trim() === '') {
+  if (text.trim() === '' || finishReason === 'length') {
     throw new Error(
-      `Model ${model} returned no text (finish_reason: ${choice?.finish_reason}). ` +
+      `Model ${model} returned no complete text (finish_reason: ${finishReason}, ` +
+        `usage: ${JSON.stringify(usage)}). ` +
         `If the token limit was hit, reasoning may have used the budget.`,
     );
   }

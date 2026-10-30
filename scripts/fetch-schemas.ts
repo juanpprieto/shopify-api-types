@@ -1,3 +1,4 @@
+import './lib/load-env.js';
 import fs from 'fs/promises';
 import path from 'path';
 import { match } from 'ts-pattern';

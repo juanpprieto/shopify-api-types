@@ -227,7 +227,7 @@ builds the package and tests the packed tarball in the e2e app.
 
 | Problem                                 | Action                                                                               |
 | --------------------------------------- | ------------------------------------------------------------------------------------ |
-| `fetch-schemas` reports a missing token | Add the token to `.env`. The scripts load it with `--env-file-if-exists`             |
+| `fetch-schemas` reports a missing token | Add the token to `.env`. Values in `.env` win over variables exported in the shell   |
 | `fetch-schemas` keeps an existing file  | Shopify served another version (fall-forward). This is expected for retired versions |
 | The build runs out of memory            | Use `npm run build:ci`, which sets a higher memory limit                             |
 | `npm run docs` fails the style gate     | Run it again, or try another model with `OPENCODE_GO_MODEL`                          |

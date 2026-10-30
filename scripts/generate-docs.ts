@@ -1,3 +1,4 @@
+import './lib/load-env.js';
 import fs from 'fs/promises';
 import { match, P } from 'ts-pattern';
 import { getCurrentVersionSet, getVersionMetadata } from './version-utils.js';
