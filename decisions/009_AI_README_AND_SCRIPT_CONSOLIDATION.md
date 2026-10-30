@@ -41,9 +41,9 @@ Consolidate simple generation scripts into unified interface.
 
 **Consolidation Scope:**
 
-- ✅ Consolidate: `generate-exports.ts` (266 LOC), `generate-comparisons.ts` (77
+- Consolidate: `generate-exports.ts` (266 LOC), `generate-comparisons.ts` (77
   LOC), `generate-indexes.ts` (234 LOC)
-- ❌ Keep separate: `generate-changelog.ts` (388 LOC - complex CLI),
+- Keep separate: `generate-changelog.ts` (388 LOC - complex CLI),
   `generate-docs.ts` (AI integration)
 
 **Target Structure:**

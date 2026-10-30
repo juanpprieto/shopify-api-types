@@ -68,14 +68,14 @@ publication date.
 
 ### Major Changes
 
-- 🚀 **First Major Release: Complete Shopify API Types with CalVer Versioning**
+- **First Major Release: Complete Shopify API Types with CalVer Versioning**
 
   This marks the first major release of `@juanpprieto/shopify-api-types`,
   providing comprehensive TypeScript definitions for all Shopify GraphQL APIs
   with proper CalVer versioning aligned with Shopify's quarterly release
   schedule.
 
-  ## ✨ What's New
+  ## What's New
 
   ### **Complete API Coverage**
   - **Admin API**: 1,758+ types for store management, webhooks, analytics
@@ -103,7 +103,7 @@ publication date.
   - **CI/CD**: Automated releases with GitHub Actions
   - **Performance**: Optimized build process with 35% script reduction
 
-  ## 📦 **Usage**
+  ## **Usage**
 
   ```bash
   npm install @juanpprieto/shopify-api-types

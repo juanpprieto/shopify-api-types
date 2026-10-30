@@ -467,14 +467,14 @@ jobs:
 
 ## Key Features
 
-- ✅ TypeScript types for Storefront, Customer Account, and Admin APIs
-- ✅ Support for last 4 API versions (quarterly releases)
-- ✅ JSON schema exports for runtime validation
-- ✅ Automatic type generation from GraphQL schemas
-- ✅ Multiple export paths for clean imports
-- ✅ CommonJS and ES module support
-- ✅ Automated CI/CD with GitHub Actions
-- ✅ Version management with Changesets
+- TypeScript types for Storefront, Customer Account, and Admin APIs
+- Support for last 4 API versions (quarterly releases)
+- JSON schema exports for runtime validation
+- Automatic type generation from GraphQL schemas
+- Multiple export paths for clean imports
+- CommonJS and ES module support
+- Automated CI/CD with GitHub Actions
+- Version management with Changesets
 
 ## Usage Examples
 
