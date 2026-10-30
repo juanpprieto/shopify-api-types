@@ -17,6 +17,13 @@ updates:
       npm:
         patterns:
           - '*'
+    ignore:
+      # Follows the lowest Node version in engines
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+      # typescript-eslint supports only <6.1.0
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
 
   # GitHub Actions
   - package-ecosystem: 'github-actions'
