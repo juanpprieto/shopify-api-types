@@ -46,12 +46,11 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
-      - name: Check version, changelog, branch and CI
+      - name: Check version, branch and CI
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           node -e 'require("node:assert/strict").equal(require("./package.json").version, process.env.RELEASE_VERSION, "Requested version must match package.json")'
-          grep -q "^## $RELEASE_VERSION\$" CHANGELOG.md || { echo "CHANGELOG.md has no '## $RELEASE_VERSION' section."; exit 1; }
           if [[ "$RELEASE_DRY_RUN" != "true" && "$GITHUB_REF" != "refs/heads/main" ]]; then
             echo "Publication is only allowed from main."
             exit 1
@@ -61,6 +60,9 @@ jobs:
           test "$passed" = true || { echo "CI must pass for this exact commit first."; exit 1; }
 
       - run: npm ci
+      # The section becomes the GitHub release text
+      - name: Check the CHANGELOG section against the writing contract
+        run: npm run check:prose -- --changelog "$RELEASE_VERSION"
       - name: Derive RELEASE_DATE from package version
         run:
           echo "RELEASE_DATE=$(npx tsx scripts/release-date-from-version.ts)" >>

@@ -1,12 +1,18 @@
 import './lib/load-env.js';
 import fs from 'fs/promises';
 import { match, P } from 'ts-pattern';
-import { getCurrentVersionSet, getVersionMetadata } from './version-utils.js';
+import { execSync } from 'child_process';
+import {
+  getCurrentVersionSet,
+  getVersionMetadata,
+  releaseDateFromPackageVersion,
+} from './version-utils.js';
 import { generateText } from './lib/opencode-go.js';
 import {
-  createFileOperationHandler,
-  handleOperationResult,
-} from './lib/patterns.js';
+  WRITING_CONTRACT,
+  findProseViolations,
+} from './lib/writing-contract.js';
+import { upsertChangelogSection } from './lib/changelog.js';
 
 // =============================================================================
 // Type Definitions (previously in readme-types.ts)
@@ -182,7 +188,6 @@ async function countApiTypes(
 ): Promise<number> {
   try {
     const countTypesPath = './scripts/count-types.ts';
-    const { execSync } = await import('child_process');
 
     // Run count-types script with specific API filter
     const output = execSync(`npx tsx ${countTypesPath} --api ${api}`, {
@@ -419,9 +424,8 @@ const README_HEADER = `# @juanpprieto/shopify-api-types
 `;
 
 /**
- * README generation prompt. The style contract enforces the anti-slop
- * rules from the human-writer audit protocol; validateReadmeStyle()
- * gate-checks the output against the same rules.
+ * README prompt. The shared writing contract carries the clarity and STE
+ * rules; validateReadmeStyle() checks the output.
  */
 const README_PROMPT = `Write the complete README.md for this npm package from the JSON input data below.
 Output ONLY the raw markdown, no preamble and no code fence around the document.
@@ -439,39 +443,39 @@ Content requirements:
 Correctness requirements:
 - Every import path MUST match a key of the exports map in the input data exactly.
   Export keys use slashes: "@juanpprieto/shopify-api-types/sfapi/2026-01", "/sfapi/current", "/schemas/admin/2026-01", "/comparisons/current".
-- Use only version numbers, counts, and change details present in the input data. Invent nothing.
 
 Readability requirements:
 - Wrap every GraphQL identifier in backticks: type names, field names, argument names, and type expressions like \`[UserError!]!\`.
-- Breaking-change bullets follow the pattern: \`Identifier\` - what changed. When there are more than 6, group them under short bold labels by kind (removed types, field type changes, input changes).
+- Breaking-change bullets follow the pattern: \`Identifier\` - what changed. When there are more than 6, group them under short subheadings by kind (removed types, field type changes, input changes).
 - For additions, do NOT list every name. State the total count, name the feature area, and give at most 8 representative type names in backticks.
-- Short paragraphs. No sentence over 25 words in prose sections.
 
-Simplified Technical English (ASD-STE100):
-- Active voice. Name the actor: "The package exports", not "is exported by".
-- Simple tenses only: simple present, simple past, simple future, imperative. No perfect tenses.
-- Imperative for instructions: "Install the package", not "You should install".
-- One instruction per sentence. Instructions have at most 20 words.
-- Standard verbs: check, make sure, start, stop, use, show, find, change, remove, need.
-  Never: verify, ensure, initiate, utilize, display, locate, modify, require.
-
-Style contract (strict):
-- Zero emojis anywhere, including headings.
-- Zero em dashes. Use commas, parentheses, or periods.
-- No marketing adjectives: comprehensive, robust, seamless, powerful, cutting-edge, innovative, extensive, rich.
-- No filler phrases: "it is important to note", "a testament to", "in today's", "at the forefront", "serves as".
-- No words: delve, leverage, utilize, facilitate, streamline, holistic, ecosystem, landscape, myriad, moreover, furthermore.
-- No meta-commentary ("let's explore", "in this section") and no closing summary section.
-- Plain declarative sentences. Vary sentence length. Prefer tables and code blocks over prose.
-- Headings are plain text, sentence case, no decorations.`;
+${WRITING_CONTRACT}`;
 
 /**
- * Hard style gate for generated READMEs (anti-slop + verbosity rules).
- * Throws when the output violates the style contract, so a bad
- * generation fails loudly instead of shipping.
+ * CHANGELOG prompt. The section is also the GitHub release text, so it
+ * follows the same contract as the README.
+ */
+const CHANGELOG_PROMPT = `Write the CHANGELOG.md section for the package version in the JSON input data below.
+Output ONLY the raw markdown body. Do not write the "## <version>" heading; the script adds it.
+
+Content requirements, in this order:
+- One short paragraph: the new current API version and the full version set (current, previous, older supported, release candidate, unstable).
+- "### Breaking changes" from the previous to the current version, per API. List every breaking change as: \`Identifier\` - what changed. Write "None" for an API without breaking changes.
+- "### Additions": per API, the count of added types and at most 5 representative names in backticks.
+- "### Release candidate": the breaking changes that the release candidate comparison shows, in at most 6 bullets.
+- "### Type counts": one line per API.
+- "### Package changes": exactly the line "[TK: package changes in this release, for example Node.js support or dependencies]". The input data has no package changes; a person fills this in.
+
+Wrap every GraphQL identifier in backticks.
+
+${WRITING_CONTRACT}`;
+
+/**
+ * README gate: the shared prose checks plus the README-specific checks.
+ * Throws so that a bad generation fails before it is written.
  */
 function validateReadmeStyle(content: string): void {
-  const violations: string[] = [];
+  const violations = findProseViolations(content);
 
   // An empty or skeletal document must never pass the gate
   if (content.trim().length < 1500) {
@@ -487,58 +491,6 @@ function validateReadmeStyle(content: string): void {
     );
   }
 
-  const emojiPattern = /\p{Extended_Pictographic}/u;
-  if (emojiPattern.test(content)) {
-    violations.push('contains emojis');
-  }
-
-  const emDashes = (content.match(/—/g) ?? []).length;
-  if (emDashes > 0) {
-    violations.push(`contains ${emDashes} em dash(es)`);
-  }
-
-  const slopWords =
-    /\b(delve|tapestry|multifaceted|leverage|utilize|facilitate|streamline|holistic|myriad|moreover|furthermore|seamless|cutting-edge|comprehensive)\b/i;
-  const slopMatch = content.match(slopWords);
-  if (slopMatch) {
-    violations.push(`contains slop vocabulary ("${slopMatch[0]}")`);
-  }
-
-  // STE: no prose sentence over 25 words (code, tables, and headings excluded)
-  // Paragraphs join their wrapped lines; each list item counts on its own
-  const units = content
-    .replace(/```[\s\S]*?```/g, '')
-    .split(/\n\s*\n/)
-    .flatMap((block) => {
-      const lines = block
-        .split('\n')
-        .filter((line) => !/^\s*(\||#|!\[|\[!\[)/.test(line));
-      return lines.some((line) => /^\s*([-*+]|\d+\.)\s/.test(line))
-        ? lines
-        : [lines.join(' ')];
-    });
-  const longSentence = units
-    .flatMap((unit) => unit.split(/(?<=[.!?])\s+/))
-    .find((sentence) => sentence.split(/\s+/).filter(Boolean).length > 25);
-  if (longSentence) {
-    violations.push(
-      `has a sentence over 25 words ("${longSentence.slice(0, 60)}...")`,
-    );
-  }
-
-  const steVerbs = /\b(verify|ensure|initiate|utilize|locate)\b/i;
-  const steMatch = content.match(steVerbs);
-  if (steMatch) {
-    violations.push(`uses a non-STE verb ("${steMatch[0]}")`);
-  }
-
-  const slopPhrases =
-    /it is important to note|a testament to|in today.s|at the forefront|serves as a|let.s (explore|dive)/i;
-  const phraseMatch = content.match(slopPhrases);
-  if (phraseMatch) {
-    violations.push(`contains slop phrase ("${phraseMatch[0]}")`);
-  }
-
   if (violations.length > 0) {
     throw new Error(
       `Generated README failed the style gate: ${violations.join('; ')}. ` +
@@ -548,66 +500,107 @@ function validateReadmeStyle(content: string): void {
 }
 
 /**
- * Generate README using AI or fallback
+ * CHANGELOG gate: the shared prose checks, the required sections, and the
+ * open package-changes marker for the reviewer.
+ */
+function validateChangelogDraft(body: string): void {
+  const violations = findProseViolations(body);
+  for (const heading of [
+    '### Breaking changes',
+    '### Release candidate',
+    '### Package changes',
+  ]) {
+    if (!body.includes(heading)) violations.push(`missing "${heading}"`);
+  }
+  if (/^##\s/m.test(body)) {
+    violations.push('contains a "## " heading; the script adds it');
+  }
+  if (violations.length > 0) {
+    throw new Error(
+      `Generated CHANGELOG section failed the style gate: ${violations.join('; ')}.`,
+    );
+  }
+}
+
+/**
+ * Generate README.md and the CHANGELOG.md section for the package version.
+ * Both texts must pass their gates before either file changes.
  */
 async function generateDocs(): Promise<void> {
-  console.log('Generating README documentation...\n');
-
-  const readmePath = './README.md';
-  const fileHandler = createFileOperationHandler();
-
   try {
-    // Step 1: Gather all required data
-    console.log('Gathering data for README generation...');
+    // Use the version set of the package version, as CI and the pre-push
+    // hook do. With the clock, the texts can label one diff with another
+    // quarter. Child processes (count-types) inherit the value.
+    const packageVersion = (
+      JSON.parse(await fs.readFile('./package.json', 'utf-8')) as {
+        version: string;
+      }
+    ).version;
+    process.env['RELEASE_DATE'] ||=
+      releaseDateFromPackageVersion(packageVersion) ?? '';
+
+    console.log('Gathering data for the README and the CHANGELOG...');
     const inputData = await prepareInputData();
+    const { version } = inputData.packageMetadata;
 
-    console.log(
-      `   Package: ${inputData.packageMetadata.name} v${inputData.packageMetadata.version}`,
-    );
-    console.log(`   Current version: ${inputData.versionSet.current}`);
-    console.log(
-      `   APIs documented: ${Object.keys(inputData.apiStats).length}`,
-    );
-    console.log(
-      `   Export paths: ${Object.keys(inputData.exports).length} categories\n`,
-    );
+    // The comparisons come from dist; a build for another set is stale
+    const manifest = JSON.parse(
+      await fs.readFile('./dist/comparisons/manifest.json', 'utf-8'),
+    ) as { versionSet: { current: string } };
+    if (manifest.versionSet.current !== inputData.versionSet.current) {
+      throw new Error(
+        `dist/comparisons is for ${manifest.versionSet.current}, but this run needs ` +
+          `${inputData.versionSet.current}. ` +
+          `Run npm run build first.`,
+      );
+    }
 
-    // Step 2: Generate README content
-    console.log('Generating README content...');
+    // Never rewrite the section of a released version
+    const released =
+      execSync(`git tag --list v${version}`, { encoding: 'utf-8' }).trim() !==
+      '';
 
-    const readmeContent =
-      README_HEADER +
-      (await generateText(README_PROMPT, inputData)).trim() +
-      '\n';
-    console.log('   README generated successfully with AI\n');
+    console.log(`   Package: ${inputData.packageMetadata.name} v${version}`);
+    console.log(`   Current version: ${inputData.versionSet.current}\n`);
 
-    // Gate-check the output against the style contract before writing
-    validateReadmeStyle(readmeContent);
-    console.log('   README passed the style gate (no emojis, no slop)\n');
+    console.log('Generating both texts (this can take 15 minutes)...');
+    const changelogInput = {
+      packageVersion: version,
+      versionSet: inputData.versionSet,
+      typeCounts: Object.fromEntries(
+        Object.entries(inputData.apiStats).map(([api, stats]) => [
+          api,
+          stats.typeCount,
+        ]),
+      ),
+      comparisons: inputData.comparisons,
+    };
+    const [readmeBody, changelogBody] = await Promise.all([
+      generateText(README_PROMPT, inputData),
+      generateText(CHANGELOG_PROMPT, changelogInput),
+    ]);
 
-    // Step 3: Write README file
-    console.log('Writing README.md...');
+    const readme = README_HEADER + readmeBody.trim() + '\n';
+    validateReadmeStyle(readme);
+    validateChangelogDraft(changelogBody);
+    console.log('   Both texts passed the style gates\n');
 
-    const writeResult = await fileHandler(
-      {
-        operation: 'write',
-        target: readmePath,
-      },
-      async () => {
-        await fs.writeFile(readmePath, readmeContent, 'utf-8');
-        return { path: readmePath };
-      },
-    );
-
-    handleOperationResult(writeResult, {
-      onSuccess: (data) => {
-        console.log(`   README written to ${data.path}\n`);
-        console.log('Documentation generation complete!');
-      },
-      onError: (error) => {
-        throw new Error(`Failed to write README: ${error}`);
-      },
-    });
+    await fs.writeFile('./README.md', readme, 'utf-8');
+    console.log('Wrote README.md.');
+    if (released) {
+      console.log(
+        `Kept the CHANGELOG section: tag v${version} exists, so ${version} is released.`,
+      );
+    } else {
+      const changelog = await fs.readFile('./CHANGELOG.md', 'utf-8');
+      await fs.writeFile(
+        './CHANGELOG.md',
+        upsertChangelogSection(changelog, version, changelogBody),
+        'utf-8',
+      );
+      console.log(`Wrote the "## ${version}" CHANGELOG section.`);
+      console.log('Replace the [TK] marker in "### Package changes" by hand.');
+    }
   } catch (error) {
     console.error('Documentation generation failed:', error);
     process.exit(1);
@@ -619,4 +612,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   generateDocs();
 }
 
-export { generateDocs, validateReadmeStyle };
+export { generateDocs, validateReadmeStyle, validateChangelogDraft };

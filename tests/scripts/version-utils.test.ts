@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
+  releaseDateFromPackageVersion,
   getSupportedVersions,
   getLatestVersion,
   getCurrentVersionSet,
@@ -129,5 +130,17 @@ describe('version-utils', () => {
 
       expect(all).toEqual(supported);
     });
+  });
+});
+
+describe('releaseDateFromPackageVersion', () => {
+  it('maps a CalVer version to the middle of its quarter month', () => {
+    expect(releaseDateFromPackageVersion('2026.7.0')).toBe('2026-07-15');
+    expect(releaseDateFromPackageVersion('2026.10.0')).toBe('2026-10-15');
+  });
+
+  it('returns null for a version that is not a quarter release', () => {
+    expect(releaseDateFromPackageVersion('2026.8.0')).toBeNull();
+    expect(releaseDateFromPackageVersion('1.2.3')).toBeNull();
   });
 });

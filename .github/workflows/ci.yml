@@ -25,6 +25,10 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run deadcode
+      - name: Docs follow the writing contract
+        run:
+          npm run check:prose -- README.md CONTRIBUTING.md scripts/ci/README.md
+          tests/e2e/README.md demo/README.md
       - name: No emojis in tracked files
         run: |
           # shellcheck disable=SC2016 # Perl code, not shell

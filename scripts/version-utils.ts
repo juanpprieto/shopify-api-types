@@ -320,3 +320,14 @@ export function getVersionToExportPathMapping(): VersionToExportPath {
 
   return validation.data;
 }
+
+/**
+ * The RELEASE_DATE (YYYY-MM-15) that matches a CalVer package version, so
+ * the version set derives from the committed version and not the clock.
+ * Returns null when the version is not CalVer (2026.7.0 -> 2026-07-15).
+ */
+export function releaseDateFromPackageVersion(version: string): string | null {
+  const match = version.match(/^(\d{4})\.(1|4|7|10)\.\d+$/);
+  if (!match || match[1] === undefined || match[2] === undefined) return null;
+  return `${match[1]}-${match[2].padStart(2, '0')}-15`;
+}

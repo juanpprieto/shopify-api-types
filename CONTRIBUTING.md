@@ -40,28 +40,33 @@ never reaches the published package.
 
 ## npm scripts
 
-| Script                    | What it does                                                |
-| ------------------------- | ----------------------------------------------------------- |
-| `validate`                | Type check, lint, and unit tests                            |
-| `check`                   | Type check and lint                                         |
-| `build`                   | Clean, generate exports, compile, then run `postbuild`      |
-| `build:ci`                | Same as `build`, with a memory limit for CI runners         |
-| `fetch-schemas`           | Download the schemas for the version set from Shopify       |
-| `generate-types`          | Generate types from the schemas, then the index files       |
-| `generate:exports`        | Write the `exports` map in `package.json`                   |
-| `generate:comparisons`    | Write `dist/comparisons` for every adjacent version pair    |
-| `docs`                    | Generate `README.md` with OpenCode Go                       |
-| `ci:validate-build`       | Check the files in `dist/`                                  |
-| `ci:validate-types`       | Compile a test file that imports the latest generated types |
-| `ci:validate-schemas`     | Check the schema files in `src/graphql-schemas/`            |
-| `ci:validate-system`      | Check the version model and the comparison files            |
-| `count-types`             | Count types, queries, and mutations per API and version     |
-| `deadcode`, `knip:strict` | Find unused files, exports, and dependencies                |
-| `test:coverage`           | Run the unit tests with a coverage report                   |
+| Script                    | What it does                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------- |
+| `validate`                | Type check, lint, and unit tests                                                                  |
+| `check`                   | Type check and lint                                                                               |
+| `build`                   | Clean, generate exports, compile, then run `postbuild`                                            |
+| `build:ci`                | Same as `build`, with a memory limit for CI runners                                               |
+| `fetch-schemas`           | Download the schemas for the version set from Shopify                                             |
+| `generate-types`          | Generate types from the schemas, then the index files                                             |
+| `generate:exports`        | Write the `exports` map in `package.json`                                                         |
+| `generate:comparisons`    | Write `dist/comparisons` for every adjacent version pair                                          |
+| `docs`                    | Generate `README.md` and draft the `CHANGELOG.md` section                                         |
+| `check:prose`             | Check docs, or one `CHANGELOG.md` section (`--changelog <version>`), against the writing contract |
+| `ci:validate-build`       | Check the files in `dist/`                                                                        |
+| `ci:validate-types`       | Compile a test file that imports the latest generated types                                       |
+| `ci:validate-schemas`     | Check the schema files in `src/graphql-schemas/`                                                  |
+| `ci:validate-system`      | Check the version model and the comparison files                                                  |
+| `count-types`             | Count types, queries, and mutations per API and version                                           |
+| `deadcode`, `knip:strict` | Find unused files, exports, and dependencies                                                      |
+| `test:coverage`           | Run the unit tests with a coverage report                                                         |
 
-`postbuild` runs these steps in order: fix the `.js` import extensions, remove
-the `dist/` dirs outside the version set, copy the schemas, generate the
-comparisons, and check the version model.
+`postbuild` runs these steps in order:
+
+1. Fix the `.js` import extensions.
+2. Remove the `dist/` dirs outside the version set.
+3. Copy the schemas.
+4. Generate the comparisons.
+5. Check the version model.
 
 ## Version support principle
 
@@ -134,13 +139,12 @@ Do these steps on a branch named `release/<version>`, for example
    npm run validate
    ```
 
-5. Write the `## 2026.10.0` section at the top of `CHANGELOG.md` by hand. Use
-   `dist/comparisons/` for the breaking changes. The Release workflow copies
-   this section into the GitHub release.
+5. Commit. Push the branch. Then start the `Docs` workflow on that branch.
 
-6. Commit. Push the branch. Then start the `Docs` workflow on that branch. It
-   opens a PR with the new README. Read the text, then merge it into the release
-   branch.
+6. Read the PR that the `Docs` workflow opens. It has the new README and a draft
+   of the `## 2026.10.0` section in `CHANGELOG.md`. Replace the `[TK]` marker
+   under "Package changes" with the package changes of this release. Then merge
+   the PR into the release branch.
 
 7. Open a PR from the release branch to `main`. Merge it when CI is green.
 
@@ -160,8 +164,11 @@ Do these steps on a branch named `release/<version>`, for example
 
 The Release workflow does these steps in this order:
 
-- It stops if the version does not match `package.json`, or if `CHANGELOG.md`
-  has no section for the version, or if CI did not pass for the commit.
+- It stops if the version does not match `package.json`, or if CI did not pass
+  for the commit.
+- It stops if the `CHANGELOG.md` section is missing, has an open `[TK]` marker,
+  or breaks the writing contract
+  (`npm run check:prose -- --changelog <version>`).
 - It builds once, packs one tarball, and tests that tarball in
   `tests/e2e/test-app`.
 - It publishes that exact tarball with `--provenance` through npm trusted
@@ -194,11 +201,16 @@ the 2026-09 catch-up releases (see `decisions/011`).
 5. **A back-dated release sets `RELEASE_DATE` on every local command.** Use a
    mid-month day, for example `RELEASE_DATE=2026-01-15`. A missing value builds
    the set for today and gives wrong artifacts. CI derives the value by itself.
-6. **The README generator runs last and must pass the style gate.**
-   `npm run docs` calls OpenCode Go (`OPENCODE_GO_API_KEY`). The default model
-   is `glm-5.3`; `OPENCODE_GO_MODEL` changes it. The script stops when the text
-   has emojis, em dashes, or listed filler words, or when it does not end with
-   the License section.
+6. **Every release text follows the writing contract.** The README, the
+   CHANGELOG section, and the GitHub release (a copy of that section) use the
+   rules in `scripts/lib/writing-contract.ts`: the clarity foundations (write
+   for the reader's task, invent nothing, mark a missing fact with `[TK]`) and
+   Simplified Technical English. `npm run docs` gives the rules to OpenCode Go
+   (`OPENCODE_GO_API_KEY`, default model `glm-5.3`, `OPENCODE_GO_MODEL` changes
+   it). It writes neither file unless both texts pass the checks. It stops when
+   `dist/` belongs to another version set, and it never rewrites the section of
+   a version that has a git tag. A person reviews the rules that a script cannot
+   check.
 7. **No patch releases.** The package releases once per quarter, in step with
    Shopify. A fix waits for the next quarterly release.
 8. **Node support follows the Node release schedule.** CI tests only Node

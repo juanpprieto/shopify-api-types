@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { validateReadmeStyle } from '../../scripts/generate-docs.js';
+import {
+  validateReadmeStyle,
+  validateChangelogDraft,
+} from '../../scripts/generate-docs.js';
 
 // A body long enough to pass the length check, in plain STE sentences
 const body = Array.from(
@@ -53,5 +56,38 @@ describe('validateReadmeStyle', () => {
     expect(() =>
       validateReadmeStyle(valid.replace('## License\n\nMIT', '\u{1F680}')),
     ).toThrow(/emojis.*|License/);
+  });
+});
+
+describe('validateChangelogDraft', () => {
+  const draft = `Shopify API \`2026-10\` is the new current version.
+
+### Breaking changes
+
+- \`PriceRule\` - Shopify removes the type.
+
+### Release candidate
+
+- None.
+
+### Package changes
+
+[TK: package changes]
+`;
+
+  it('passes a draft with the required sections', () => {
+    expect(() => validateChangelogDraft(draft)).not.toThrow();
+  });
+
+  it('fails a draft without the package changes section', () => {
+    expect(() =>
+      validateChangelogDraft(draft.replace('### Package changes', '')),
+    ).toThrow(/Package changes/);
+  });
+
+  it('fails a draft with its own version heading', () => {
+    expect(() => validateChangelogDraft(`## 2026.10.0\n\n${draft}`)).toThrow(
+      /the script adds it/,
+    );
   });
 });
