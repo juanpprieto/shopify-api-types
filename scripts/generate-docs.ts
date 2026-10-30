@@ -7,12 +7,13 @@ import {
   getVersionMetadata,
   releaseDateFromPackageVersion,
 } from './version-utils.js';
-import { generateText } from './lib/opencode-go.js';
+import { DEFAULT_MODEL, generateText } from './lib/opencode-go.js';
 import {
   WRITING_CONTRACT,
   findProseViolations,
 } from './lib/writing-contract.js';
 import { upsertChangelogSection } from './lib/changelog.js';
+import { describeChange } from './lib/change-context.js';
 
 // =============================================================================
 // Type Definitions (previously in readme-types.ts)
@@ -44,7 +45,11 @@ type ReadmeInput = {
   packageMetadata: {
     name: string;
     version: string;
-    generatedAt: string;
+    // Facts the README notes may state; read from package.json
+    typesOnly: boolean;
+    runtimeDependencies: number;
+    nodeEngine: string;
+    releaseNotesUrl: string;
   };
   versionSet: {
     current: string;
@@ -348,7 +353,12 @@ async function prepareInputData(): Promise<ReadmeInput> {
     packageMetadata: {
       name: packageJson.name,
       version: packageJson.version,
-      generatedAt: new Date().toISOString(),
+      // dist ships .d.ts and JSON only (see ci:validate-build)
+      typesOnly: true,
+      runtimeDependencies: Object.keys(packageJson.dependencies ?? {}).length,
+      nodeEngine: packageJson.engines?.node ?? '',
+      // The Release workflow creates this release from the CHANGELOG section
+      releaseNotesUrl: `https://github.com/juanpprieto/shopify-api-types/releases/tag/v${packageJson.version}`,
     },
     versionSet,
     versionMetadata,
@@ -368,15 +378,17 @@ async function prepareInputData(): Promise<ReadmeInput> {
  * counts, every breaking-change description, and a capped sample of
  * added type names. Raw diffs run to hundreds of KB.
  */
-function condenseComparison(comparison: VersionComparison): VersionComparison {
-  const condensed: VersionComparison = {
-    fromVersion: comparison.fromVersion,
-    toVersion: comparison.toVersion,
-  };
+export function condenseComparison(
+  comparison: VersionComparison,
+): VersionComparison {
+  const { fromVersion, toVersion } = comparison;
+  const condensed: VersionComparison = { fromVersion, toVersion };
 
   for (const api of ['storefront', 'admin', 'customer-account'] as const) {
     const data = comparison[api] as
       | {
+          fromVersion?: string;
+          toVersion?: string;
           summary?: unknown;
           changes?: Record<
             string,
@@ -390,22 +402,32 @@ function condenseComparison(comparison: VersionComparison): VersionComparison {
         }
       | undefined;
     if (!data) continue;
+    // The comparison files store the versions per API, not at the top
+    const from = data.fromVersion ?? fromVersion;
+    const to = data.toVersion ?? toVersion;
 
-    const allChanges = Object.values(data.changes ?? {}).flat();
-    const breakingChanges = allChanges
-      .filter((c) => c.breaking)
-      .map((c) => c.description ?? c.name ?? '')
-      .filter((d) => d !== '');
-    const addedNames = allChanges
-      .filter((c) => c.changeType === 'added' && !c.breaking)
-      .map((c) => c.name ?? '')
-      .filter((n) => n !== '')
-      .slice(0, 20);
-
+    // Every breaking change and a sample of additions, each with Shopify's
+    // description and migration note, so the texts can explain the impact
+    // enums repeats entries of types, so skip it
+    const allChanges = Object.entries(data.changes ?? {})
+      .filter(([group]) => group !== 'enums')
+      .flatMap(([, changes]) => changes);
+    const additions = allChanges.filter(
+      (c) => c.changeType === 'added' && !c.breaking,
+    );
     condensed[api] = {
       summary: data.summary,
-      breakingChanges,
-      notableAdditions: addedNames,
+      breakingChanges: allChanges
+        .filter((c) => c.breaking)
+        .map((c) => describeChange(api, from, to, c)),
+      additionCount: additions.length,
+      // Full list for the script; the model gets only the sample below
+      additionLabels: additions.map(
+        (c) => (c as { path?: string }).path ?? c.name ?? '',
+      ),
+      notableAdditions: additions
+        .slice(0, 40)
+        .map((c) => describeChange(api, from, to, c)),
     };
   }
 
@@ -436,27 +458,68 @@ function buildReadme(version: string, body: string): string {
  * README prompt. The shared writing contract carries the clarity and STE
  * rules; validateReadmeStyle() checks the output.
  */
+/**
+ * How to write about schema changes. Shared by the README and the
+ * CHANGELOG, so both explain the same changes the same way.
+ */
+const CHANGE_RULES = `How to write about changes:
+- The reader is a developer who maintains a Shopify app or storefront. They want to know what happened, whether it affects their code, and what to do. They do not want a list of schema items.
+- Every change item in the input has Shopify's own text: shopifyDescription (what the item is) and, for a deprecated item, deprecationReason (Shopify's migration note). These are your only source for what an item does and what replaces it. Never guess a replacement.
+- Group related changes by feature area, for example discounts, markets, metaobjects, checkout, or payments. Give each group a heading in plain words that names the area and what happens, like "Markets: currency settings move to \`marketUpdate\`".
+- Under each group heading, write 1 to 3 sentences: what Shopify changed, which apps it affects, and what to do. Take "what to do" from deprecationReason, or from shopifyDescription when it names a replacement. When Shopify names no replacement, say so in a few words. For a new feature, say what an app can do now that it could not do before.
+- State the action once. Do not write "need to change" and then the same action again.
+- After those sentences, put the exact items of the group in a collapsed block. Its summary says how many items it has, like "23 removed types". One item per line, in backticks.
+- Say each fact once. Do not repeat a group's sentences in an alert, an introduction, or another section.
+- When an API has no changes, say so in one short line. Do not make a section for it.
+- Put every identifier, type, field, argument, enum value, path, and command in backticks.
+- Leave one blank line between paragraphs, lists, tables, alerts, and collapsed blocks.
+
+Collapsed blocks use exactly this form. Leave a blank line after </summary> and before </details>, or the list inside does not render:
+
+<details>
+<summary>23 removed types</summary>
+
+- \`PriceRule\`
+- \`PriceRuleValue\`
+
+</details>`;
+
 const README_PROMPT = `Write the complete README.md for this npm package from the JSON input data below.
 Output ONLY the raw markdown, no preamble and no code fence around the document.
+Do not write a title or badges; the script adds them.
 
-Content requirements:
-- Start with a one-paragraph description. Do not write a title or badges; the script adds them.
-- The document ends with a "## License" section containing the single line "MIT".
-- Supported versions table with semantic aliases (current/previous/next/unstable).
-- Install and usage examples for versioned type imports, alias imports, schema imports, and comparison imports.
-- API overview table with type counts.
-- A section on what changed between previous and current version (use the comparison data, list every breaking change).
-- A short preview section for the release candidate comparison.
-- Package exports reference tree.
+Readers see this file on GitHub and on npmjs.com. Write it for a TypeScript developer who opens it for the first time and wants to start in one minute.
+
+Use exactly this layout, in this order:
+
+1. One opening sentence, at most 25 words: what the package gives a TypeScript developer and why it helps. No version list, no dates, no build data.
+2. "## Install": a \`bash\` code block with \`npm install -D @juanpprieto/shopify-api-types\`. Then a \`> [!NOTE]\` alert with the facts from packageMetadata: the package has types and JSON only (typesOnly), the runtime dependency count, and the Node.js range (nodeEngine).
+3. "## Quick start": one \`ts\` code block with 3 short imports: an alias import, a versioned import, and a schema or comparison import. Then a table with the columns "Import path" and "Use it when", one row per import style.
+4. "## Versions": a table with the columns "Alias", "Version", "Status", one row for every version in the version set. Then a \`> [!TIP]\` alert: use \`current\` for production code. Then a \`> [!WARNING]\` alert: \`next\` and \`unstable\` change before Shopify releases them.
+5. "## APIs": a table with the columns "API", "Import prefix", "Types", one row per API, with the type counts.
+6. "## What changed in <current version>": a \`> [!IMPORTANT]\` alert of 1 sentence with the number of breaking changes and the number of feature areas they touch. Then a table with the columns "Area", "What changes", "What to do": one row per feature area with breaking changes, at most 12 words per cell. Then one sentence that names the new feature areas. Then the line "Every changed item, with details: [release notes for <package version>](<releaseNotesUrl>)". The README gives no more detail than this; the release notes have it.
+7. "## Coming in <next version>": a \`> [!WARNING]\` alert of 1 sentence: these changes are not stable yet. Then a table with the columns "Area", "What changes", one row per feature area with breaking changes in the release candidate comparison.
+8. "## Schemas and comparisons": one \`ts\` code block that imports a schema and a comparison file, and 2 sentences on what each one contains.
+9. "## All exports": one \`<details>\` block "Show all export paths", with a \`text\` code block that lists every export key, grouped by API.
+10. "## License" with the single line "MIT". Nothing after it.
+
+GitHub Markdown rules:
+- Alerts use exactly this form, with no text on the first line:
+  > [!NOTE]
+  > Text of the note.
+- Every code block names its language: \`bash\`, \`ts\`, or \`text\`.
+- Use a table for 3 or more items that have the same fields. Use a list for anything else.
+- Headings go no deeper than "###". Do not use bold text as a heading.
 
 Correctness requirements:
 - Every import path MUST match a key of the exports map in the input data exactly.
   Export keys use slashes: "@juanpprieto/shopify-api-types/sfapi/2026-01", "/sfapi/current", "/schemas/admin/2026-01", "/comparisons/current".
-
-Readability requirements:
 - Wrap every GraphQL identifier in backticks: type names, field names, argument names, and type expressions like \`[UserError!]!\`.
-- Breaking-change bullets follow the pattern: \`Identifier\` - what changed. When there are more than 6, group them under short subheadings by kind (removed types, field type changes, input changes).
-- For additions, do NOT list every name. State the total count, name the feature area, and give at most 8 representative type names in backticks.
+
+How to describe a change in a table cell:
+- Use Shopify's own text in the input: shopifyDescription (what the item is) and deprecationReason (the migration note). Never guess a replacement.
+- Name the feature area in plain words, like "Discounts" or "Markets", not the API name alone.
+- "What to do" is the action from deprecationReason or shopifyDescription. When Shopify names no replacement, write "Remove the references".
 
 ${WRITING_CONTRACT}`;
 
@@ -465,19 +528,57 @@ ${WRITING_CONTRACT}`;
  * follows the same contract as the README.
  */
 const CHANGELOG_PROMPT = `Write the CHANGELOG.md section for the package version in the JSON input data below.
+This section is also the text of the GitHub release. A developer reads it to decide whether to upgrade and what to change.
 Output ONLY the raw markdown body. Do not write the "## <version>" heading; the script adds it.
 
-Content requirements, in this order:
-- One short paragraph: the new current API version and the full version set (current, previous, older supported, release candidate, unstable).
-- "### Breaking changes" from the previous to the current version, per API. List every breaking change as: \`Identifier\` - what changed. Write "None" for an API without breaking changes.
-- "### Additions": per API, the count of added types and at most 5 representative names in backticks.
-- "### Release candidate": the breaking changes that the release candidate comparison shows, in at most 6 bullets.
-- "### Type counts": one line per API.
-- "### Package changes": exactly the line "[TK: package changes in this release, for example Node.js support or dependencies]". The input data has no package changes; a person fills this in.
+Use exactly this layout, in this order:
+1. One or 2 sentences: which Shopify API version is now current, and what that means for an app that upgrades. Do not list the whole version set here.
+2. A \`> [!IMPORTANT]\` alert: how many breaking changes per API, in one sentence.
+3. "### Breaking changes": the groups of breaking changes from the previous to the current version. Each group heading is "####".
+4. "### New features": at most 5 groups for the additions that give an app the most new capability, each with a "####" heading. Then the line "<!-- other-additions -->" on its own. The script replaces it with a collapsed list of every other addition, so do not list the other additions yourself. Use additionCount for the totals.
+5. "### Release candidate": the groups of the release candidate comparison, with "####" headings, shorter than section 3.
+6. "### Versions in this release": a table with the columns "Alias", "Version", one row per version in the version set, and a table with the columns "API", "Types" for the type counts.
+7. "### Package changes": exactly the line "[TK: package changes in this release, for example Node.js support or dependencies]". The input data has no package changes; a person fills this in.
 
-Wrap every GraphQL identifier in backticks.
+${CHANGE_RULES}
 
 ${WRITING_CONTRACT}`;
+
+/**
+ * Replace the other-additions marker with a collapsed list of every added
+ * item that the text does not name yet. The list comes from the comparison
+ * data, so it is complete; the model only sees a sample of the additions.
+ */
+export function fillOtherAdditions(
+  body: string,
+  comparison: Record<string, unknown>,
+): string {
+  const apis: Array<[string, string]> = [
+    ['storefront', 'Storefront API'],
+    ['admin', 'Admin API'],
+    ['customer-account', 'Customer Account API'],
+  ];
+  const parts: string[] = [];
+  let total = 0;
+  for (const [key, label] of apis) {
+    const labels =
+      (comparison[key] as { additionLabels?: string[] } | undefined)
+        ?.additionLabels ?? [];
+    const rest = [...new Set(labels)].filter(
+      (name) => name !== '' && !body.includes(`\`${name}\``),
+    );
+    if (rest.length === 0) continue;
+    total += rest.length;
+    parts.push(
+      `${label} (${rest.length}):\n\n${rest.map((n) => `- \`${n}\``).join('\n')}`,
+    );
+  }
+  const block =
+    total === 0
+      ? ''
+      : `<details>\n<summary>${total} other additions</summary>\n\n${parts.join('\n\n')}\n\n</details>`;
+  return body.replace('<!-- other-additions -->', block);
+}
 
 /**
  * README gate: the shared prose checks plus the README-specific checks.
@@ -491,6 +592,32 @@ function validateReadmeStyle(content: string): void {
     violations.push(
       `content too short (${content.trim().length} chars) - generation likely failed`,
     );
+  }
+
+  // Layout: the elements the prompt requires for GitHub readers
+  const required: Array<[RegExp, string]> = [
+    [/^## Install$/m, '"## Install" section'],
+    [/^## Quick start$/m, '"## Quick start" section'],
+    [/^> \[!(NOTE|TIP|IMPORTANT|WARNING)\]$/m, 'a GitHub alert'],
+    [/<details>/, 'a <details> block'],
+    [/```ts\n/, 'a ts code block'],
+  ];
+  for (const [pattern, label] of required) {
+    if (!pattern.test(content)) violations.push(`missing ${label}`);
+  }
+  const opened = (content.match(/<details>/g) ?? []).length;
+  const closed = (content.match(/<\/details>/g) ?? []).length;
+  if (opened !== closed) {
+    violations.push(`${opened} <details> but ${closed} </details>`);
+  }
+  if (/<\/summary>\n(?!\n)/.test(content)) {
+    violations.push('no blank line after </summary>; the list will not render');
+  }
+  if (/```\n(?!\n|$)/.test(content.replace(/```\n(?=[\s\S]*?```)/, ''))) {
+    // checked below by language rule
+  }
+  if (/^```$/m.test(content.replace(/```[\w-]+\n[\s\S]*?\n```/g, ''))) {
+    violations.push('a code block without a language');
   }
 
   // Truncation check: the prompt requires a closing License section
@@ -584,12 +711,60 @@ async function generateDocs(): Promise<void> {
       ),
       comparisons: inputData.comparisons,
     };
-    const [readmeBody, changelogBody] = await Promise.all([
+    // Preview: keep the exact model input next to the drafts, written
+    // before the call so a failed run shows it too
+    const previewDir = `./preview/${process.env['OPENCODE_GO_MODEL'] || DEFAULT_MODEL}`;
+    if (process.argv.includes('--preview')) {
+      await fs.mkdir(previewDir, { recursive: true });
+      await fs.writeFile(
+        `${previewDir}/input-readme.json`,
+        JSON.stringify(inputData, null, 2),
+      );
+      await fs.writeFile(
+        `${previewDir}/input-changelog.json`,
+        JSON.stringify(changelogInput, null, 2),
+      );
+    }
+
+    const [readmeBody, changelogDraft] = await Promise.all([
       generateText(README_PROMPT, inputData),
       generateText(CHANGELOG_PROMPT, changelogInput),
     ]);
 
     const readme = buildReadme(version, readmeBody);
+    const changelogBody = fillOtherAdditions(
+      changelogDraft,
+      inputData.comparisons.current as unknown as Record<string, unknown>,
+    );
+
+    // Preview: write both texts and the gate result to preview/ only, so a
+    // person can read every draft before any tracked file changes
+    if (process.argv.includes('--preview')) {
+      const gate = [
+        ['README', (): void => validateReadmeStyle(readme)],
+        ['CHANGELOG', (): void => validateChangelogDraft(changelogBody)],
+      ] as const;
+      const results = gate.map(([name, check]) => {
+        try {
+          check();
+          return `${name}: passed`;
+        } catch (error) {
+          return `${name}: ${error instanceof Error ? error.message : error}`;
+        }
+      });
+      const dir = previewDir;
+      await fs.writeFile(`${dir}/README.md`, readme, 'utf-8');
+      await fs.writeFile(
+        `${dir}/CHANGELOG-${version}.md`,
+        `## ${version}\n\n${changelogBody.trim()}\n`,
+        'utf-8',
+      );
+      await fs.writeFile(`${dir}/gate.txt`, results.join('\n') + '\n');
+      console.log(`Wrote ${dir}/:`);
+      results.forEach((line) => console.log(`   ${line.slice(0, 200)}`));
+      return;
+    }
+
     validateReadmeStyle(readme);
     validateChangelogDraft(changelogBody);
     console.log('   Both texts passed the style gates\n');

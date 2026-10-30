@@ -79,9 +79,15 @@ export function findProseViolations(text: string): string[] {
     .replace(/```[\s\S]*?```/g, '')
     .split(/\n\s*\n/)
     .flatMap((block) => {
+      // Skip tables, headings, images, badges, alert markers, and the HTML
+      // lines of collapsed blocks; read quoted alert text without its "> "
       const lines = block
         .split('\n')
-        .filter((line) => !/^\s*(\||#|!\[|\[!\[)/.test(line));
+        .filter(
+          (line) =>
+            !/^\s*(\||#|!\[|\[!\[|> \[!|<\/?(details|summary)>)/.test(line),
+        )
+        .map((line) => line.replace(/^\s*>\s?/, ''));
       return lines.some((line) => /^\s*([-*+]|\d+\.)\s/.test(line))
         ? lines
         : [lines.join(' ')];
