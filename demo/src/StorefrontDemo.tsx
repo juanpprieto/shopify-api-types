@@ -9,10 +9,8 @@ import type {
   Shop,
   Mutation,
   CartInput,
+  Cart,
 } from '@juanpprieto/shopify-api-types/sfapi/current';
-
-// Alternative import pattern - specific version
-import type { Cart } from '@juanpprieto/shopify-api-types/sfapi/2025-07';
 
 // Use built-in Shopify types directly - no custom types needed!
 type ProductsQueryResponse = Pick<QueryRoot, 'products'>;
@@ -113,7 +111,7 @@ export const StorefrontDemo: React.FC = () => {
 
   // Example client setup (would normally use real store domain)
   const client = createGraphQLClient({
-    url: 'https://your-shop.myshopify.com/api/2025-07/graphql.json',
+    url: `https://your-shop.myshopify.com/api/${__SHOPIFY_API_VERSION__}/graphql.json`,
     headers: {
       'X-Shopify-Storefront-Access-Token': 'your-token-here',
     },
@@ -204,7 +202,7 @@ export const StorefrontDemo: React.FC = () => {
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <h2>🛍️ Storefront API Demo</h2>
+      <h2>Storefront API Demo</h2>
 
       <div style={{ marginBottom: '20px' }}>
         <h3>Type Import Examples</h3>
@@ -278,7 +276,7 @@ const response = await client.request<ProductsQuery>(query);`}
             backgroundColor: '#f0f8ff',
           }}
         >
-          <h3>🛒 Cart Information</h3>
+          <h3>Cart Information</h3>
           <p>
             <strong>Cart ID:</strong> {cart.id}
           </p>
@@ -367,7 +365,7 @@ const response = await client.request<ProductsQuery>(query);`}
       <div
         style={{ marginTop: '30px', padding: '15px', background: '#f9f9f9' }}
       >
-        <h3>✨ Type Safety Benefits</h3>
+        <h3>Type Safety Benefits</h3>
         <ul>
           <li>
             <strong>Complete GraphQL Coverage:</strong> Queries, Mutations, and
