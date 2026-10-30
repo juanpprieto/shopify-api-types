@@ -2,7 +2,7 @@ name: Dependency Review
 
 on:
   pull_request:
-    branches: [main, first-release]
+    branches: [main]
 
 permissions:
   contents: read
@@ -12,19 +12,11 @@ jobs:
   dependency-review:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+      - uses: actions/checkout@v7
+      # Reports in the PR; does not block the merge
+      - uses: actions/dependency-review-action@v5
         continue-on-error: true
         with:
           fail-on-severity: moderate
           comment-summary-in-pr: true
           deny-licenses: GPL-2.0, GPL-3.0
-
-      - name: Fallback Security Check
-        if: failure()
-        run: |
-          echo "Dependency Review not available - running fallback security check"
-          npm audit --audit-level=moderate || echo "Manual dependency review recommended"
